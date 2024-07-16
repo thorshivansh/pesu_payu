@@ -43,7 +43,7 @@ dependencies:
   payu_checkoutpro_flutter: ^1.1.5
   dio: ^5.5.0+1
   fpdart: ^1.1.0
-  flutter_widget_from_html: ^0.15.1
+  flutter_widget_from_html: ^0.14.11
   intl: ^0.19.0
   number_to_text_converter: ^1.0.5
   fluttertoast: ^8.2.6
