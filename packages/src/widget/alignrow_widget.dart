@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pesupay/src/widget/autosize_text.dart';
+import 'autosize_text.dart';
 
 class AlignRowWidget extends StatelessWidget {
   final String? firstText;

@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
 import 'package:payu_checkoutpro_flutter/payu_checkoutpro_flutter.dart';
-import 'package:pesupay/src/presentation/controller/payment_controller.dart';
-import 'package:pesupay/src/presentation/sub_widgets/payment_status.dart';
+import 'src/presentation/controller/payment_controller.dart';
+import 'src/presentation/sub_widgets/payment_status.dart';
 
 
 typedef Pesupay = void Function(VoidCallback pay);

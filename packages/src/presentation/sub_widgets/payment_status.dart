@@ -7,11 +7,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-import 'package:pesupay/src/presentation/controller/payment_controller.dart';
-import 'package:pesupay/src/utils/color/colors.dart';
-import 'package:pesupay/src/widget/alignrow_widget.dart';
-import 'package:pesupay/src/widget/autosize_text.dart';
-import 'package:pesupay/src/widget/common_button.dart';
+import '../controller/payment_controller.dart';
+import '../../utils/color/colors.dart';
+import '../../widget/alignrow_widget.dart';
+import '../../widget/autosize_text.dart';
+import '../../widget/common_button.dart';
 import 'package:screenshot/screenshot.dart';
 
 class PaymentStatus extends StatefulWidget {

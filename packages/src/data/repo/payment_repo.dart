@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:pesupay/src/core/api_config.dart';
+import '../../core/api_config.dart';
 // import 'package:pesua/utils/properties.dart';
 
 abstract class PaymentDetailRepo {
