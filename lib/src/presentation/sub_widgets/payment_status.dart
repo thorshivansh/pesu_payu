@@ -107,7 +107,7 @@ class _PaymentStatusState extends State<PaymentStatus>
                               bottomLeft: Radius.circular(80),
                               bottomRight: Radius.circular(80),
                             ),
-                            color: widget.color ?? PesuColor.darkBlue1,
+                            color: widget.color ?? MyColors.darkBlue1,
                           ),
                       child: SingleChildScrollView(
                         child: Column(

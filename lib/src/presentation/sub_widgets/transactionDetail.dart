@@ -6,8 +6,18 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesupay/src/presentation/controller/payment_controller.dart';
-import 'package:pesupay/src/utils/toast.dart';
+import 'package:pesu_payu/pesupay.dart';
+import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
+import 'package:pesu_payu/src/presentation/sub_widgets/disclaimer.dart';
+import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
+import 'package:pesu_payu/src/utils/misctext_field.dart';
+import 'package:pesu_payu/src/utils/my_button.dart';
+import 'package:pesu_payu/src/utils/my_text.dart';
+import 'package:pesu_payu/src/utils/my_icons.dart';
+import 'package:pesu_payu/src/utils/page_route.dart';
+import 'package:pesu_payu/src/utils/toast.dart';
+// import 'package:pesupay/src/presentation/controller/payment_controller.dart';
+// import 'package:pesupay/src/utils/toast.dart';
 // import 'package:pesua/app/modules/student_modules/online_payment/controllers/online_payment_controller.dart';
 // import 'package:pesua/app/modules/student_modules/online_payment/views/payment_page.dart';
 // import 'package:pesua/app/modules/student_modules/online_payment/views/subwidgets/disclaimer.dart';
@@ -27,9 +37,9 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: customAppBar(title: "Transaction Detail"),
+        appBar: AppBar(title:Text( "Transaction Detail")),
         body: Obx(() => controller.paymentloading.value
-            ? const PesuLoading()
+            ? const CircularProgressIndicator.adaptive()
             : SingleChildScrollView(
                 child: Container(
                   margin: const EdgeInsets.all(12),
@@ -40,7 +50,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Text("1", style: Properties.textsStyles.text18_600),
+                          // MyText("1", //style: Properties.textsStyles.text18_600),
                           Expanded(
                             child: Container(
                               padding: const EdgeInsets.only(left: 8),
@@ -48,7 +58,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  MyText(
                                     controller
                                             .paymentDetailModel
                                             .value
@@ -56,13 +66,13 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                                 annualfeeIndex]
                                             .finDemandFeeType ??
                                         '',
-                                    style: GoogleFonts.roboto(
-                                      textStyle:
-                                          Properties.textsStyles.text18_600,
-                                      color: Properties.themeColor.darkBlue,
-                                    ),
+                                    // style: GoogleFonts.roboto(
+                                    //   textStyle:
+                                    //       Properties.textsStyles.text18_600,
+                                    //   color: Properties.themeColor.darkBlue,
+                                    // ),
                                   ),
-                                  Text(
+                                  MyText(
                                       "${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].academicYear ?? ""}  -  ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].branch ?? ""} "),
                                   Padding(
                                     padding: const EdgeInsets.only(
@@ -72,15 +82,15 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
+                                        MyText(
                                           "Demand Amount",
-                                          style:
-                                              Properties.textsStyles.text14_600,
+                                          //style:
+                                              // Properties.textsStyles.text14_600,
                                         ),
-                                        Text(
+                                        MyText(
                                           "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].demandAmount.toString() ?? '0.0'}",
-                                          style:
-                                              Properties.textsStyles.text14_600,
+                                          //style:
+                                              // Properties.textsStyles.text14_600,
                                         ),
                                       ],
                                     ),
@@ -89,15 +99,15 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
+                                      MyText(
                                         "Paid Amount",
-                                        style:
-                                            Properties.textsStyles.text14_600,
+                                        //style:
+                                            // Properties.textsStyles.text14_600,
                                       ),
-                                      Text(
+                                      MyText(
                                         "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].paidAmount.toString() ?? '0.0'}",
-                                        style:
-                                            Properties.textsStyles.text14_600,
+                                        //style:
+                                            // Properties.textsStyles.text14_600,
                                       ),
                                     ],
                                   ),
@@ -105,15 +115,15 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
+                                      MyText(
                                         "Balance Due",
-                                        style:
-                                            Properties.textsStyles.text14_600,
+                                        //style:
+                                            // Properties.textsStyles.text14_600,
                                       ),
-                                      Text(
+                                      MyText(
                                         "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].totalDue.toString() ?? '0.0'}",
-                                        style:
-                                            Properties.textsStyles.text14_600,
+                                        //style:
+                                            // Properties.textsStyles.text14_600,
                                       ),
                                     ],
                                   ),
@@ -121,15 +131,15 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
+                                      MyText(
                                         "Due Date",
-                                        style:
-                                            Properties.textsStyles.text14_600,
+                                        //style:
+                                            // Properties.textsStyles.text14_600,
                                       ),
-                                      Text(
+                                      MyText(
                                         '${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].dueDate}',
-                                        style:
-                                            Properties.textsStyles.text14_600,
+                                        //style:
+                                            // Properties.textsStyles.text14_600,
                                       ),
                                     ],
                                   ),
@@ -140,12 +150,12 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
+                                        MyText(
                                           "Status",
-                                          style:
-                                              Properties.textsStyles.text14_600,
+                                          //style:
+                                              // Properties.textsStyles.text14_600,
                                         ),
-                                        Text(
+                                        MyText(
                                           controller
                                                   .paymentDetailModel
                                                   .value
@@ -153,8 +163,8 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                                       annualfeeIndex]
                                                   .verifiedStatus ??
                                               '',
-                                          style:
-                                              Properties.textsStyles.text14_600,
+                                          //style:
+                                              // Properties.textsStyles.text14_600,
                                         )
                                       ],
                                     ),
@@ -164,18 +174,19 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                       ? const SizedBox()
                                       : ExpansionTile(
                                           tilePadding: EdgeInsets.zero,
-                                          iconColor:
-                                              Properties.themeColor.darkBlue,
-                                          collapsedIconColor:
-                                              Properties.themeColor.darkBlue,
-                                          title: Text(
+                                          // iconColor:
+                                          //     Properties.themeColor.darkBlue,
+                                          // collapsedIconColor:
+                                          //     Properties.themeColor.darkBlue,
+                                          title: MyText(
                                               'No.of Transaction(${controller.transactionDetailModel.value.studentDetails?.length ?? 0})',
-                                              style: GoogleFonts.roboto(
-                                                textStyle: Properties
-                                                    .textsStyles.text14_500,
-                                                color: Properties
-                                                    .themeColor.darkBlue,
-                                              )),
+                                              //style: GoogleFonts.roboto(
+                                                // textStyle: Properties
+                                                //     .textsStyles.text14_500,
+                                                // color: Properties
+                                                    // .themeColor.darkBlue,
+                                              ),
+                                              // ),
                                           children: [
                                             Column(
                                               children: [
@@ -234,7 +245,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                           padding:
                                               const EdgeInsets.only(top: 10),
                                           child: Center(
-                                            child: commonButton(
+                                            child: MyButton(
                                                 width: MediaQuery.of(context)
                                                         .size
                                                         .width /
@@ -244,18 +255,18 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                                       false;
                                                   controller.otherAmountflag
                                                       .value = false;
-                                                  (controller
-                                                              .connectionController
-                                                              .connectionType
-                                                              .value ==
-                                                          0)
-                                                      ? showModalBottomSheet(
-                                                          context: context,
-                                                          builder: (BuildContext
-                                                              context) {
-                                                            return noInternetDialog();
-                                                          })
-                                                      : showModalBottomSheet(
+                                                  // (controller
+                                                  //             .connectionController
+                                                  //             .connectionType
+                                                  //             .value ==
+                                                  //         0)
+                                                  //     ? showModalBottomSheet(
+                                                  //         context: context,
+                                                  //         builder: (BuildContext
+                                                  //             context) {
+                                                  //           return noInternetDialog();
+                                                  //         })
+                                                      showModalBottomSheet(
                                                           isDismissible: false,
                                                           isScrollControlled:
                                                               true,
@@ -302,6 +313,8 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                                             );
                                                           },
                                                         );
+                                               
+                                               
                                                 },
                                                 label: "PAY"),
                                           ),
@@ -324,7 +337,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
 
   Widget noOfTransaction(int transactionIndex) {
     return (controller.transactionDetailModel.value.studentDetails == [])
-        ? const Text("Transaction Detail Missing")
+        ? const MyText("Transaction Detail Missing")
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -334,11 +347,11 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      MyText(
                         "Date of transaction",
-                        style: Properties.textsStyles.text14_600,
+                        //style: Properties.textsStyles.text14_600,
                       ),
-                      Text(
+                      MyText(
                         controller
                                 .transactionDetailModel
                                 .value
@@ -346,20 +359,20 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                 .transactionDate
                                 .toString() ??
                             "",
-                        style: Properties.textsStyles.text14_600,
+                        //style: Properties.textsStyles.text14_600,
                       ),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      MyText(
                         "Paid Amount",
-                        style: Properties.textsStyles.text14_600,
+                        //style: Properties.textsStyles.text14_600,
                       ),
-                      Text(
+                      MyText(
                         "₹ ${controller.transactionDetailModel.value.studentDetails?[transactionIndex].amount.toString()}",
-                        style: Properties.textsStyles.text14_600,
+                        //style: Properties.textsStyles.text14_600,
                       ),
                     ],
                   ),
@@ -368,11 +381,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        MyText(
                           "Status",
-                          style: Properties.textsStyles.text14_600,
                         ),
-                        Text(
+                        MyText(
                           controller
                                   .transactionDetailModel
                                   .value
@@ -380,7 +392,6 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                   .verifiedStatus
                                   .toString() ??
                               "",
-                          style: Properties.textsStyles.text14_600,
                         )
                       ],
                     ),
@@ -392,8 +403,8 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("Transaction Id"),
-                          Text(controller
+                          const MyText("Transaction Id"),
+                          MyText(controller
                                   .transactionDetailModel
                                   .value
                                   .studentDetails?[transactionIndex]
@@ -412,7 +423,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                           },
                           child: Icon(
                             Icons.copy,
-                            color: Properties.themeColor.darkBlue1,
+                            // color: Properties.themeColor.darkBlue1,
                           ))
                     ],
                   ),
@@ -428,31 +439,31 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
 
   Widget noInternetDialog() {
     return Container(
-      color: Properties.themeColor.white,
+      color:Colors.white,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             padding:
                 const EdgeInsets.only(left: 8, right: 18, top: 12, bottom: 8),
-            color: Properties.themeColor.darkBlue1,
+            // color: Properties.themeColor.darkBlue1,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                MyText(
                   "Network/Connection Error",
-                  style: Properties.textsStyles.text15_500.copyWith(
-                    color: Properties.themeColor.white,
-                  ),
+                  // //style: Properties.textsStyles.text15_500.copyWith(
+                  //   color:Colors.white,
+                  // ),
                 ),
                 InkWell(
                     onTap: () {
                       Get.back();
                     },
-                    child: Icon(
+                    child: MyIcons(
                       LucideIcons.x,
                       size: 20,
-                      color: Properties.themeColor.white,
+                      color:Colors.white,
                     ))
               ],
             ),
@@ -460,7 +471,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           // const Divider(),
           const Padding(
             padding: EdgeInsets.only(left: 12, right: 12, top: 15, bottom: 10),
-            child: Text(
+            child: MyText(
                 "The server is taking too long to respond OR something is wrong with your internet connection.Please try again later."),
           ),
           Align(
@@ -470,7 +481,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                 bottom: 35,
                 right: 14,
               ),
-              child: commonButton(
+              child: MyButton(
                   width: 60,
                   height: 30,
                   onPressed: () {
@@ -496,15 +507,15 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
             Container(
               padding: const EdgeInsets.only(
                   left: 8.0, right: 8.0, top: 12.0, bottom: 12.0),
-              color: Properties.themeColor.darkBlue1,
+              // color: Properties.themeColor.darkBlue1,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  MyText(
                     "Confirm Amount To Pay",
-                    style: Properties.textsStyles.text18_600.copyWith(
-                      color: Properties.themeColor.white,
-                    ),
+                    // //style: Properties.textsStyles.text18_600.copyWith(
+                    //   color:Colors.white,
+                    // ),
                   ),
                   InkWell(
                       onTap: () {
@@ -513,7 +524,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                       child: Icon(
                         LucideIcons.x,
                         size: 20.0,
-                        color: Properties.themeColor.white,
+                        color:Colors.white,
                       ))
                 ],
               ),
@@ -529,31 +540,31 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
+                          child: MyText(
                             "ANNUAL FEE",
-                            style: Properties.textsStyles.text18_700,
+                            // //style: Properties.textsStyles.text18_700,/
                           ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            MyText(
                               "Due Amount ",
-                              style: Properties.textsStyles.text15_500
-                                  .copyWith(color: Properties.themeColor.black),
+                        
+      
                             ),
                             Container(
                               padding: const EdgeInsets.only(left: 4, top: 4),
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Properties.themeColor.gray3)),
+                              // decoration: BoxDecoration(
+                                  // border: Border.all(
+                                  //     color: Properties.themeColor.gray3)),
                               width: 195,
                               height: 30,
-                              child: Text(
+                              child: MyText(
                                 " ₹ $dueAmount",
-                                style: Properties.textsStyles.text15_500
-                                    .copyWith(
-                                        color: Properties.themeColor.black),
+                                // //style: Properties.textsStyles.text15_500
+                                //     .copyWith(
+                                //         color: Properties.themeColor.black),
                               ),
                             )
                           ],
@@ -569,7 +580,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text("OR"),
+                                child: MyText("OR"),
                               ),
                               Expanded(
                                 child: Divider(
@@ -599,7 +610,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                 controller.otherAmountflag.value =
                                     !controller.otherAmountflag.value;
                               }),
-                          const Text("Other Amount"),
+                          const MyText("Other Amount"),
                         ],
                       ),
                     ),
@@ -621,7 +632,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text("Partial Amount :"),
+                                  const MyText("Partial Amount :"),
                                   SizedBox(
                                     width: 200,
                                     height: 60,
@@ -655,11 +666,11 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text("Amount in words :"),
+                                    const MyText("Amount in words :"),
                                     Container(
                                       padding: const EdgeInsets.only(
                                           left: 4, top: 2),
-                                      color: Properties.themeColor.gray5,
+                                      // color: Properties.themeColor.gray5,
                                       width: 200,
                                       height: 50,
                                       child: AutoSizeText(
@@ -687,7 +698,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                 // mainAxisAlignment: MainAxisAlignment.start,
                                 // crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(
+                                  MyText(
                                     'Min amount',
                                   ),
                                 ],
@@ -696,11 +707,11 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                 // mainAxisAlignment: MainAxisAlignment.end,
                                 // crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(
+                                  MyText(
                                     '${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].minAmount}',
-                                    style: Properties.textsStyles.text15_500
-                                        .copyWith(
-                                            color: Properties.themeColor.black),
+                                    // //style: Properties.textsStyles.text15_500
+                                    //     .copyWith(
+                                    //         color: Properties.themeColor.black),
                                   ),
                                 ],
                               )
@@ -762,7 +773,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                       const Padding(
                         padding: EdgeInsets.only(
                             left: 12, right: 8, top: 8, bottom: 8),
-                        child: Text(
+                        child: MyText(
                           "Note:- Please update your Adhaar No in your portal(My Profile) . Ignore if it is updated. *",
                         ),
                       ),
@@ -792,7 +803,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
       Get.back();
       Navigator.push(
         context,
-        FullPageDialogRoute(
+        FullDialogRoute(
           builder: (context) => PesuPaymentPage(
             isMiscpayment: isMiscPayment,
             merchantKey: merchantKey,
@@ -870,25 +881,25 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
 
     Color getButtonColor() {
       if (_.tcflag.value && !_.otherAmountflag.value) {
-        return Properties.themeColor.darkGreen;
+        return Colors.green;
       }
       if (_.tcflag.value && _.otherAmountflag.value == true) {
         if (!_.isotherAmountAvailable.value) {
-          return Properties.themeColor.darkGreen;
+          return Colors.green;
           // if (_.tcflag.value) {
           // }
         } else if (controller.partialAmountController.value.text == '' ||
             _.partialAmountController.text.isEmpty) {
-          return Properties.themeColor.gray;
+          return Colors.grey;
           // if (_.partialAmountController.text.isNotEmpty && _.tcflag.value) {}
         }
-            return Properties.themeColor.darkGreen;
+            return Colors.green;
 
         //  return    partialAmountController.text.isNotEmpty?Properties.themeColor.darkGreen
         //     _.partialAmountController.text.isNotEmpty?Properties.themeColor.darkGreen
         //     : Properties.themeColor.gray;
       }
-      return Properties.themeColor.gray;
+      return Colors.grey;
     }
 
     return Padding(
@@ -896,13 +907,13 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          commonButton(
+          MyButton(
             width: MediaQuery.of(context).size.width / 2.3,
             onPressed: handleSubmit,
             label: "Submit",
-            color: getButtonColor(),
+            backgrounColor: getButtonColor(),
           ),
-          commonButton(
+          MyButton(
             width: MediaQuery.of(context).size.width / 2.3,
             onPressed: () {
               _.clean();
@@ -925,17 +936,17 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Fine Amount"),
+              const MyText("Fine Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Properties.themeColor.gray3)),
+                // decoration: BoxDecoration(
+                //     border: Border.all(color: Properties.themeColor.gray3)),
                 width: 195,
                 height: 30,
-                child: Text(
+                child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-                  style: Properties.textsStyles.text15_500
-                      .copyWith(color: Properties.themeColor.black),
+                  // //style: Properties.textsStyles.text15_500
+                  //     .copyWith(color: Properties.themeColor.black),
                 ),
               )
             ],
@@ -944,9 +955,9 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
         const Divider(),
         Padding(
           padding: const EdgeInsets.only(bottom: 4, left: 8),
-          child: Text(
+          child: MyText(
             "Total Amount to Pay",
-            style: Properties.textsStyles.text18_700,
+            //style: Properties.textsStyles.text18_700,
           ),
         ),
         Padding(
@@ -954,17 +965,17 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Due/min Amount"),
+              const MyText("Due/min Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Properties.themeColor.gray3)),
+                // decoration: BoxDecoration(
+                    // border: Border.all(color: Properties.themeColor.gray3)),
                 width: 195,
                 height: 30,
-                child: Text(
+                child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-                  style: Properties.textsStyles.text15_500
-                      .copyWith(color: Properties.themeColor.black),
+                  //style: Properties.textsStyles.text15_500
+                      // .copyWith(color: Properties.themeColor.black),
                 ),
               )
             ],
@@ -975,17 +986,17 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Fine Amount"),
+              const MyText("Fine Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Properties.themeColor.gray3)),
+                // decoration: BoxDecoration(
+                //     border: Border.all(color: Properties.themeColor.gray3)),
                 width: 195,
                 height: 30,
-                child: Text(
+                child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-                  style: Properties.textsStyles.text15_500
-                      .copyWith(color: Properties.themeColor.black),
+                  //style: Properties.textsStyles.text15_500
+                      // .copyWith(color: Properties.themeColor.black),
                 ),
               )
             ],
@@ -996,17 +1007,17 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Partial Amount"),
+              const MyText("Partial Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Properties.themeColor.gray3)),
+                // decoration: BoxDecoration(
+                    // border: Border.all(color: Properties.themeColor.gray3)),
                 width: 195,
                 height: 30,
-                child: Text(
+                child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-                  style: Properties.textsStyles.text15_500
-                      .copyWith(color: Properties.themeColor.black),
+                  //style: Properties.textsStyles.text15_500
+                      // .copyWith(color: Properties.themeColor.black),
                 ),
               )
             ],
@@ -1017,17 +1028,17 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Total Amount"),
+              const MyText("Total Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Properties.themeColor.gray3)),
+                // decoration: BoxDecoration(
+                //     border: Border.all(color: Properties.themeColor.gray3)),
                 width: 195,
                 height: 30,
-                child: Text(
+                child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-                  style: Properties.textsStyles.text15_500
-                      .copyWith(color: Properties.themeColor.black),
+                  //style: Properties.textsStyles.text15_500
+                      // .copyWith(color: Properties.themeColor.black),
                 ),
               )
             ],

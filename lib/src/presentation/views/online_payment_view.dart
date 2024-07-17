@@ -2,25 +2,24 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/controllers/online_payment_controller.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/views/subwidgets/annualFees.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/views/subwidgets/disclaimer.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/views/subwidgets/miscellaneous.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/views/subwidgets/paymentHistoryView.dart';
-import 'package:pesua/utils/properties.dart';
-import 'package:pesua/utils/retry_exception.dart';
-import 'package:pesua/utils/rxstatus.dart';
-import 'package:pesua/utils/widgets/appbar/custom_app_bar.dart';
-import 'package:pesua/utils/widgets/loading_widget.dart';
-import 'package:pesupay/src/presentation/controller/payment_controller.dart';
-import 'package:pesupay/src/utils/enums/rxtstatus.dart';
-
-// import '../controllers/online_payment_controller.dart';
+import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
+import 'package:pesu_payu/src/presentation/sub_widgets/annualFees.dart';
+import 'package:pesu_payu/src/presentation/sub_widgets/disclaimer.dart';
+import 'package:pesu_payu/src/presentation/sub_widgets/miscellaneous.dart';
+import 'package:pesu_payu/src/presentation/sub_widgets/paymentHistoryView.dart';
+import 'package:pesu_payu/src/utils/enums/rxtstatus.dart';
 
 class OnlinePaymentView extends GetView<OnlinePaymentController> {
-  const OnlinePaymentView({super.key});
+    final String name;
+    final String email;
+    final String mobileNumber;
+    final String userId;
+    final String loginId;
+  const OnlinePaymentView({required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
   @override
   Widget build(BuildContext context) {
+controller.getUserInfo(email: email, name: name,mobileNumber: mobileNumber,userId: userId,loginId: loginId);
+
     
     // Get.put<OnlinePaymentController>(OnlinePaymentController());
     TabBar tabBar = TabBar(
@@ -50,12 +49,12 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
           // }
         },
         enableFeedback: true,
-        indicatorColor: Properties.themeColor.appVersion,
+        // indicatorColor: Properties.themeColor.appVersion,
         indicatorWeight: 4,
         indicatorSize: TabBarIndicatorSize.label,
         isScrollable: true,
-        labelColor: Properties.themeColor.darkBlue1,
-        unselectedLabelColor: Properties.themeColor.darkBlue1,
+        // labelColor: Properties.themeColor.darkBlue1,
+        // unselectedLabelColor: Properties.themeColor.darkBlue1,
         tabs: const [
           Tab(
             text: "Annual Fees",
@@ -67,8 +66,8 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: customAppBar(
-          title: "Online Payments",
+        appBar: AppBar(
+          title: const Text("Online Payments"),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 14),
@@ -104,25 +103,25 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
           bottom: PreferredSize(
             preferredSize: tabBar.preferredSize,
             child: Material(
-              color: Properties.themeColor.darkBlue3,
+              // color: Properties.themeColor.darkBlue3,
               //<-- SEE HERE
               child: SizedBox(
                   width: MediaQuery.of(context).size.width, child: tabBar),
             ),
           ),
-          onBack: () {
-            Get.back();
-          },
+          // onBack: () {
+          //   Get.back();
+          // },
 
           // backgroundColor: Properties.themeColor.secondaryColor,
         ),
         body: Obx(
           () => controller.rxRequestStatus.value==RequestStatus.LOADING
-              ? const PesuLoading()
+              ? const CircularProgressIndicator.adaptive()
               : controller.rxRequestStatus.value==RequestStatus.ERROR ?
-            RetryException(onTap: (){
-              controller.getPaymentDetail();
-              controller.getCTypeListResponse();
+            GestureDetector(onTap: (){
+              // controller.getPaymentDetail();
+              // controller.getCTypeListResponse();
             })
               
               // const Center(child: Text("No Data Available"),)

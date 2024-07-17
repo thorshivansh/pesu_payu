@@ -1,7 +1,7 @@
 //    import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class PesuColor{
+class MyColors{
    
   static const Color darkBlue=  Color(0xff00377B);
 //    static const skyblue:  Color(0xffD7EDFB);

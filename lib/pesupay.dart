@@ -23,11 +23,7 @@ class PesuPaymentPage extends StatefulWidget {
   final String merchantKey;
   final String? paymentDescription;
   final bool isMiscpayment;
-    final String name;
-    final String email;
-    final String mobileNumber;
-    final String userId;
-    final String loginId;
+
 
   const PesuPaymentPage({
     super.key,
@@ -40,7 +36,7 @@ class PesuPaymentPage extends StatefulWidget {
     this.fdFeeTypeId,
     required this.merchantKey,
     this.paymentDescription,
-    required this.isMiscpayment, required this.name, required this.email, required this.mobileNumber, required this.userId, required this.loginId, this.loadingWidget,
+    required this.isMiscpayment, this.loadingWidget,
     // this.pay
   });
 
@@ -107,9 +103,9 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
   Map payuparams() {
     try {
       var additionnalParms = {
-        PayUAdditionalParamKeys.udf1: widget.userId,
-        PayUAdditionalParamKeys.udf2: widget.mobileNumber,
-        PayUAdditionalParamKeys.udf3: widget.loginId,
+        PayUAdditionalParamKeys.udf1:_controller.userInfo.value['userId'],
+        PayUAdditionalParamKeys.udf2: _controller.userInfo.value['mobileNumber'],
+        PayUAdditionalParamKeys.udf3: _controller.userInfo.value['loginId'],
         PayUAdditionalParamKeys.udf4: widget.academicyear,
         PayUAdditionalParamKeys.udf5: widget.misctype
       };
@@ -121,9 +117,9 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
         PayUPaymentParamKey.productInfo: widget.isMiscpayment
             ? widget.paymentDescription
             : widget.feeName, //TODO paymnnet description if misc
-        PayUPaymentParamKey.firstName: widget.name,
-        PayUPaymentParamKey.email: widget.email ,
-        PayUPaymentParamKey.phone: widget.mobileNumber,
+        PayUPaymentParamKey.firstName: _controller.userInfo.value['name'],
+        PayUPaymentParamKey.email: _controller.userInfo.value['email'] ,
+        PayUPaymentParamKey.phone: _controller.userInfo.value['mobileNumber'],
         PayUPaymentParamKey.environment: "0", //TODO  change ennviroment key
         PayUPaymentParamKey.additionalParam: additionnalParms,
         PayUPaymentParamKey.enableNativeOTP: true,
@@ -133,7 +129,7 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
             , //TODO for ios txid canot be more than 25 lenght
         // transactionId Cannot be null or empty and should be unique for each transaction. Maximum allowed length is 25 characters. It cannot contain special characters like: -_/
         PayUPaymentParamKey.userCredential:
-            "${widget.merchantKey}:${widget.email }", //TODO  change merchant key
+            "${widget.merchantKey}:${_controller.userInfo.value['email'] }", //TODO  change merchant key
         //  Format: <testmerchantKey>:<userId> ... UserId is any id/email/phone number to uniquely identify the user.
         PayUPaymentParamKey.android_surl:_controller.androidSurl,
         PayUPaymentParamKey.android_furl: _controller.androidFurl,
@@ -173,8 +169,8 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
   feeType: widget.feeName,
   trxnId: _getTransactionId(_controller.payuresponse.value),
   amount: widget.dueAmount,
-  name: widget.name,
-  srn: widget.loginId,
+  name: _controller.userInfo.value['name'],
+  srn: _controller.userInfo.value['loginId'],
   errorReason: _getErrorReason(_controller.payuresponse.value),
 )),
       ),

@@ -7,7 +7,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesupay/src/presentation/controller/payment_controller.dart';
+import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
+import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
+import 'package:pesu_payu/src/utils/dropdown.dart';
+import 'package:pesu_payu/src/utils/misctext_field.dart';
+import 'package:pesu_payu/src/utils/my_button.dart';
+import 'package:pesu_payu/src/utils/my_icons.dart';
+import 'package:pesu_payu/src/utils/my_text.dart';
+import 'package:pesu_payu/src/utils/toast.dart';
+import 'package:pesu_payu/src/widget/alignrow_widget.dart';
+// import 'package:pesupay/src/presentation/controller/payment_controller.dart'
 
 // import 'package:pesua/app/modules/student_modules/online_payment/controllers/online_payment_controller.dart';
 // import 'package:pesua/app/modules/student_modules/online_payment/views/subwidgets/terms_condition.dart';
@@ -31,7 +40,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
 
    Function? downlaod;
     return Obx(() => controller.paymentloading.value
-        ? const PesuLoading()
+        ? const CircularProgressIndicator.adaptive()
         : Container(
             margin: const EdgeInsets.all(12.0),
             child: Column(
@@ -85,7 +94,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                         strokeWidth: 3.0,
                                       ),
                                     )
-                                  : const Icon(
+                                  : const MyIcons(
                                       Icons.keyboard_arrow_down_rounded),
                               menuMaxHeight: Get.width * 1.2,
                               initialValue: controller.ctypedrop.value,
@@ -101,11 +110,11 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                         onTap: () {
                                           controller.stypedrop.value = "";
 
-                                          controller
-                                              .getSTypeListResponse(e.id ?? 0);
+                                          // controller
+                                          //     .getSTypeListResponse(e.id ?? 0);
                                           controller.ctypeValue = e.id;
                                         },
-                                        child: Text(
+                                        child: MyText(
                                           e.name ?? '',
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
@@ -163,7 +172,9 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                                           ? const SizedBox(
                                                               height: 150,
                                                               child:
-                                                                  PesuLoading())
+                                                                  CircularProgressIndicator.adaptive()
+                                                                  
+                                                                  )
                                                           : paymentConfirmation(
                                                               context,
                                                               0) // Replace with your bottom sheet content
@@ -179,10 +190,10 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                                 value: e.name,
                                                 onTap: () {
                                            
-                                                  controller
-                                                      .getPaymentConfirmationResponse(
-                                                          controller.ctypeValue,
-                                                          e.id!);
+                                                  // controller
+                                                  //     .getPaymentConfirmationResponse(
+                                                  //         controller.ctypeValue,
+                                                  //         e.id!);
                                                
                                                   controller.miscdescController
                                                       .clear();
@@ -196,7 +207,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                                       1.0,
                                                   // height: 90,
                                                   color: Colors.white,
-                                                  child: Text(
+                                                  child: MyText(
                                                     e.name ?? '',
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -217,11 +228,11 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                 Expanded(
                   child: RefreshIndicator.adaptive(
                     onRefresh: () async {
-                      controller.getCTypeListResponse();
-                      controller.getPaymentDetail();
+                      // controller.getCTypeListResponse();
+                      // controller.getPaymentDetail();
                     },
                     child: controller.paymentloading.value
-                        ? const PesuLoading()
+                        ? const CircularProgressIndicator.adaptive()
                         : ListView.builder(
                             shrinkWrap: true,
                             itemCount: controller.paymentDetailModel.value
@@ -257,19 +268,19 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          MyText(
                             controller.paymentDetailModel.value.misDetails?[i]
                                     .transactionDetails ??
                                 "",
-                            style: Properties.textsStyles.text16_600
-                                .copyWith(color: Colors.black),
+                            // style: Properties.textsStyles.text16_600
+                            //     .copyWith(color: Colors.black),
                           ),
                         ],
                       ),
                     ),
                     Column(
                       children: [
-                        Text(controller.paymentDetailModel.value.misDetails?[i]
+                        MyText(controller.paymentDetailModel.value.misDetails?[i]
                                 .transactionDate ??
                             ""),
                       ],
@@ -282,9 +293,9 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    MyText(
                         "${controller.paymentDetailModel.value.misDetails?[i].batchName ?? ""} "),
-                    Text(
+                    MyText(
                         "₹ ${controller.paymentDetailModel.value.misDetails?[i].amount ?? ""}"),
                   ],
                 ),
@@ -295,7 +306,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Status"),
+                    const MyText("Status"),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
 
@@ -303,7 +314,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                       children: [
                         Container(
                           child: (status == "Successful" || status == "Paid")
-                              ? Icon(
+                              ? MyIcons(
                                   LucideIcons.checkCircle,
                                   color: ((status == "Successful")
                                       ? Colors.green
@@ -311,25 +322,25 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                   size: 20,
                                 )
                               : (status == "Pending")
-                                  ? const Icon(
+                                  ? const MyIcons(
                                       LucideIcons.clock,
                                       color: Colors.grey,
                                       size: 20,
                                     )
                                   : (status == "Rejected" ||
                                           status == "Failure")
-                                      ? const Icon(
+                                      ? const MyIcons(
                                           LucideIcons.xCircle,
                                           color: Colors.red,
                                           size: 20,
                                         )
-                                      : const Icon(
+                                      : const MyIcons(
                                           Icons.check_circle_outline_sharp,
                                           color: Colors.white,
                                           size: 20,
                                         ),
                         ),
-                        Text(
+                        MyText(
                             " ${controller.paymentDetailModel.value.misDetails?[i].verifiedStatus.toString()}"),
                       ],
                     ),
@@ -341,7 +352,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Transaction Id"),
+                    const MyText("Transaction Id"),
                     InkWell(
                       onTap: () async {
                         await Clipboard.setData(ClipboardData(
@@ -352,13 +363,13 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                       },
                       child: Row(
                         children: [
-                          Icon(
+                          const MyIcons(
                             LucideIcons.copy,
-                            color: Properties.themeColor.skyblue1,
+                            // color: Properties.themeColor.skyblue1,
                             size: 16,
                           ),
-                          const Text(" "),
-                          Text(controller.paymentDetailModel.value
+                          const MyText(" "),
+                          MyText(controller.paymentDetailModel.value
                                   .misDetails?[i].transactionNo
                                   .toString() ??
                               ""),
@@ -375,7 +386,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     // Expanded(
-                    //   child: Text(
+                    //   child: MyText(
                     //       maxLines: 4,
                     //       controller.paymentDetailModel.value.paymenthistory?[i]
                     //                       .reason !=
@@ -386,33 +397,33 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                     //           ? "Reason : ${controller.paymentDetailModel.value.paymenthistory?[i].reason.toString()}"
                     //           : ""),
                     // ),
-                    (controller.paymentDetailModel.value.misDetails?[i]
-                                .verifiedStatus ==
-                            "Successful"||controller.paymentDetailModel.value.misDetails?[i]
-                                .recepitId!=0.0)
-                        ? Center(
-                          child: SizedBox(
-                            height: 30,
-                            width: 140,
-                            child: DownloadFunction
-                            (
-                              fileName: 'receipt',
-                              url: 'https://www.pesuacademy.com/Academy/s/reports/Reports/StudentReceiptDownload/0/246320/12',
-                              download:(_)=>download=_ ,
-                              child: commonButton(
-                                  width: 70,
-                                  color: Properties.themeColor.darkBlue,
-                                  height: 30,
-                                  onPressed: () {
-                                    download!.call();
+                    // (controller.paymentDetailModel.value.misDetails?[i]
+                    //             .verifiedStatus ==
+                    //         "Successful"||controller.paymentDetailModel.value.misDetails?[i]
+                    //             .recepitId!=0.0)
+                    //     ? Center(
+                    //       child: SizedBox(
+                    //         height: 30,
+                    //         width: 140,
+                    //         child: DownloadFunction
+                    //         (
+                    //           fileName: 'receipt',
+                    //           url: 'https://www.pesuacademy.com/Academy/s/reports/Reports/StudentReceiptDownload/0/246320/12',
+                    //           download:(_)=>download=_ ,
+                    //           child: MyButton(
+                    //               width: 70,
+                    //               // color: Properties.themeColor.darkBlue,
+                    //               height: 30,
+                    //               onPressed: () {
+                    //                 download!.call();
                               
                             
-                                  },
-                                  label: "PDF Download"),
-                            ),
-                          ),
-                        )
-                        : Container()
+                    //               },
+                    //               label: "PDF Download"),
+                    //         ),
+                    //       ),
+                    //     )
+                    //     : Container()
                   ],
                 ),
               ),
@@ -437,7 +448,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
     //                             .miscellaneouspayment?[0].dataValue3??'';
     //                       }
     return controller.paymentConfirmationModel.value.isEmpty
-        ? SizedBox(height: 130, child: nodata(message: 'No Data Available'))
+        ? SizedBox(height: 130, child: Text( 'No Data Available'))
         : Padding(
             padding: const EdgeInsets.only(bottom: 30.0),
             child: Column(
@@ -446,18 +457,18 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                 GetBuilder<OnlinePaymentController>(
                   builder: (c) {
                     return ListTile(
-                      tileColor: Properties.themeColor.darkBlue1,
-                      title: Text(
+                      // tileColor: Properties.themeColor.darkBlue1,
+                      title: const MyText(
                         "Payment Confirmation",
-                        style: Properties.textsStyles.text18_600.copyWith(
-                          color: Properties.themeColor.white,
-                        ),
+                        // style: Properties.textsStyles.text18_600.copyWith(
+                        //   color: Properties.themeColor.white,
+                        // ),
                       ),
                       trailing: IconButton(
-                        icon: Icon(
+                        icon: const MyIcons(
                           LucideIcons.x,
                           size: 18,
-                          color: Properties.themeColor.white,
+                          // color: Properties.themeColor.white,
                         ),
                         onPressed: () {
                           c.clean();
@@ -476,11 +487,11 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AlignRowWidget(
-                          firstWidget: const Text(
+                          firstWidget: const MyText(
                             'Academic year:',
                             style: TextStyle(fontSize: 16),
                           ),
-                          secondWidget: Text(
+                          secondWidget: MyText(
                             controller.paymentConfirmationModel.value[0]
                                     .miscellaneouspayment?[0].academicYear ??
                                 "",
@@ -489,7 +500,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                         ),
                         const Divider(),
                         AlignRowWidget(
-                            firstWidget: const Text(
+                            firstWidget: const MyText(
                               'Payment Description:',
                               style: TextStyle(fontSize: 16),
                             ),
@@ -505,7 +516,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                             .miscellaneouspayment?[0]
                                             .paymentDesc ==
                                         null
-                                ? Text(
+                                ? MyText(
                                     controller
                                             .paymentConfirmationModel
                                             .value[0]
@@ -513,8 +524,8 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                             .paymentDesc
                                             .toString() ??
                                         "",
-                                    style: Properties.textsStyles.text14_600
-                                        .copyWith(color: Colors.black),
+                                    // style: Properties.textsStyles.text14_600
+                                    //     .copyWith(color: Colors.black),
                                   )
                                 : MiscTextfield(
                                     validator: (v) {
@@ -531,7 +542,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                         const Divider(),
                       
                         AlignRowWidget(
-                            firstWidget: const Text(
+                            firstWidget: const MyText(
                               'Amount:',
                               style: TextStyle(fontSize: 16),
                             ),
@@ -541,7 +552,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                         .miscellaneouspayment![0]
                                         .amount !=
                                     "0"
-                                ? Text(
+                                ? MyText(
                                     '₹. ${controller.paymentConfirmationModel.value[0].miscellaneouspayment?[0].amount.toString()}', // Replace with your data
                                     style: const TextStyle(fontSize: 16),
                                   )
@@ -583,12 +594,12 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  // Text(
+                                  // MyText(
                                   //   'Data Value:',
                                   //   style: TextStyle(fontSize: 16),
                                   // ),
 
-                                  Text(
+                                  MyText(
                                     controller.paymentConfirmationModel.value[0]
                                             .miscellaneouspayment?[0].dataValue1
                                             .toString() ??
@@ -597,7 +608,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                     style: const TextStyle(fontSize: 16),
                                   ),
 
-                                  Text(
+                                  MyText(
                                       '₹. ${controller.paymentConfirmationModel.value[0].miscellaneouspayment?[0].dataValue2.toString() ?? ""}')
                                 ],
                               ),
@@ -611,7 +622,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                MyText(
                                   "${controller.paymentConfirmationModel.value[0].miscellaneouspayment?[0].label.toString()}:",
                                   style: const TextStyle(fontSize: 16),
                                 ),
@@ -651,7 +662,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                           ]),
                         const Divider(),
                         AlignRowWidget(
-                            firstWidget: const Text(
+                            firstWidget: const MyText(
                               'Instructions:',
                               style: TextStyle(fontSize: 16),
                             ),
@@ -669,12 +680,12 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                               controller.paymentConfirmationModel.value[0]
                                   .miscellaneouspayment?[0].amount),
                           builder: (c) => AlignRowWidget(
-                              firstWidget: const Text(
+                              firstWidget: const MyText(
                                 'Total Amount:',
                                 style: TextStyle(fontSize: 16),
                               ),
                               secondWidget:
-                                  Text(controller.miscamount.value.toString())),
+                                  MyText(controller.miscamount.value.toString())),
                         ),
                         const Divider(),
                       ],
@@ -734,7 +745,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                 controller.tcflag.value
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: commonButton(
+                        child: MyButton(
                             onPressed: () async {
 
 

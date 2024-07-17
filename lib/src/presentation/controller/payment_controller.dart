@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:number_to_text_converter/number_to_text_converter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
+import 'package:pesu_payu/src/utils/page_route.dart';
 
 // import 'package:pesua/app/data/api/api_client.dart';
 // import 'package:pesua/app/data/models/payment_models/TransactionModel.dart';
@@ -128,6 +129,18 @@ RxString amountInWords = RxString('');
   void onReady() {
     super.onReady();
   }
+final Rx<Map<String, String>> userInfo = Rx({});
+Future<Map<String, String>> getUserInfo({required String name, required String email,required String mobileNumber, required String userId, required String loginId}) async {
+
+
+  return userInfo.value={
+    'name': name,
+    'email': email,
+    'mobileNumber': mobileNumber,
+    'loginId': loginId,
+    'userId': userId,
+  };
+}
 
   @override
   void onClose() {
@@ -241,36 +254,30 @@ RxString amountInWords = RxString('');
   Future<void> startPayment(
       {required String amount,
       required String cat,
-      required String name,
-      required String email,
-      required String mobileNumber,
+
       required String subcat,
-      required String loginId,
-      required String userId,
+   
       required String academicYearId,
       String? miscDescription,
     required  String merchantKey,
       required BuildContext context}) async {
     var miscCatSubcat = "1&$cat&$subcat&2&2&1";
     Get.back();
-    // Navigator.push(
-    //     context,
-    //     FullPageDialogRoute(
-    //         builder: ((context) => PesuPaymentPage(
-    //           name:name ,
-    //           email:email ,
-    //           loginId: loginId,
-    //           // loadingWidget: ,
-    //           mobileNumber:mobileNumber,
-    //           userId: userId,
-    //               paymentDescription: miscDescription,
-    //               isMiscpayment: true,
-    //               dueAmount: amount,
-    //               feeName: miscDescription,
-    //               misctype: miscCatSubcat,
-    //               merchantKey: merchantKey,
-    //               academicyear: academicYearId,
-    //             ))));
+    Navigator.push(
+        context,
+        FullDialogRoute(
+            builder: ((context) => PesuPaymentPage(
+           
+              // loadingWidget: ,
+            
+                  paymentDescription: miscDescription,
+                  isMiscpayment: true,
+                  dueAmount: amount,
+                  feeName: miscDescription,
+                  misctype: miscCatSubcat,
+                  merchantKey: merchantKey,
+                  academicyear: academicYearId,
+                ))));
   }
 
 //

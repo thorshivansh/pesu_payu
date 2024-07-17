@@ -3,18 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/controllers/online_payment_controller.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/views/subwidgets/transactionDetail.dart';
-import 'package:pesua/utils/properties.dart';
+import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
+import 'package:pesu_payu/src/presentation/sub_widgets/transactionDetail.dart';
+import 'package:pesu_payu/src/utils/my_text.dart';
+
 
 class AnnualFee extends GetView<OnlinePaymentController> {
+  // final 
   const AnnualFee({super.key});
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator.adaptive(
                 onRefresh: ()async {
-controller.getCTypeListResponse();
-               controller.getPaymentDetail();
+// controller.getCTypeListResponse();
+//                controller.getPaymentDetail();
               //  return ;
                 },
                 child:SingleChildScrollView(
@@ -24,12 +26,12 @@ controller.getCTypeListResponse();
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(10),
-              color: Properties.themeColor.darkBlue3,
-              child: Text(
+              // color: Properties.themeColor.darkBlue3,
+              child: MyText(
                   "Balance / Pending Amount(${controller.pendingCount.value})",
                   style: GoogleFonts.merriweather(
-                    textStyle: Properties.textsStyles.text16_500
-                        .copyWith(color: Properties.themeColor.darkBlue1),
+                    // textStyle: Properties.textsStyles.text16_500
+                    //     .copyWith(color: Properties.themeColor.darkBlue1),
                   )),
             ),
             ListView.builder(
@@ -49,7 +51,7 @@ controller.getCTypeListResponse();
             //   width: double.infinity,
             //   padding: const EdgeInsets.all(10),
             //   color: Properties.themeColor.darkBlue3,
-            //   child: Text(
+            //   child: MyText(
             //       "Paid/Successful/Rejected Payment(${controller.paidCount.value})",
             //       style: GoogleFonts.merriweather(
             //         textStyle: Properties.textsStyles.text16_500
@@ -82,14 +84,14 @@ controller.getCTypeListResponse();
         .paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i].paymentStatus;
     return InkWell(
       onTap: () {
-        controller.getTransactionDetail(
-            controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i]
-                    .academicYearId ??
-                0,
-            controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i]
-                    .finDemandFeeTypeId
-                    .toString() ??
-                0);
+        // controller.getTransactionDetail(
+        //     controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i]
+        //             .academicYearId ??
+        //         0,
+        //     controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i]
+        //             .finDemandFeeTypeId
+        //             .toString() ??
+        //         0);
 controller. setisotherAmountAvailable(i);
         Get.to(() => TransactionDetailView(
               annualfeeIndex: i,
@@ -119,14 +121,14 @@ controller. setisotherAmountAvailable(i);
                     children: [
                       SizedBox(
                         width: MediaQuery.of(context).size.width / 1.8,
-                        child: Text(
+                        child: MyText(
                           '${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i].finDemandFeeType}(${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i].academicYear ?? ""} - ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i].branch ?? ""})',
                           maxLines: 4,
-                          style: Properties.textsStyles.text16_600
-                              .copyWith(color: Colors.black),
+                          // style: Properties.textsStyles.text16_600
+                          //     .copyWith(color: Colors.black),
                         ),
                       ),
-                      const Text("10-06-2024"),
+                      const MyText("10-06-2024"),
                     ],
                   ),
                 ),
@@ -136,7 +138,7 @@ controller. setisotherAmountAvailable(i);
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      MyText(
                           "Total : ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i].demandAmount} "),
                       Container(
                         child: (status == "Successful" || status == "Paid")
@@ -178,9 +180,9 @@ controller. setisotherAmountAvailable(i);
                   // crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    MyText(
                         "Balance : ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i].totalDue}"),
-                    Text(controller.paymentDetailModel.value
+                    MyText(controller.paymentDetailModel.value
                             .sTUDENTPAYMENTDETAILS?[i].paymentStatus
                             .toString() ??
                         ""),
