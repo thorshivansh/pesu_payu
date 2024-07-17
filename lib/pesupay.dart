@@ -19,12 +19,13 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
     final String mobileNumber;
     final String userId;
     final String loginId;
+    final int instId;
     final Dio dio;
-  const OnlinePaymentView(this.dio, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
+  const OnlinePaymentView(this.dio, this.instId, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
   @override
   Widget build(BuildContext context) {
      Get.put<OnlinePaymentController>(OnlinePaymentController(dio));
-controller.getUserInfo(email: email, name: name,mobileNumber: mobileNumber,userId: userId,loginId: loginId);
+controller.getUserInfo(email: email, name: name,mobileNumber: mobileNumber,userId: userId,loginId: loginId, instId:instId);
 
     
     // Get.put<OnlinePaymentController>(OnlinePaymentController());

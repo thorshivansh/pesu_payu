@@ -121,8 +121,8 @@ RxString amountInWords = RxString('');
   @override
   void onInit() async {
     _paymentDetailRepo = PaymentDetailRepo(_dio);
-    // await getPaymentDetail();
-    // getCTypeListResponse();
+    await getPaymentDetail();
+    getCTypeListResponse();
     super.onInit();
   }
 
@@ -130,8 +130,8 @@ RxString amountInWords = RxString('');
   void onReady() {
     super.onReady();
   }
-final Rx<Map<String, String>> userInfo = Rx({});
-Future<Map<String, String>> getUserInfo({required String name, required String email,required String mobileNumber, required String userId, required String loginId}) async {
+final Rx<Map<String, dynamic>> userInfo = Rx({});
+Future<Map<String, dynamic>> getUserInfo({required String name,required int instId, required String email,required String mobileNumber, required String userId, required String loginId}) async {
 
 
   return userInfo.value={
@@ -140,6 +140,7 @@ Future<Map<String, String>> getUserInfo({required String name, required String e
     'mobileNumber': mobileNumber,
     'loginId': loginId,
     'userId': userId,
+    'instId': instId,
   };
 }
 
@@ -282,14 +283,14 @@ Future<Map<String, String>> getUserInfo({required String name, required String e
   }
 
 //
-  Future<void> getPaymentDetail(String userId) async {
+  Future<void> getPaymentDetail() async {
     if (rxRequestStatus.value != RequestStatus.LOADING) {
       setRxRequestStatus(RequestStatus.LOADING);
     }
     try {
       // paymentloading.value = true;
       var response =
-          await _paymentDetailRepo.getPaymentDetail(userId);
+          await _paymentDetailRepo.getPaymentDetail(userInfo.value['userId']!);
       // if (response.statuscode == 200) {
       response.fold((error) {
         // paymentloading.value = false;
@@ -518,12 +519,12 @@ update();
          showToast('Downloaded Successfully');
   }
 
-  Future getCTypeListResponse(int instId) async {
+  Future getCTypeListResponse() async {
     try {
       // paymentloading.value = true;
       ctypeModel.value.ctype?.clear();
       var response =
-          await _paymentDetailRepo.getCTypeList(instId);
+          await _paymentDetailRepo.getCTypeList(userInfo.value['instId']!);
 
       response.fold((error) {
         paymentloading.value = false;
