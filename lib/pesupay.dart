@@ -1,6 +1,7 @@
 
 
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -18,9 +19,11 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
     final String mobileNumber;
     final String userId;
     final String loginId;
-  const OnlinePaymentView({required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
+    final Dio dio;
+  const OnlinePaymentView(this.dio, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
   @override
   Widget build(BuildContext context) {
+     Get.put<OnlinePaymentController>(OnlinePaymentController(dio));
 controller.getUserInfo(email: email, name: name,mobileNumber: mobileNumber,userId: userId,loginId: loginId);
 
     
