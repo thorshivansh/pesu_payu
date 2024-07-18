@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -121,28 +122,29 @@ RxString amountInWords = RxString('');
   @override
   void onInit() async {
     _paymentDetailRepo = PaymentDetailRepo(_dio);
-    await getPaymentDetail();
-    getCTypeListResponse();
+  
     super.onInit();
   }
 
   @override
   void onReady() {
+       getPaymentDetail();
+    getCTypeListResponse();
     super.onReady();
   }
-final Rx<Map<String, dynamic>> userInfo = Rx({});
-Future<Map<String, dynamic>> getUserInfo({required String name,required int instId, required String email,required String mobileNumber, required String userId, required String loginId}) async {
+ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
+// Future<ValueNotifier<Map<String, dynamic>> > getUserInfo({required String name,required int instId, required String email,required String mobileNumber, required String userId, required String loginId}) async {
 
 
-  return userInfo.value={
-    'name': name,
-    'email': email,
-    'mobileNumber': mobileNumber,
-    'loginId': loginId,
-    'userId': userId,
-    'instId': instId,
-  };
-}
+//   return userInfo=ValueNotifier({
+//     'name': name,
+//     'email': email,
+//     'mobileNumber': mobileNumber,
+//     'loginId': loginId,
+//     'userId': userId,
+//     'instId': instId,
+//   });
+// }
 
   @override
   void onClose() {

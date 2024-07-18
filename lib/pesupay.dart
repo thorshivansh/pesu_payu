@@ -1,11 +1,12 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
 
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/annualFees.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/disclaimer.dart';
@@ -25,7 +26,13 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
   @override
   Widget build(BuildContext context) {
      Get.put<OnlinePaymentController>(OnlinePaymentController(dio));
-controller.getUserInfo(email: email, name: name,mobileNumber: mobileNumber,userId: userId,loginId: loginId, instId:instId);
+     controller.userInfo=ValueNotifier({ 'name': name,
+    'email': email,
+    'mobileNumber': mobileNumber,
+    'loginId': loginId,
+    'userId': userId,
+    'instId': instId,});
+// controller.getUserInfo(email: email, name: name,mobileNumber: mobileNumber,userId: userId,loginId: loginId, instId:instId);
 
     
     // Get.put<OnlinePaymentController>(OnlinePaymentController());
@@ -146,3 +153,34 @@ controller.getUserInfo(email: email, name: name,mobileNumber: mobileNumber,userI
     );
   }
 }
+class UserInfo {
+  final String name;
+  final String email;
+  final String mobile;
+  final String instId;
+  final String userId;
+  final String loginId;
+  UserInfo({
+    required this.name,
+    required this.email,
+    required this.mobile,
+    required this.instId,
+    required this.userId,
+    required this.loginId,
+  });
+  
+
+  void updatinfo(){
+
+  
+  ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({
+ 'name': name,
+    'email': email,
+    'mobileNumber': mobile,
+    'loginId': loginId,
+    'userId': userId,
+    'instId': instId,
+
+  });
+  }
+  }
