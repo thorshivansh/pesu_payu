@@ -518,6 +518,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                     "Confirm Amount To Pay",
                     // //style: Properties.textsStyles.text18_600.copyWith(
                       color:Colors.white,
+                      // style: ,
                     // ),
                   ),
                   InkWell(

@@ -27,7 +27,7 @@ class MyText extends StatelessWidget {
      style: style??GoogleFonts.roboto(
     fontSize: 15,
     fontWeight: FontWeight.w500,
-    color: Colors.black,
+    color:color?? Colors.black,
   ),  );
   }
 }

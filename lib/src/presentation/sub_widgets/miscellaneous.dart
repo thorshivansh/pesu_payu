@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
@@ -150,7 +151,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                           enableDrag: false,
                                           isScrollControlled: true,
                                           isDismissible: false,
-                                          backgroundColor: Colors.white,
+                                          backgroundColor: MyColors.darkBlue1,
                                           elevation: 0.0,
                                           shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.vertical(
@@ -174,7 +175,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                                           ? const SizedBox(
                                                               height: 150,
                                                               child:
-                                                                  CircularProgressIndicator.adaptive()
+                                                                  Center(child: CircularProgressIndicator.adaptive())
                                                                   
                                                                   )
                                                           : paymentConfirmation(
@@ -420,11 +421,15 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                   // color: Properties.themeColor.darkBlue,
                                   height: 30,
                                   onPressed: () {
-                                    download!.call();
+                                    // download!.call();
                               
                             
                                   },
-                                  name: MyText('Pdf Downlaod',color: Colors.white, style:MyTextStyle.text16_700.copyWith(color: Colors.white))),
+                                  name: MyText('Pdf Downlaod',color: Colors.white, style:GoogleFonts.roboto(
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    color: Colors.white,
+  ))),
                             // ),
                           ),
                         )
@@ -867,7 +872,11 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                 log(e.toString(), error: s, name: "pay button");
                               }
                             },
-                            label: "Pay"),
+                            name:MyText('PAY', style:  GoogleFonts.roboto(
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    color: Colors.white,
+  ),  )),
                       )
                     : const SizedBox(),
               ],
