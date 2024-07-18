@@ -11,6 +11,7 @@ import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/disclaimer.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
 import 'package:pesu_payu/src/presentation/views/online_payment_view.dart';
+import 'package:pesu_payu/src/utils/color/colors.dart';
 import 'package:pesu_payu/src/utils/misctext_field.dart';
 import 'package:pesu_payu/src/utils/my_button.dart';
 import 'package:pesu_payu/src/utils/my_text.dart';
@@ -447,7 +448,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           Container(
             padding:
                 const EdgeInsets.only(left: 8, right: 18, top: 12, bottom: 8),
-            // color: Properties.themeColor.darkBlue1,
+            color: MyColors.darkBlue1,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -508,7 +509,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
             Container(
               padding: const EdgeInsets.only(
                   left: 8.0, right: 8.0, top: 12.0, bottom: 12.0),
-              // color: Properties.themeColor.darkBlue1,
+              color: MyColors.darkBlue1,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

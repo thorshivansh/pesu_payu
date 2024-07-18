@@ -12,7 +12,7 @@ class MyIcons extends StatelessWidget {
  
    @override
    Widget build(BuildContext context) {
-     return Icon(icon?? Icons.circle, color:color??Colors.white,
+     return Icon(icon?? Icons.circle, color:color??Colors.black,
      
      size: size??8.0,
      );

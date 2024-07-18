@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
+import 'package:pesu_payu/src/utils/color/colors.dart';
 import 'package:pesu_payu/src/utils/dropdown.dart';
 import 'package:pesu_payu/src/utils/misctext_field.dart';
 import 'package:pesu_payu/src/utils/my_button.dart';
@@ -365,10 +366,10 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                         children: [
                           const MyIcons(
                             LucideIcons.copy,
-                            // color: Properties.themeColor.skyblue1,
+                            color:MyColors.darkBlue1,
                             size: 16,
                           ),
-                          const MyText(" "),
+                          // const MyText(" "),
                           MyText(controller.paymentDetailModel.value
                                   .misDetails?[i].transactionNo
                                   .toString() ??

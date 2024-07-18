@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pesu_payu/src/utils/color/colors.dart';
+import 'package:pesu_payu/src/utils/my_text.dart';
 import 'package:pesu_payu/src/utils/styles/my_text_styles.dart';
 
 class MyButton extends StatefulWidget {
@@ -75,7 +76,7 @@ class _AnimatedTapButton1State extends State<MyButton>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-               widget.name??Text(widget.label??'Retry', style:widget.labelstyle?? MyTextStyle.text16_700)
+               widget.name??MyText(widget.label??'Retry',color: Colors.white, style:widget.labelstyle?? MyTextStyle.text16_700)
       
                   // ,
               ],
