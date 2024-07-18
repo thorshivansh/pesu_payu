@@ -481,9 +481,9 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                           color:Colors.white, 
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop();
                           c.clean();
-                        controller.stypeModel.value.clear();
+                          Navigator.of(context).pop();
+                        // controller.stypeModel.value.clear();
                         // controller.stypeModel.value[0].stype?.clear();
                         },
                       ),
