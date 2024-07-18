@@ -76,7 +76,7 @@ class _AnimatedTapButton1State extends State<MyButton>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-               widget.name??MyText(widget.label??'Retry',color: Colors.white, style:widget.labelstyle?? MyTextStyle.text16_700.copyWith(color: Colors.white))
+               widget.name??MyText(widget.label??'Retry', style:widget.labelstyle?? MyTextStyle.text16_700.copyWith(color: Colors.white))
       
                   // ,
               ],

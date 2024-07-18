@@ -105,7 +105,8 @@ late PaymentDetailRepo _paymentDetailRepo;
   final count = 0.obs;
   RxBool otherAmountflag = false.obs;
   RxBool isotherAmountAvailable = false.obs;
-  RxBool tcflag = false.obs;
+  RxBool annulatcflag = false.obs;
+  RxBool misctcflag = false.obs;
   dynamic ctypeValue;
   dynamic stypeValue;
   dynamic partialAmount;
@@ -157,7 +158,7 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
   }
 
   void clean() {
-    tcflag.value = false;
+    misctcflag.value = false;
     miscSubcopies.clear();
     miscdescController.clear();
     miscdynamicamount.clear();

@@ -425,7 +425,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                               
                             
                                   },
-                                  name: MyText('Pdf Downlaod',color: Colors.white, style:GoogleFonts.roboto(
+                                  name: MyText('Pdf Downlaod', style:GoogleFonts.roboto(
     fontSize: 15,
     fontWeight: FontWeight.w500,
     color: Colors.white,
@@ -708,9 +708,9 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Checkbox(
-                                  value: c.tcflag.value,
+                                  value: c.misctcflag.value,
                                   onChanged: (value) {
-                                    c.tcflag.value = !c.tcflag.value;
+                                    c.misctcflag.value = !c.misctcflag.value;
                                   }),
                               Expanded(
                                 child: RichText(
@@ -752,7 +752,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                             ])),
 
 
-                controller.tcflag.value
+                controller.misctcflag.value
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: MyButton(

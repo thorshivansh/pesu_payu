@@ -254,10 +254,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                                         .width /
                                                     1.3,
                                                 onPressed: () {
-                                                  controller.tcflag.value =
-                                                      false;
-                                                  controller.otherAmountflag
-                                                      .value = false;
+                                                  // controller.tcflag.value =
+                                                  //     false;
+                                                  // controller.otherAmountflag
+                                                  //     .value = false;
                                                   // (controller
                                                   //             .connectionController
                                                   //             .connectionType
@@ -309,8 +309,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                                                         .sTUDENTPAYMENTDETAILS?[
                                                                             annualfeeIndex]
                                                                         .totalDue
-                                                                        .toString() ??
-                                                                    '0.0',
+                                                                        .toString() ,
                                                                 annualfeeIndex,
                                                               )),
                                                             );
@@ -732,10 +731,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Checkbox(
-                                value: controller.tcflag.value,
+                                value: controller.annulatcflag.value,
                                 onChanged: (value) {
-                                  controller.tcflag.value =
-                                      !controller.tcflag.value;
+                                  controller.annulatcflag.value =
+                                      !controller.annulatcflag.value;
                                 }),
                             Expanded(
                               child: RichText(
@@ -835,7 +834,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
       final miscType = "0&0&0&1&$feeTypeId";
       final instId = studentDetails.instId.toString();
 
-      if (_.tcflag.value && !_.otherAmountflag.value) {
+      if (_.annulatcflag.value && !_.otherAmountflag.value) {
         navigateToPaymentPage(
           instId: instId,
           isMiscPayment: false,
@@ -849,7 +848,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
         );
       } else if (_.otherAmountflag.value) {
         if (!_.isotherAmountAvailable.value) {
-          if (_.tcflag.value) {
+          if (_.annulatcflag.value) {
             navigateToPaymentPage(
               instId: instId,
               isMiscPayment: false,
@@ -890,10 +889,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
 
 
     Color getButtonColor() {
-      if (_.tcflag.value && !_.otherAmountflag.value) {
+      if (_.annulatcflag.value && !_.otherAmountflag.value) {
         return Colors.green;
       }
-      if (_.tcflag.value && _.otherAmountflag.value == true) {
+      if (_.annulatcflag.value && _.otherAmountflag.value == true) {
         if (!_.isotherAmountAvailable.value) {
           return Colors.green;
           // if (_.tcflag.value) {
