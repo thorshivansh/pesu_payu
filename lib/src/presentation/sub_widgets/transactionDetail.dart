@@ -39,9 +39,9 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title:Text( "Transaction Detail")),
+        appBar: AppBar(title:const Text( "Transaction Detail")),
         body: Obx(() => controller.paymentloading.value
-            ? const CircularProgressIndicator.adaptive()
+            ? const Center(child: CircularProgressIndicator.adaptive())
             : SingleChildScrollView(
                 child: Container(
                   margin: const EdgeInsets.all(12),
@@ -84,7 +84,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        MyText(
+                                        const MyText(
                                           "Demand Amount",
                                           //style:
                                               // Properties.textsStyles.text14_600,
@@ -101,7 +101,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      MyText(
+                                      const MyText(
                                         "Paid Amount",
                                         //style:
                                             // Properties.textsStyles.text14_600,
@@ -117,7 +117,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      MyText(
+                                      const MyText(
                                         "Balance Due",
                                         //style:
                                             // Properties.textsStyles.text14_600,
@@ -133,7 +133,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      MyText(
+                                      const MyText(
                                         "Due Date",
                                         //style:
                                             // Properties.textsStyles.text14_600,
@@ -152,7 +152,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        MyText(
+                                        const MyText(
                                           "Status",
                                           //style:
                                               // Properties.textsStyles.text14_600,
@@ -349,7 +349,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MyText(
+                      const MyText(
                         "Date of transaction",
                         //style: Properties.textsStyles.text14_600,
                       ),
@@ -368,7 +368,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MyText(
+                      const MyText(
                         "Paid Amount",
                         //style: Properties.textsStyles.text14_600,
                       ),
@@ -383,7 +383,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        MyText(
+                        const MyText(
                           "Status",
                         ),
                         MyText(
@@ -423,7 +423,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                             showToast('Transaction id copied');
                             // copied successfully
                           },
-                          child: Icon(
+                          child: const Icon(
                             Icons.copy,
                             // color: Properties.themeColor.darkBlue1,
                           ))
@@ -452,7 +452,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                MyText(
+                const MyText(
                   "Network/Connection Error",
                   // //style: Properties.textsStyles.text15_500.copyWith(
                   //   color:Colors.white,
@@ -462,7 +462,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                     onTap: () {
                       Get.back();
                     },
-                    child: MyIcons(
+                    child: const MyIcons(
                       LucideIcons.x,
                       size: 20,
                       color:Colors.white,
@@ -513,7 +513,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MyText(
+                  const MyText(
                     "Confirm Amount To Pay",
                     // //style: Properties.textsStyles.text18_600.copyWith(
                     //   color:Colors.white,
@@ -523,7 +523,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                       onTap: () {
                         Get.back();
                       },
-                      child: Icon(
+                      child: const Icon(
                         LucideIcons.x,
                         size: 20.0,
                         color:Colors.white,
@@ -540,8 +540,8 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 4),
                           child: MyText(
                             "ANNUAL FEE",
                             // //style: Properties.textsStyles.text18_700,/
@@ -550,7 +550,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            MyText(
+                            const MyText(
                               "Due Amount ",
                         
       
@@ -961,8 +961,8 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           ),
         ),
         const Divider(),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 4, left: 8),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 4, left: 8),
           child: MyText(
             "Total Amount to Pay",
             //style: Properties.textsStyles.text18_700,

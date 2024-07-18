@@ -131,7 +131,7 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
         ),
         body: Obx(
           () => controller.rxRequestStatus.value==RequestStatus.LOADING
-              ? const CircularProgressIndicator.adaptive()
+              ? const Center(child: CircularProgressIndicator.adaptive())
               : controller.rxRequestStatus.value==RequestStatus.ERROR ?
             GestureDetector(onTap: (){
               // controller.getPaymentDetail();

@@ -164,7 +164,7 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
       top: false,
       child: Scaffold(
         body: Obx(() => _controller.payupaymentstarted.value
-            ?  widget.loadingWidget??const CircularProgressIndicator.adaptive()
+            ?  Center(child: widget.loadingWidget??const CircularProgressIndicator.adaptive())
             : PaymentStatus(
   paymenntStatus: _controller.payuresponse.value['status'] ?? '1',
   errorType: _controller.payuresponse.value['id'] ?? '1',

@@ -41,7 +41,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
 
    Function? downlaod;
     return Obx(() => controller.paymentloading.value
-        ? const CircularProgressIndicator.adaptive()
+        ? const Center(child: CircularProgressIndicator.adaptive())
         : Container(
             margin: const EdgeInsets.all(12.0),
             child: Column(
@@ -233,7 +233,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                       controller.getPaymentDetail();
                     },
                     child: controller.paymentloading.value
-                        ? const CircularProgressIndicator.adaptive()
+                        ? const Center(child: CircularProgressIndicator.adaptive())
                         : ListView.builder(
                             shrinkWrap: true,
                             itemCount: controller.paymentDetailModel.value
@@ -452,7 +452,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
     //                             .miscellaneouspayment?[0].dataValue3??'';
     //                       }
     return controller.paymentConfirmationModel.value.isEmpty
-        ? SizedBox(height: 130, child: Text( 'No Data Available'))
+        ? const SizedBox(height: 130, child: Text( 'No Data Available'))
         : Padding(
             padding: const EdgeInsets.only(bottom: 30.0),
             child: Column(
