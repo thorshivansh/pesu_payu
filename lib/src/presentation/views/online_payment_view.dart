@@ -22,6 +22,7 @@ class PesuPaymentPage extends StatefulWidget {
   final String? demandId;
   final String dueAmount;
   final String? feeName;
+  final String? instId;
   final String? fdFeeTypeId;
   final String merchantKey;
   final String? paymentDescription;
@@ -39,7 +40,7 @@ class PesuPaymentPage extends StatefulWidget {
     this.fdFeeTypeId,
     required this.merchantKey,
     this.paymentDescription,
-    required this.isMiscpayment, this.loadingWidget,
+    required this.isMiscpayment, this.loadingWidget, this.instId,
     // this.pay
   });
 
@@ -218,22 +219,22 @@ String _getErrorReason(Map<dynamic, dynamic>? response) {
   @override
   generateHash(Map response) async {
     try {
-      // var hash = await _controller.getserverDynamicHash(
-      //   instId: '',//TODO add InnstId 
-      //   trxnId:_controller.pesutxnId.value,
-      //   misctype: widget.misctype,
-      //   merchantKey: widget.merchantKey,
-      //   hash: jsonEncode(response),
-      //   academicyear: widget.academicyear,
-      //   fdFeeTypeId:widget.isMiscpayment?"2": widget.fdFeeTypeId!,
-      //   feeName: widget.feeName!,
-      //   demandId:widget.isMiscpayment?"0": widget.demandId!,
-      //   dueAmount: widget.dueAmount,
-      // );
+      var hash = await _controller.getserverDynamicHash(
+        instId: widget.instId,//TODO add InnstId 
+        trxnId:_controller.pesutxnId.value,
+        misctype: widget.misctype,
+        merchantKey: widget.merchantKey,
+        hash: jsonEncode(response),
+        academicyear: widget.academicyear,
+        fdFeeTypeId:widget.isMiscpayment?"2": widget.fdFeeTypeId!,
+        feeName: widget.feeName!,
+        demandId:widget.isMiscpayment?"0": widget.demandId!,
+        dueAmount: widget.dueAmount,
+      );
 
       // if (hash == null) return;
       print('@@@@@@');
-      var hash = HashService.generateHash(response);
+      // var hash = HashService.generateHash(response);
       _checkoutPro.hashGenerated(hash: hash);
     } catch (e, s) {
       // print(e

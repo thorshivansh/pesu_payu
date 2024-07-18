@@ -263,6 +263,7 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
    
       required String academicYearId,
       String? miscDescription,
+      String? instId,
     required  String merchantKey,
       required BuildContext context}) async {
     var miscCatSubcat = "1&$cat&$subcat&2&2&1";
@@ -273,7 +274,7 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
             builder: ((context) => PesuPaymentPage(
            
               // loadingWidget: ,
-            
+            instId: instId,
                   paymentDescription: miscDescription,
                   isMiscpayment: true,
                   dueAmount: amount,
@@ -424,7 +425,7 @@ update();
       required String feeName,
       required String fdFeeTypeId,
       required String merchantKey,
-     required String instId, 
+      String? instId, 
       //  required String name,
   // required String email,
   // required String mobileNumber,
@@ -451,7 +452,7 @@ update();
               dueAmount: dueAmount,
               feeName: feeName,
               fdFeeTypeId: fdFeeTypeId,
-              instId: instId ,
+              instId: instId??userInfo.value['instId'] ,
               merchantKey: merchantKey);
       response.fold((error) {
         payupaymentstarted.value = false;

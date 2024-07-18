@@ -761,7 +761,10 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                       .miscSubcopyformKey.currentState!
                                       .validate()) {
                                  controller.startPayment(
-                                    
+                                    instId:controller
+                                        .paymentConfirmationModel
+                                        .value[0]
+                                        .miscellaneouspayment![0].instId.toString() ,
                                     miscDescription: controller
                                         .paymentConfirmationModel
                                         .value[0]
@@ -796,6 +799,10 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                       controller.discformKey.currentState!
                                           .validate()) {
                                                 controller.startPayment(
+                                                  instId:controller
+                                        .paymentConfirmationModel
+                                        .value[0]
+                                        .miscellaneouspayment![0].instId.toString() ,
                                     
                                     miscDescription: controller.miscdescController.value.text,
                                     merchantKey: controller
@@ -820,7 +827,10 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                 } else {
                                   // Function? download;
                                   controller.startPayment(
-                                    
+                                    instId:controller
+                                        .paymentConfirmationModel
+                                        .value[0]
+                                        .miscellaneouspayment![0].instId.toString() ,
                                     miscDescription: controller
                                         .paymentConfirmationModel
                                         .value[0]

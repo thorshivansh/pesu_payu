@@ -800,12 +800,14 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
       required String feeName,
       required String feeTypeId,
       required String miscType,
+      String? instId,
     }) {
       Get.back();
       Navigator.push(
         context,
         FullDialogRoute(
           builder: (context) => PesuPaymentPage(
+            instId: instId,
             isMiscpayment: isMiscPayment,
             merchantKey: merchantKey,
             academicyear: academicYear,
@@ -828,9 +830,11 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
       final feeName = studentDetails.feetype ?? '';
       final feeTypeId = studentDetails.finDemandFeeTypeId ?? '';
       final miscType = "0&0&0&1&$feeTypeId";
+      final instId = studentDetails.instId.toString();
 
       if (_.tcflag.value && !_.otherAmountflag.value) {
         navigateToPaymentPage(
+          instId: instId,
           isMiscPayment: false,
           merchantKey: merchantKey,
           academicYear: academicYear,
@@ -844,6 +848,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
         if (!_.isotherAmountAvailable.value) {
           if (_.tcflag.value) {
             navigateToPaymentPage(
+              instId: instId,
               isMiscPayment: false,
               merchantKey: merchantKey,
               academicYear: academicYear,
@@ -865,6 +870,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
             showToast('Minimum amount should be Rs. 5000');
           } else {
             navigateToPaymentPage(
+              instId: instId,
               isMiscPayment: false,
               merchantKey: merchantKey,
               academicYear: academicYear,
