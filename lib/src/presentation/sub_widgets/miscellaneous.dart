@@ -15,6 +15,7 @@ import 'package:pesu_payu/src/utils/misctext_field.dart';
 import 'package:pesu_payu/src/utils/my_button.dart';
 import 'package:pesu_payu/src/utils/my_icons.dart';
 import 'package:pesu_payu/src/utils/my_text.dart';
+import 'package:pesu_payu/src/utils/styles/my_text_styles.dart';
 import 'package:pesu_payu/src/utils/toast.dart';
 import 'package:pesu_payu/src/widget/alignrow_widget.dart';
 // import 'package:pesupay/src/presentation/controller/payment_controller.dart'
@@ -423,7 +424,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                               
                             
                                   },
-                                  label: "PDF Download"),
+                                  name: MyText('Pdf Downlaod',color: Colors.white, style:MyTextStyle.text16_700.copyWith(color: Colors.white))),
                             // ),
                           ),
                         )
@@ -465,14 +466,14 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                       title: const MyText(
                         "Payment Confirmation",
                         // style: Properties.textsStyles.text18_600.copyWith(
-                        //   color: Properties.themeColor.white,
+                          color: Colors.white,
                         // ),
                       ),
                       trailing: IconButton(
                         icon: const MyIcons(
                           LucideIcons.x,
                           size: 18,
-                          // color: Properties.themeColor.white,
+                          color:Colors.white, 
                         ),
                         onPressed: () {
                           c.clean();

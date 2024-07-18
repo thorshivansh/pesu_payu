@@ -17,6 +17,7 @@ import 'package:pesu_payu/src/utils/my_button.dart';
 import 'package:pesu_payu/src/utils/my_text.dart';
 import 'package:pesu_payu/src/utils/my_icons.dart';
 import 'package:pesu_payu/src/utils/page_route.dart';
+import 'package:pesu_payu/src/utils/styles/my_text_styles.dart';
 import 'package:pesu_payu/src/utils/toast.dart';
 // import 'package:pesupay/src/presentation/controller/payment_controller.dart';
 // import 'package:pesupay/src/utils/toast.dart';
@@ -318,7 +319,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                                
                                                
                                                 },
-                                                label: "PAY"),
+                                                name: MyText('PAY',color: Colors.white, style: MyTextStyle.text16_700.copyWith(color: Colors.white))),
                                           ),
                                         )
                                       : Container(),
@@ -516,7 +517,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                   const MyText(
                     "Confirm Amount To Pay",
                     // //style: Properties.textsStyles.text18_600.copyWith(
-                    //   color:Colors.white,
+                      color:Colors.white,
                     // ),
                   ),
                   InkWell(
