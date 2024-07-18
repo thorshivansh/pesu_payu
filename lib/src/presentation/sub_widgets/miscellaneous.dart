@@ -151,7 +151,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                           enableDrag: false,
                                           isScrollControlled: true,
                                           isDismissible: false,
-                                          backgroundColor: MyColors.darkBlue1,
+                                          // backgroundColor: MyColors.darkBlue1,
                                           elevation: 0.0,
                                           shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.vertical(
@@ -467,7 +467,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                 GetBuilder<OnlinePaymentController>(
                   builder: (c) {
                     return ListTile(
-                      // tileColor: Properties.themeColor.darkBlue1,
+                      tileColor: MyColors.darkBlue1,
                       title: const MyText(
                         "Payment Confirmation",
                         // style: Properties.textsStyles.text18_600.copyWith(
@@ -482,8 +482,8 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                         ),
                         onPressed: () {
                           c.clean();
-                        // controller.stypeModel.value.clear();
-                        // controller.stypeModel.value[0].stype?.clear();
+                        controller.stypeModel.value.clear();
+                        controller.stypeModel.value[0].stype?.clear();
                           Navigator.of(context).pop();
                         },
                       ),
@@ -540,7 +540,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                 : MiscTextfield(
                                     validator: (v) {
                                       if (v == null || v.isEmpty || v == '') {
-                                        return 'Description is empty!';
+                                        return 'Please enter the description';
                                       }
                                       return null;
                                     },
@@ -586,7 +586,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                     },
                                     validator: (v) {
                                       if (v == null || v.isEmpty || v == '') {
-                                        return 'amount is empty!';
+                                        return 'Please enter the amount';
                                       }else if(v=='0'){
                                         return 'amount should be greater than 0';
                                       }

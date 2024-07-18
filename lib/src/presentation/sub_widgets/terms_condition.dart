@@ -15,7 +15,7 @@ class TermsAndConditionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar??AppBar(title: const MyText("Terms and Conditions")),
+      appBar:AppBar(title: const MyText("Terms and Conditions")),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(8.0),
@@ -58,12 +58,10 @@ class TermsAndConditionView extends StatelessWidget {
                      
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "The description of items are specific to you when you log in with your user id and unique password.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "The description of items are specific to you when you log in with your user id and unique password.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -78,12 +76,10 @@ class TermsAndConditionView extends StatelessWidget {
                     
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "All charges quoted are in Indian Rupees.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "All charges quoted are in Indian Rupees.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -98,12 +94,10 @@ class TermsAndConditionView extends StatelessWidget {
                     
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "PES UNIVERSITY reserves the right to change the charges at any time.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "PES UNIVERSITY reserves the right to change the charges at any time.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -118,12 +112,10 @@ class TermsAndConditionView extends StatelessWidget {
                     
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "Your payment to PES UNIVERSITY ., will normally reach PES UNIVERSITY account, within two working days.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "Your payment to PES UNIVERSITY ., will normally reach PES UNIVERSITY account, within two working days.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -138,12 +130,10 @@ class TermsAndConditionView extends StatelessWidget {
                      
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "We cannot accept liability for a payment not reaching the correct account of PES UNIVERSITY, due to quoting an incorrect account number or incorrect details, by you. Neither can we accept liability if payment is refused or declined by the Net Banking/ credit/ debit card supplier for any reason.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "We cannot accept liability for a payment not reaching the correct account of PES UNIVERSITY, due to quoting an incorrect account number or incorrect details, by you. Neither can we accept liability if payment is refused or declined by the Net Banking/ credit/ debit card supplier for any reason.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -157,12 +147,10 @@ class TermsAndConditionView extends StatelessWidget {
                       
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "If the Banker/card supplier declines payment, PES UNIVERSITY is under no obligation to bring this fact to your attention.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "If the Banker/card supplier declines payment, PES UNIVERSITY is under no obligation to bring this fact to your attention.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -176,12 +164,10 @@ class TermsAndConditionView extends StatelessWidget {
                       
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "It is for you (the Customer) to check with your bank/credit/debit card supplier that payment has been deducted from your account.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "It is for you (the Customer) to check with your bank/credit/debit card supplier that payment has been deducted from your account.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -195,12 +181,10 @@ class TermsAndConditionView extends StatelessWidget {
                       
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "In no event, PES UNIVERSITY will be liable for any damages whatsoever arising out of the use, computer virus, malware, inability to use, or the results of use of this site or any websites linked to this site, or the materials or information contained at any or all such sites, whether based on warranty, contract, tort or any other legal theory and whether or not advised of the possibility of such damages.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "In no event, PES UNIVERSITY will be liable for any damages whatsoever arising out of the use, computer virus, malware, inability to use, or the results of use of this site or any websites linked to this site, or the materials or information contained at any or all such sites, whether based on warranty, contract, tort or any other legal theory and whether or not advised of the possibility of such damages.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -291,12 +275,10 @@ class TermsAndConditionView extends StatelessWidget {
                       
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "Charges, Taxes applicable for online payment through Payment Gateway will be borne by the customer.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "Charges, Taxes applicable for online payment through Payment Gateway will be borne by the customer.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -310,12 +292,10 @@ class TermsAndConditionView extends StatelessWidget {
                       
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "In respect of any failed transactions of any of the Customers, processed through this service, the amount will be refunded after deducting the transaction charges.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "In respect of any failed transactions of any of the Customers, processed through this service, the amount will be refunded after deducting the transaction charges.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -329,12 +309,10 @@ class TermsAndConditionView extends StatelessWidget {
                       
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "In respect of any failed transactions of any of the Customers, processed through this service, the amount will be refunded after deducting the transaction charges.",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "In respect of any failed transactions of any of the Customers, processed through this service, the amount will be refunded after deducting the transaction charges.",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -348,12 +326,10 @@ class TermsAndConditionView extends StatelessWidget {
                       
                     ),
                   ),
-                  Expanded(
-                    child: MyText(
-                      maxLines: 10,
-                      "The Parent/Guardian shall pay an additional Convenience Fee plus taxes for every transaction through Credit Card/Debit Card & approximately for Net Banking including Service Tax 18% is shown as below :",
-                      style: textStyle,
-                    ),
+                  MyText(
+                    maxLines: 10,
+                    "The Parent/Guardian shall pay an additional Convenience Fee plus taxes for every transaction through Credit Card/Debit Card & approximately for Net Banking including Service Tax 18% is shown as below :",
+                    style: textStyle,
                   ),
                 ],
               ),
@@ -366,19 +342,15 @@ class TermsAndConditionView extends StatelessWidget {
                   border: TableBorder.all(),
                   columns: const <DataColumn>[
                     DataColumn(
-                      label: Expanded(
-                        child: MyText(
-                          'Accepted Channel',
-                          // style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
+                      label: MyText(
+                        'Accepted Channel',
+                        // style: TextStyle(fontStyle: FontStyle.italic),
                       ),
                     ),
                     DataColumn(
-                      label: Expanded(
-                        child: MyText(
-                          'Rates',
-                          // style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
+                      label: MyText(
+                        'Rates',
+                        // style: TextStyle(fontStyle: FontStyle.italic),
                       ),
                     ),
                   ],
