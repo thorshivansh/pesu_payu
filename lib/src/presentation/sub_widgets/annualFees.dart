@@ -15,8 +15,8 @@ class AnnualFee extends GetView<OnlinePaymentController> {
   Widget build(BuildContext context) {
     return RefreshIndicator.adaptive(
                 onRefresh: ()async {
-// controller.getCTypeListResponse();
-//                controller.getPaymentDetail();
+controller.getCTypeListResponse();
+               controller.getPaymentDetail();
               //  return ;
                 },
                 child:SingleChildScrollView(
@@ -84,14 +84,14 @@ class AnnualFee extends GetView<OnlinePaymentController> {
         .paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i].paymentStatus;
     return InkWell(
       onTap: () {
-        // controller.getTransactionDetail(
-        //     controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i]
-        //             .academicYearId ??
-        //         0,
-        //     controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i]
-        //             .finDemandFeeTypeId
-        //             .toString() ??
-        //         0);
+        controller.getTransactionDetail(
+            controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i]
+                    .academicYearId ??
+                0,
+            controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i]
+                    .finDemandFeeTypeId
+                    .toString() ??
+                0);
 controller. setisotherAmountAvailable(i);
         Get.to(() => TransactionDetailView(
               annualfeeIndex: i,

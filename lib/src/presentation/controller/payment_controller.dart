@@ -325,11 +325,11 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
   }
 
   Future<void> getTransactionDetail(
-      dynamic academicYearId, dynamic feeType, String userId) async {
+      dynamic academicYearId, dynamic feeType,) async {
     try {
       paymentloading.value = true;
       var response = await _paymentDetailRepo
-          .getTransactionDetail(academicYearId, feeType,userId);
+          .getTransactionDetail(academicYearId, feeType,userInfo.value['userId']);
       // if (response.statuscode == 200) {
       response.fold((left) {
         paymentloading.value = false;
@@ -424,22 +424,25 @@ update();
       required String feeName,
       required String fdFeeTypeId,
       required String merchantKey,
-     required String instId,   required String name,
-  required String email,
-  required String mobileNumber,
-  required String userId,
-  required String loginId,}) async {
+     required String instId, 
+      //  required String name,
+  // required String email,
+  // required String mobileNumber,
+  // required String userId,
+  // required String loginId,
+  
+  }) async {
     // String hash='';
     payupaymentstarted.value = true;
     var serverhash;
     try {
       var response = await _paymentDetailRepo
           .getDynamicHash(
-            name: name,
-            email: email,
-            mobileNumber: mobileNumber,
-            userId: userId,
-            loginId: loginId,
+            name:  userInfo.value['name'],
+            email:  userInfo.value['email'],
+            mobileNumber:  userInfo.value['mobileNumber'],
+            userId:  userInfo.value['userId'],
+            loginId:  userInfo.value['loginId'],
               txnId:trxnId,
               hash: hash,
               academicyear: academicyear,
@@ -543,14 +546,14 @@ update();
     }
   }
 
-  Future getSTypeListResponse(int id, int instId) async {
+  Future getSTypeListResponse(int id) async {
     try {
       // paymentloading.value = true;
           stypeModel.value.clear();
       
       miscloading.value = true;
       var response =
-          await _paymentDetailRepo.getSTypeList(id, instId);
+          await _paymentDetailRepo.getSTypeList(id,  userInfo.value['instId']);
       response.fold((error) {
         miscloading.value = false;
       }, (response) {
@@ -568,13 +571,13 @@ update();
     }
   }
 
-  Future<void> getPaymentConfirmationResponse(int ctypeId, int stypeId,  String userId) async {
+  Future<void> getPaymentConfirmationResponse(int ctypeId, int stypeId, ) async {
     try {
 
       miscloading.value = true;
       paymentConfirmationModel.value.clear();
       var response = await _paymentDetailRepo
-          .getPaymentConfirmationDetail(ctypeId, stypeId, userId);
+          .getPaymentConfirmationDetail(ctypeId, stypeId, userInfo.value['userId']);
 
       response.fold((error) {
         miscloading.value = false;

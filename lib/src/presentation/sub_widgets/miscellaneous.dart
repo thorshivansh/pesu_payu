@@ -110,8 +110,8 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                         onTap: () {
                                           controller.stypedrop.value = "";
 
-                                          // controller
-                                          //     .getSTypeListResponse(e.id ?? 0);
+                                          controller
+                                              .getSTypeListResponse(e.id ?? 0);
                                           controller.ctypeValue = e.id;
                                         },
                                         child: MyText(
@@ -190,10 +190,10 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                                 value: e.name,
                                                 onTap: () {
                                            
-                                                  // controller
-                                                  //     .getPaymentConfirmationResponse(
-                                                  //         controller.ctypeValue,
-                                                  //         e.id!);
+                                                  controller
+                                                      .getPaymentConfirmationResponse(
+                                                          controller.ctypeValue,
+                                                          e.id!);
                                                
                                                   controller.miscdescController
                                                       .clear();
@@ -228,8 +228,8 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                 Expanded(
                   child: RefreshIndicator.adaptive(
                     onRefresh: () async {
-                      // controller.getCTypeListResponse();
-                      // controller.getPaymentDetail();
+                      controller.getCTypeListResponse();
+                      controller.getPaymentDetail();
                     },
                     child: controller.paymentloading.value
                         ? const CircularProgressIndicator.adaptive()

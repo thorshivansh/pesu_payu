@@ -20,8 +20,8 @@ class PaymentHistoryView extends GetView<OnlinePaymentController> {
                 onRefresh: () async
                 
                 {
-            //       controller.getPaymentDetail();
-            //  controller.   getCTypeListResponse();
+                  controller.getPaymentDetail();
+             controller.   getCTypeListResponse();
                 },
                 child: ListView.builder(
           shrinkWrap: true,
