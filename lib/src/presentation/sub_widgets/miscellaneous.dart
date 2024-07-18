@@ -151,7 +151,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                           enableDrag: false,
                                           isScrollControlled: true,
                                           isDismissible: false,
-                                          // backgroundColor: MyColors.darkBlue1,
+                                          backgroundColor: Colors.white,
                                           elevation: 0.0,
                                           shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.vertical(
@@ -481,10 +481,10 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                           color:Colors.white, 
                         ),
                         onPressed: () {
+                          Navigator.of(context).pop();
                           c.clean();
                         controller.stypeModel.value.clear();
-                        controller.stypeModel.value[0].stype?.clear();
-                          Navigator.of(context).pop();
+                        // controller.stypeModel.value[0].stype?.clear();
                         },
                       ),
                     );
