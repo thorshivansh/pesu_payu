@@ -268,6 +268,9 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
       required BuildContext context}) async {
     var miscCatSubcat = "1&$cat&$subcat&2&2&1";
     Get.back();
+    stypeValue=null;
+    stypedrop.value=null;
+    stypeModel.value.clear();
     Navigator.push(
         context,
         FullDialogRoute(

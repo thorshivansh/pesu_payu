@@ -385,45 +385,48 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    // Expanded(
-                    //   child: MyText(
-                    //       maxLines: 4,
-                    //       controller.paymentDetailModel.value.paymenthistory?[i]
-                    //                       .reason !=
-                    //                   ' ' &&
-                    //               controller.paymentDetailModel.value
-                    //                       .paymenthistory?[i].reason !=
-                    //                   ''
-                    //           ? "Reason : ${controller.paymentDetailModel.value.paymenthistory?[i].reason.toString()}"
-                    //           : ""),
-                    // ),
-                    // (controller.paymentDetailModel.value.misDetails?[i]
-                    //             .verifiedStatus ==
-                    //         "Successful"||controller.paymentDetailModel.value.misDetails?[i]
-                    //             .recepitId!=0.0)
-                    //     ? Center(
-                    //       child: SizedBox(
-                    //         height: 30,
-                    //         width: 140,
-                    //         child: DownloadFunction
-                    //         (
-                    //           fileName: 'receipt',
-                    //           url: 'https://www.pesuacademy.com/Academy/s/reports/Reports/StudentReceiptDownload/0/246320/12',
-                    //           download:(_)=>download=_ ,
-                    //           child: MyButton(
-                    //               width: 70,
-                    //               // color: Properties.themeColor.darkBlue,
-                    //               height: 30,
-                    //               onPressed: () {
-                    //                 download!.call();
+                    Expanded(
+                      child: MyText(
+                          maxLines: 4,
+                          controller.paymentDetailModel.value.paymenthistory?[i]
+                                          .reason !=
+                                      ' ' &&
+                                  controller.paymentDetailModel.value
+                                          .paymenthistory?[i].reason !=
+                                      ''
+                              ? "Reason : ${controller.paymentDetailModel.value.paymenthistory?[i].reason.toString()}"
+                              : ""),
+                    ),
+                    (controller.paymentDetailModel.value.misDetails?[i]
+                                .verifiedStatus ==
+                            "Successful"||controller.paymentDetailModel.value.misDetails?[i]
+                                .recepitId!=0.0)
+                        ? Center(
+                          child: SizedBox(
+                            height: 30,
+                            width: 140,
+                            child: 
+                            
+                            // DownloadFunction
+                            // (
+                            //   fileName: 'receipt',
+                            //   url: 'https://www.pesuacademy.com/Academy/s/reports/Reports/StudentReceiptDownload/0/246320/12',
+                            //   download:(_)=>download=_ ,
+                            //   child:
+                               MyButton(
+                                  width: 70,
+                                  // color: Properties.themeColor.darkBlue,
+                                  height: 30,
+                                  onPressed: () {
+                                    download!.call();
                               
                             
-                    //               },
-                    //               label: "PDF Download"),
-                    //         ),
-                    //       ),
-                    //     )
-                    //     : Container()
+                                  },
+                                  label: "PDF Download"),
+                            // ),
+                          ),
+                        )
+                        : Container()
                   ],
                 ),
               ),
