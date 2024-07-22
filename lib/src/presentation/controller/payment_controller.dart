@@ -262,7 +262,7 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
     }
   }
 
-  void increment() => count.value++;
+
 
   ///misc payment
   Future<void> startPayment(
@@ -538,7 +538,7 @@ update();
          showToast('Downloaded Successfully');
   }
 
-  Future getCTypeListResponse() async {
+  Future<void> getCTypeListResponse() async {
     try {
       // paymentloading.value = true;
       ctypeModel.value.ctype?.clear();
@@ -666,7 +666,7 @@ update();
   ///
   Future<void> getTermsAndConditions() async {
 
-if(rxRequestStatus.value!=RequestStatus.LOADING)    setRxRequestStatus(RequestStatus.LOADING);
+// if(rxRequestStatus.value!=RequestStatus.LOADING)    setRxRequestStatus(RequestStatus.LOADING);
     var localTermsandCond =await getLocaltermsConditions();
     try {
       var response = await _paymentDetailRepo.getPaymenttandc(userInfo.value['instId']);
@@ -682,15 +682,15 @@ if(rxRequestStatus.value!=RequestStatus.LOADING)    setRxRequestStatus(RequestSt
 termsandcondition.value=res['termsandcondtions'][0]['description'];
 log(termsandcondition.value.toString());
 
-setRxRequestStatus(RequestStatus.SUCCESS);
+// setRxRequestStatus(RequestStatus.SUCCESS);
       });
       
   }catch(e){
     if(localTermsandCond!=null){
 termsandcondition.value=jsonDecode(localTermsandCond);
-setRxRequestStatus(RequestStatus.SUCCESS);
+// setRxRequestStatus(RequestStatus.SUCCESS);
     }else{
-      setRxRequestStatus(RequestStatus.ERROR);
+      // setRxRequestStatus(RequestStatus.ERROR);
     }
 
     if(kDebugMode){

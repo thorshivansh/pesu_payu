@@ -1,13 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/utils/enums/rxtstatus.dart';
-import 'package:pesu_payu/src/utils/my_button.dart';
-import 'package:pesu_payu/src/utils/my_icons.dart';
-import 'package:pesu_payu/src/utils/my_text.dart';
+import 'package:pesu_payu/src/widget/retry_widget.dart';
 
 class TermsAndConditionView extends GetView<OnlinePaymentController> {
   const TermsAndConditionView({super.key});
@@ -26,14 +22,12 @@ class TermsAndConditionView extends GetView<OnlinePaymentController> {
                     child: Center(child: CircularProgressIndicator.adaptive()))
                 : con.rxRequestStatus.value == RequestStatus.ERROR ||
                         con.termsandcondition.value == null
-                    ? InkWell(onTap: controller.getTermsAndConditions)
+                    ? RetryException(onTap: controller.getTermsAndConditions, message:  '')
                     : HtmlDetails(
                         open: true,
                         child: HtmlWidget(
                           controller.termsandcondition.value,
-                          onErrorBuilder: (context, element, error) => InkWell(
-                            onTap: controller.getTermsAndConditions,
-                          ),
+                          onErrorBuilder: (context, element, error) => RetryException(onTap: controller.getTermsAndConditions, message: '',),
                           onLoadingBuilder:
                               (context, element, loadingProgress) =>
                                   const SizedBox(
