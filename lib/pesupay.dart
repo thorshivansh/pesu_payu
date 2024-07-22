@@ -13,6 +13,7 @@ import 'package:pesu_payu/src/presentation/sub_widgets/disclaimer.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/miscellaneous.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/paymentHistoryView.dart';
 import 'package:pesu_payu/src/utils/enums/rxtstatus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnlinePaymentView extends GetView<OnlinePaymentController> {
     final String name;
@@ -22,10 +23,11 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
     final String loginId;
     final int instId;
     final Dio dio;
-  const OnlinePaymentView(this.dio, this.instId, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
+    final SharedPreferences _preferences;
+  const OnlinePaymentView(this.dio, this.instId, this._preferences, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
   @override
   Widget build(BuildContext context) {
-     Get.put<OnlinePaymentController>(OnlinePaymentController(dio));
+     Get.put<OnlinePaymentController>(OnlinePaymentController(dio, _preferences),);
      controller.userInfo=ValueNotifier({ 'name': name,
     'email': email,
     'mobileNumber': mobileNumber,

@@ -29,6 +29,7 @@ abstract class PaymentDetailRepo {
   Future<Either<Exception, dynamic>> getCTypeList(int instId);
   Future<Either<Exception, dynamic>> getSTypeList(int id, int instId);
   Future<Either<Exception, dynamic>> getPaymentConfirmationDetail(int ctype, int stype, String userId);
+  Future<Either<Exception, dynamic>> getPaymenttandc(int instId);
 }
 
 class PaymentDetailService implements PaymentDetailRepo {
@@ -268,5 +269,34 @@ class PaymentDetailService implements PaymentDetailRepo {
       log("error api call in getPaymentConfirmationDetail", error: e);
       return Left(e);
     }
+  }
+  
+  @override
+  Future<Either<Exception, dynamic>> getPaymenttandc(int instId)async {
+    try{
+ log(jsonEncode({
+        'action': 48,
+        'mode': 6,
+        "instId":instId
+       
+      }));
+
+FormData body = FormData.fromMap({
+   'action': 48,
+        'mode': 6,
+        "instId":instId
+});
+var res =await _dio.post(ApiConfig.dispatecher, data: body);
+log(res.toString(), name: 'getPaymenttandc');
+if(res.statusCode==200){
+  return Right(res.data);
+}else{
+  throw Exception("${res.statusMessage}");
+}
+
+  }on DioException catch(e){
+    log("error api call in getPaymenttandc", error: e);
+    return Left(e);
+  }
   }
 }

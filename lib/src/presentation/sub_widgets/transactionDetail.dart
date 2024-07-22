@@ -289,29 +289,38 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                                           enableDrag: false,
                                                           builder: (BuildContext
                                                               context) {
-                                                            return Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .only(
-                                                                bottom: MediaQuery.of(
-                                                                        context)
-                                                                    .viewInsets
-                                                                    .bottom,
+                                                            return PopScope(
+                                              onPopInvoked: (didPop) {
+                                                if (didPop) {
+                                              controller.annulatcflag.value=false;
+                        controller.amountInWords.value='';
+                        controller.partialAmountController.clear();
+                                                }
+                                              },
+                                              child: Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .only(
+                                                                  bottom: MediaQuery.of(
+                                                                          context)
+                                                                      .viewInsets
+                                                                      .bottom,
+                                                                ),
+                                                                child:
+                                                                    SingleChildScrollView(
+                                                                        child:
+                                                                            confirmationDialogBox(
+                                                                  context,
+                                                                  controller
+                                                                          .paymentDetailModel
+                                                                          .value
+                                                                          .sTUDENTPAYMENTDETAILS?[
+                                                                              annualfeeIndex]
+                                                                          .totalDue
+                                                                          .toString() ,
+                                                                  annualfeeIndex,
+                                                                )),
                                                               ),
-                                                              child:
-                                                                  SingleChildScrollView(
-                                                                      child:
-                                                                          confirmationDialogBox(
-                                                                context,
-                                                                controller
-                                                                        .paymentDetailModel
-                                                                        .value
-                                                                        .sTUDENTPAYMENTDETAILS?[
-                                                                            annualfeeIndex]
-                                                                        .totalDue
-                                                                        .toString() ,
-                                                                annualfeeIndex,
-                                                              )),
                                                             );
                                                           },
                                                         );
@@ -523,6 +532,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                   InkWell(
                       onTap: () {
                         Get.back();
+                        controller.annulatcflag.value=false;
+                        controller.amountInWords.value='';
+                        controller.partialAmountController.clear();
+                    
                       },
                       child: const Icon(
                         LucideIcons.x,
@@ -877,7 +890,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
               merchantKey: merchantKey,
               academicYear: academicYear,
               demandId: demandId,
-              dueAmount: _.partialAmountController.text,
+              dueAmount: _.partialAmountController.text.toString(),
               feeName: feeName,
               feeTypeId: feeTypeId,
               miscType: miscType,

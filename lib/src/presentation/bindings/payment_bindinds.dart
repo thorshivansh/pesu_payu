@@ -4,7 +4,7 @@ class OnlinePaymentBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<OnlinePaymentController>(
-      () => OnlinePaymentController(Get.find()),
+      () => OnlinePaymentController(Get.find(), Get.find()),
     );
   }
 }

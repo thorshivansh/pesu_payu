@@ -1,10 +1,12 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
@@ -14,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
 import 'package:pesu_payu/src/presentation/views/online_payment_view.dart';
 import 'package:pesu_payu/src/utils/page_route.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:pesua/app/data/api/api_client.dart';
 // import 'package:pesua/app/data/models/payment_models/TransactionModel.dart';
@@ -45,8 +48,9 @@ import 'package:uuid/uuid.dart';
 class OnlinePaymentController extends GetxController {
   // OnlinePaymentController( this._dio);
   static const Uuid _uuid = Uuid();
-  OnlinePaymentController(this._dio);
+  OnlinePaymentController(this._dio, this._preferences);
   final Dio _dio;
+ late final  SharedPreferences _preferences;
 late PaymentDetailRepo _paymentDetailRepo;
 // final PaymentDetailService _api=PaymentDetailService(_dio);
   ///stores trxn Id
@@ -73,6 +77,10 @@ late PaymentDetailRepo _paymentDetailRepo;
   final miscSubcopies = TextEditingController();
   final miscdescController = TextEditingController();
   final miscdynamicamount = TextEditingController();
+
+//terms and conditions
+Rx<dynamic> termsandcondition = Rx<dynamic>(null);
+
 
   ///formKey
   final amountformKey = GlobalKey<FormState>();
@@ -109,7 +117,7 @@ late PaymentDetailRepo _paymentDetailRepo;
   RxBool misctcflag = false.obs;
   dynamic ctypeValue;
   dynamic stypeValue;
-  dynamic partialAmount;
+  // dynamic partialAmount;
   RxBool pcflag = false.obs;
 
 
@@ -132,6 +140,7 @@ RxString amountInWords = RxString('');
        getPaymentDetail();
     getCTypeListResponse();
     super.onReady();
+    getTermsAndConditions();
   }
 ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
 // Future<ValueNotifier<Map<String, dynamic>> > getUserInfo({required String name,required int instId, required String email,required String mobileNumber, required String userId, required String loginId}) async {
@@ -551,7 +560,9 @@ update();
     }
   }
 
-  Future getSTypeListResponse(int id) async {
+
+
+  Future<void> getSTypeListResponse(int id) async {
     try {
       // paymentloading.value = true;
           stypeModel.value.clear();
@@ -639,13 +650,70 @@ update();
         // return miscamount.value;
       }
     } catch (e) {
-      print('update amoutnt ' + "$e");
+      if (kDebugMode) {
+        print('update amoutnt ' + "$e");
+      }
     }
     update([
       {'id': "292992"}
     ]);
 // return miscamount.value;
   }
+
+
+//TODO add locala Storage for terms and conditons
+  ///get Terms & conditions api
+  ///
+  Future<void> getTermsAndConditions() async {
+
+if(rxRequestStatus.value!=RequestStatus.LOADING)    setRxRequestStatus(RequestStatus.LOADING);
+    var localTermsandCond =await getLocaltermsConditions();
+    try {
+      var response = await _paymentDetailRepo.getPaymenttandc(userInfo.value['instId']);
+      response.fold((error) {
+        if (kDebugMode) {
+          print('error $error');
+          }
+        throw Exception(error);
+
+
+      }, (res) {
+        saveLocaltermsConditions(res);
+termsandcondition.value=res['termsandcondtions'][0]['description'];
+log(termsandcondition.value.toString());
+
+setRxRequestStatus(RequestStatus.SUCCESS);
+      });
+      
+  }catch(e){
+    if(localTermsandCond!=null){
+termsandcondition.value=jsonDecode(localTermsandCond);
+setRxRequestStatus(RequestStatus.SUCCESS);
+    }else{
+      setRxRequestStatus(RequestStatus.ERROR);
+    }
+
+    if(kDebugMode){
+      print('getTermsAndConditions $e');
+      }
+  }
+  update();
+  }
+
+
+Future<bool> saveLocaltermsConditions(String value)async{
+
+  final bool done = await  _preferences.setString("terms-cond", jsonEncode(value));
+  return done;
+}
+
+
+Future<String?> getLocaltermsConditions()async{
+  final String? data= _preferences.getString("terms-cond");
+
+  return data;
+}
+
 }
 
 class HashError implements Exception {

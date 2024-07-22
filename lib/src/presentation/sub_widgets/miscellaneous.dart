@@ -160,7 +160,14 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                           ),
                                           context: context,
                                           builder: (context) {
-                                            return Obx(
+                                            return PopScope(
+                                              onPopInvoked: (didPop) {
+                                                if (didPop) {
+                                                  c.stypeModel.value.clear();
+                                                  c.clean();
+                                                }
+                                              },
+                                              child: Obx(
                                               () => SafeArea(
                                                 child: Padding(
                                                   padding: EdgeInsets.only(
@@ -183,7 +190,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                                               0) // Replace with your bottom sheet content
                                                       ),
                                                 ),
-                                              ),
+                                              ),),
                                             );
                                           },
                                         );
