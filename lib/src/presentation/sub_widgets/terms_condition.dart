@@ -16,11 +16,11 @@ class TermsAndConditionView extends GetView<OnlinePaymentController> {
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: GetBuilder<OnlinePaymentController>(builder: (con) {
-            return con.rxRequestStatus.value == RequestStatus.LOADING
+            return con.termsLoading.value=='load'
                 ? const SizedBox(
                     height: 500,
                     child: Center(child: CircularProgressIndicator.adaptive()))
-                : con.rxRequestStatus.value == RequestStatus.ERROR ||
+                : con.termsLoading.value == 'fail' ||
                         con.termsandcondition.value == null
                     ? RetryException(onTap: controller.getTermsAndConditions, message:  '')
                     : HtmlDetails(

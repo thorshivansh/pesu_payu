@@ -80,6 +80,7 @@ late PaymentDetailRepo _paymentDetailRepo;
 
 //terms and conditions
 Rx<dynamic> termsandcondition = Rx<dynamic>(null);
+Rx<dynamic> termsLoading = Rx<dynamic>(null);
 
 
   ///formKey
@@ -665,7 +666,7 @@ update();
   ///get Terms & conditions api
   ///
   Future<void> getTermsAndConditions() async {
-
+termsLoading.value='load';
 // if(rxRequestStatus.value!=RequestStatus.LOADING)    setRxRequestStatus(RequestStatus.LOADING);
     var localTermsandCond =await getLocaltermsConditions();
     try {
@@ -674,6 +675,7 @@ update();
         if (kDebugMode) {
           print('error $error');
           }
+          termsLoading.value='fail';
         throw Exception(error);
 
 
@@ -681,11 +683,12 @@ update();
         saveLocaltermsConditions(res);
 termsandcondition.value=res['termsandcondtions'][0]['description'];
 log(termsandcondition.value.toString());
-
+termsLoading.value='Success';
 // setRxRequestStatus(RequestStatus.SUCCESS);
       });
       
   }catch(e){
+    termsLoading.value='fail';
     if(localTermsandCond!=null){
 termsandcondition.value=jsonDecode(localTermsandCond);
 // setRxRequestStatus(RequestStatus.SUCCESS);
