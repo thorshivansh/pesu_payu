@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
+import 'package:pesu_payu/config.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
-import 'package:pesu_payu/src/utils/enums/rxtstatus.dart';
+import 'package:pesu_payu/src/widget/appbar.dart';
 import 'package:pesu_payu/src/widget/retry_widget.dart';
 
 class TermsAndConditionView extends GetView<OnlinePaymentController> {
@@ -10,16 +11,20 @@ class TermsAndConditionView extends GetView<OnlinePaymentController> {
 
   @override
   Widget build(BuildContext context) {
+    final config = Get.find<PaymentConfig>();
     return Scaffold(
-      appBar: AppBar(title: const Text("Terms and Conditions")),
+      appBar: paymentAppBar(appBarTitle: "Terms and Conditions", appBarBackgroundColor: config.primaryColor),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: GetBuilder<OnlinePaymentController>(builder: (con) {
+          child: GetBuilder<OnlinePaymentController>(
+            
+            id: 'terms',
+            builder: (con) {
             return con.termsLoading.value=='load'
-                ? const SizedBox(
+                ?  SizedBox(
                     height: 500,
-                    child: Center(child: CircularProgressIndicator.adaptive()))
+                    child: Center(child: config.loadingWidget))
                 : con.termsLoading.value == 'fail' ||
                         con.termsandcondition.value == null
                     ? RetryException(onTap: controller.getTermsAndConditions, message:  '')
@@ -30,11 +35,10 @@ class TermsAndConditionView extends GetView<OnlinePaymentController> {
                           onErrorBuilder: (context, element, error) => RetryException(onTap: controller.getTermsAndConditions, message: '',),
                           onLoadingBuilder:
                               (context, element, loadingProgress) =>
-                                  const SizedBox(
+                                   SizedBox(
                                       height: 500,
                                       child: Center(
-                                          child: CircularProgressIndicator
-                                              .adaptive())),
+                                          child: config.loadingWidget)),
                         ));
           }),
         ),

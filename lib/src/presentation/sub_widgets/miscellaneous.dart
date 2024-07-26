@@ -8,41 +8,34 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:pesu_payu/config.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
-import 'package:pesu_payu/src/utils/color/colors.dart';
 import 'package:pesu_payu/src/utils/dropdown.dart';
 import 'package:pesu_payu/src/utils/misctext_field.dart';
 import 'package:pesu_payu/src/utils/my_button.dart';
 import 'package:pesu_payu/src/utils/my_icons.dart';
 import 'package:pesu_payu/src/utils/my_text.dart';
-import 'package:pesu_payu/src/utils/styles/my_text_styles.dart';
 import 'package:pesu_payu/src/utils/toast.dart';
 import 'package:pesu_payu/src/widget/alignrow_widget.dart';
-// import 'package:pesupay/src/presentation/controller/payment_controller.dart'
+import 'package:pesu_payu/src/widget/autosize_text.dart';
 
-// import 'package:pesua/app/modules/student_modules/online_payment/controllers/online_payment_controller.dart';
-// import 'package:pesua/app/modules/student_modules/online_payment/views/subwidgets/terms_condition.dart';
-// import 'package:pesua/app/modules/student_modules/online_payment/widgets/misctextfield.dart';
-// import 'package:pesua/services/auth_service.dart/file_dowload.dart';
-// import 'package:pesua/utils/properties.dart';
-// import 'package:pesua/utils/widgets/align_row.dart';
-// import 'package:pesua/utils/widgets/buttons/common_button.dart';
-// import 'package:pesua/utils/widgets/dialogs/toast.dart';
-// import 'package:pesua/utils/widgets/drop_down/dropdown.dart';
-// import 'package:pesua/utils/widgets/loading_widget.dart';
-// import 'package:pesua/utils/widgets/no_data_.dart';
 
 class Miscellaneous extends GetView<OnlinePaymentController> {
   const Miscellaneous({super.key});
 
   @override
   Widget build(BuildContext context) {
-    controller.ctypeValue=null;
-    controller.ctypedrop.value=null;
+    final config = Get.find<PaymentConfig>();
+    controller.ctypeValue = null;
+    controller.ctypedrop.value = null;
+    controller.sTypeModel.value.clear();
+    // controller.stypeValue = null;
+    // controller.stypedrop.value = null;
+    // controller.clean();
 
-   Function? downlaod;
-    return Obx(() => controller.paymentloading.value
+    Function? downlaod;
+    return Obx(() => controller.paymentLoading.value
         ? const Center(child: CircularProgressIndicator.adaptive())
         : Container(
             margin: const EdgeInsets.all(12.0),
@@ -55,7 +48,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
 //         showSelectedItems: true,
 //         // disabledItemFn: (String s) => s.startsWith('I'),
 //     ),
-//     items: controller.ctypeModel.value.ctype!.map((e) => e.name!).toList(),
+//     items: controller.cTypeModel.value.ctype!.map((e) => e.name!).toList(),
 //     dropdownDecoratorProps: const DropDownDecoratorProps(
 //         dropdownSearchDecoration: InputDecoration(
 
@@ -74,7 +67,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
 //         disabledItemFn: (String s) => s.startsWith('I'),
 //     ),
 
-                controller.ctypeModel.value.ctype == null
+                controller.cTypeModel.value.ctype == null
                     ? const SizedBox()
                     : Column(
                         children: [
@@ -86,7 +79,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                 const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: ShowDropDown(
                               // itemHeight: 50,
-                              icon: controller.miscloading.value
+                              icon: controller.miscLoading.value
                                   ? const SizedBox(
                                       height: 20,
                                       width: 20,
@@ -104,10 +97,10 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                               hintText: 'Select Category',
                               onChanged: (v) {
                                 controller.stypedrop.value = null;
-                                controller.stypeModel.value.clear();
+                                controller.sTypeModel.value.clear();
                                 controller.ctypedrop.value = v;
                               },
-                              items: controller.ctypeModel.value.ctype!
+                              items: controller.cTypeModel.value.ctype!
                                   .map((e) => DropdownMenuItem(
                                         value: e,
                                         onTap: () {
@@ -129,17 +122,19 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                           const SizedBox(
                             height: 15,
                           ),
-
-
-                     GetBuilder<OnlinePaymentController>(builder: (c)=>     c.stypeModel.value.isEmpty ||
-                                  c.stypeModel.value[0].stype!.isEmpty
-                              ? const SizedBox()
-                              :Padding(
+//****************************************************************************** */
+                          GetBuilder<OnlinePaymentController>(
+                            id: 'counterId',
+                            builder: (_) => controller
+                                        .sTypeModel.value.isEmpty ||
+                                    controller
+                                        .sTypeModel.value[0].stype!.isEmpty
+                                ? const SizedBox()
+                                : Padding(
                                     padding: const EdgeInsets.only(
                                         right: 8.0, left: 8.0),
                                     child: ShowDropDown(
                                       menuMaxHeight: Get.width * 1.2,
-                                     
                                       initialValue: controller.stypedrop.value,
                                       hintText: 'Select Sub-Category',
                                       onChanged: (selectedValue) {
@@ -163,52 +158,56 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                             return PopScope(
                                               onPopInvoked: (didPop) {
                                                 if (didPop) {
-                                                  c.stypeModel.value.clear();
-                                                  c.clean();
+                                                  // print('object');
+                                                  // controller.sTypeModel.value.clear();
+                                                  controller.stypedrop.value =
+                                                      null;
+                                                  controller.stypeValue = null;
+                                                  controller.clean();
                                                 }
                                               },
                                               child: Obx(
-                                              () => SafeArea(
-                                                child: Padding(
-                                                  padding: EdgeInsets.only(
-                                                    bottom:
-                                                        MediaQuery.of(context)
-                                                            .viewInsets
-                                                            .bottom,
+                                                () => SafeArea(
+                                                  child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                      bottom:
+                                                          MediaQuery.of(context)
+                                                              .viewInsets
+                                                              .bottom,
+                                                    ),
+                                                    child: SingleChildScrollView(
+                                                        child: controller
+                                                                .miscLoading
+                                                                .value
+                                                            ? SizedBox(
+                                                                height: 150,
+                                                                child: Center(
+                                                                    child: config
+                                                                        .loadingWidget))
+                                                            : paymentConfirmation(
+                                                                context,
+                                                                0) // Replace with your bottom sheet content
+                                                        ),
                                                   ),
-                                                  child: SingleChildScrollView(
-                                                      child: controller
-                                                              .miscloading.value
-                                                          ? const SizedBox(
-                                                              height: 150,
-                                                              child:
-                                                                  Center(child: CircularProgressIndicator.adaptive())
-                                                                  
-                                                                  )
-                                                          : paymentConfirmation(
-                                                              context,
-                                                              0) // Replace with your bottom sheet content
-                                                      ),
                                                 ),
-                                              ),),
+                                              ),
                                             );
                                           },
                                         );
                                       },
-                                      items: controller.stypeModel.value[0].stype!
+                                      items: controller
+                                          .sTypeModel.value[0].stype!
                                           .map((e) => DropdownMenuItem(
                                                 value: e.name,
                                                 onTap: () {
-                                           
                                                   controller
                                                       .getPaymentConfirmationResponse(
                                                           controller.ctypeValue,
                                                           e.id!);
-                                               
+
                                                   controller.miscdescController
                                                       .clear();
                                                   controller.stypeValue = e.id;
-                                                  
                                                 },
                                                 child: Container(
                                                   width: MediaQuery.of(context)
@@ -227,8 +226,8 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                               ))
                                           .toList(),
                                     ),
-                                  ),)
-                                
+                                  ),
+                          )
                         ],
                       ),
 
@@ -241,8 +240,9 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                       controller.getCTypeListResponse();
                       controller.getPaymentDetail();
                     },
-                    child: controller.paymentloading.value
-                        ? const Center(child: CircularProgressIndicator.adaptive())
+                    child: controller.paymentLoading.value
+                        ? const Center(
+                            child: CircularProgressIndicator.adaptive())
                         : ListView.builder(
                             shrinkWrap: true,
                             itemCount: controller.paymentDetailModel.value
@@ -258,8 +258,8 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
           ));
   }
 
-  Widget annualFreeListTile1(BuildContext context, int i,Function? download ) {
-     
+  Widget annualFreeListTile1(BuildContext context, int i, Function? download) {
+   final payConfig= Get.find<PaymentConfig>();
     var status =
         controller.paymentDetailModel.value.misDetails?[i].verifiedStatus;
     return Column(
@@ -290,8 +290,8 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                     ),
                     Column(
                       children: [
-                        MyText(controller.paymentDetailModel.value.misDetails?[i]
-                                .transactionDate ??
+                        MyText(controller.paymentDetailModel.value
+                                .misDetails?[i].transactionDate ??
                             ""),
                       ],
                     ),
@@ -373,9 +373,9 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                       },
                       child: Row(
                         children: [
-                          const MyIcons(
+                           MyIcons(
                             LucideIcons.copy,
-                            color:MyColors.darkBlue1,
+                            color: payConfig.primaryColor,
                             size: 16,
                           ),
                           // const MyText(" "),
@@ -408,38 +408,39 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                               : ""),
                     ),
                     (controller.paymentDetailModel.value.misDetails?[i]
-                                .verifiedStatus ==
-                            "Successful"||controller.paymentDetailModel.value.misDetails?[i]
-                                .recepitId!=0.0)
+                                    .verifiedStatus ==
+                                "Successful" ||
+                            controller.paymentDetailModel.value.misDetails?[i]
+                                    .recepitId !=
+                                0.0)
                         ? Center(
-                          child: SizedBox(
-                            height: 30,
-                            width: 140,
-                            child: 
-                            
-                            // DownloadFunction
-                            // (
-                            //   fileName: 'receipt',
-                            //   url: 'https://www.pesuacademy.com/Academy/s/reports/Reports/StudentReceiptDownload/0/246320/12',
-                            //   download:(_)=>download=_ ,
-                            //   child:
-                               MyButton(
-                                  width: 70,
-                                  // color: Properties.themeColor.darkBlue,
-                                  height: 30,
-                                  onPressed: () {
-                                    // download!.call();
-                              
-                            
-                                  },
-                                  name: MyText('Pdf Downlaod', style:GoogleFonts.roboto(
-    fontSize: 15,
-    fontWeight: FontWeight.w500,
-    color: Colors.white,
-  ))),
-                            // ),
-                          ),
-                        )
+                            child: SizedBox(
+                              height: 30,
+                              width: 140,
+                              child:
+
+                                  // DownloadFunction
+                                  // (
+                                  //   fileName: 'receipt',
+                                  //   url: 'https://www.pesuacademy.com/Academy/s/reports/Reports/StudentReceiptDownload/0/246320/12',
+                                  //   download:(_)=>download=_ ,
+                                  //   child:
+                                  MyButton(
+                                      width: 70,
+                                      backgrounColor: Colors.white,
+                                      height: 30,
+                                      onPressed: () {
+                                        // download!.call();
+                                      },
+                                      name: MyText('Pdf Downlaod',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white,
+                                          ))),
+                              // ),
+                            ),
+                          )
                         : Container()
                   ],
                 ),
@@ -453,50 +454,38 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
   }
 
   Widget paymentConfirmation(BuildContext context, int i) {
-    //  if (controller.paymentConfirmationModel.value
-    //                           .miscellaneouspayment?[0].label !=
-    //                       'NA' ||
-    //                   controller.paymentConfirmationModel.value
-    //                           .miscellaneouspayment?[0].label !=
-    //                       '' ||
-    //                   controller.paymentConfirmationModel.value
-    //                           .miscellaneouspayment?[0].label !=
-    //                       null){  controller.miscSubcopies.text=controller.paymentConfirmationModel.value
-    //                             .miscellaneouspayment?[0].dataValue3??'';
-    //                       }
+    final payConfig= Get.find<PaymentConfig>();
     return controller.paymentConfirmationModel.value.isEmpty
-        ? const SizedBox(height: 130, child: Text( 'No Data Available'))
+        ? const SizedBox(height: 130, child: Text('No Data Available'))
         : Padding(
             padding: const EdgeInsets.only(bottom: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GetBuilder<OnlinePaymentController>(
-                  builder: (c) {
-                    return ListTile(
-                      tileColor: MyColors.darkBlue1,
-                      title: const MyText(
-                        "Payment Confirmation",
-                        // style: Properties.textsStyles.text18_600.copyWith(
-                          color: Colors.white,
-                        // ),
+                GetBuilder<OnlinePaymentController>(builder: (c) {
+                  return ListTile(
+                    tileColor: payConfig.primaryColor,
+                    title: const MyText(
+                      "Payment Confirmation",
+                      // style: Properties.textsStyles.text18_600.copyWith(
+                      color: Colors.white,
+                      // ),
+                    ),
+                    trailing: IconButton(
+                      icon: const MyIcons(
+                        LucideIcons.x,
+                        size: 18,
+                        color: Colors.white,
                       ),
-                      trailing: IconButton(
-                        icon: const MyIcons(
-                          LucideIcons.x,
-                          size: 18,
-                          color:Colors.white, 
-                        ),
-                        onPressed: () {
-                          c.clean();
-                          Navigator.of(context).pop();
-                        // controller.stypeModel.value.clear();
-                        // controller.stypeModel.value[0].stype?.clear();
-                        },
-                      ),
-                    );
-                  }
-                ),
+                      onPressed: () {
+                        // c.clean();
+                        Navigator.of(context).pop();
+                        // controller.sTypeModel.value.clear();
+                        // controller.sTypeModel.value[0].stype?.clear();
+                      },
+                    ),
+                  );
+                }),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: SingleChildScrollView(
@@ -517,6 +506,7 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                         ),
                         const Divider(),
                         AlignRowWidget(
+                            secondWidgetFlex: 2,
                             firstWidget: const MyText(
                               'Payment Description:',
                               style: TextStyle(fontSize: 16),
@@ -534,20 +524,21 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                             .paymentDesc ==
                                         null
                                 ? MyText(
-                                    controller
-                                            .paymentConfirmationModel
-                                            .value[0]
-                                            .miscellaneouspayment?[0]
-                                            .paymentDesc
-                                            .toString() ??
-                                        "",
+                                    controller.paymentConfirmationModel.value[0]
+                                        .miscellaneouspayment?[0].paymentDesc
+                                        .toString(),
                                     // style: Properties.textsStyles.text14_600
                                     //     .copyWith(color: Colors.black),
                                   )
                                 : MiscTextfield(
+                                    textFieldLabel: PesuText(
+                                      'Description',
+                                      color: Get.find<PaymentConfig>()
+                                          .primaryColor,
+                                    ),
                                     validator: (v) {
                                       if (v == null || v.isEmpty || v == '') {
-                                        return 'Please enter the description';
+                                        return 'Please enter description';
                                       }
                                       return null;
                                     },
@@ -557,7 +548,6 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                         controller.miscdescController,
                                   )),
                         const Divider(),
-                      
                         AlignRowWidget(
                             firstWidget: const MyText(
                               'Amount:',
@@ -574,6 +564,12 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                     style: const TextStyle(fontSize: 16),
                                   )
                                 : MiscTextfield(
+                                    hintText: 'amount',
+                                    textFieldLabel: PesuText(
+                                      '₹',
+                                      color: Get.find<PaymentConfig>()
+                                          .primaryColor,
+                                    ),
                                     formKey: controller.amountformKey,
                                     textController:
                                         controller.miscdynamicamount,
@@ -593,8 +589,8 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                     },
                                     validator: (v) {
                                       if (v == null || v.isEmpty || v == '') {
-                                        return 'Please enter the amount';
-                                      }else if(v=='0'){
+                                        return 'Please enter amount';
+                                      } else if (v == '0') {
                                         return 'amount should be greater than 0';
                                       }
                                       return null;
@@ -648,6 +644,11 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                 ),
                                 Flexible(
                                     child: MiscTextfield(
+                                        textFieldLabel: PesuText(
+                                          'No. of Copies',
+                                          color: Get.find<PaymentConfig>()
+                                              .primaryColor,
+                                        ),
                                         formKey: controller.miscSubcopyformKey,
                                         validator: (v) {
                                           if (v == null ||
@@ -678,21 +679,22 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                             ),
                           ]),
                         const Divider(),
-                        AlignRowWidget(
-                            firstWidget: const MyText(
-                              'Instructions:',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            secondWidget: HtmlWidget(controller
-                                    .paymentConfirmationModel
-                                    .value[0]
-                                    .miscellaneouspayment?[0]
-                                    .instructions
-                                    .toString() ??
-                                ""),
-                            crossAxisAlignment: CrossAxisAlignment.start),
+                        // AlignRowWidget(
+                        //     firstWidget: const MyText(
+                        //       'Instructions:',
+                        //       style: TextStyle(fontSize: 16),
+                        //     ),
+                        //     secondWidget: HtmlWidget(controller
+                        //             .paymentConfirmationModel
+                        //             .value[0]
+                        //             .miscellaneouspayment?[0]
+                        //             .instructions
+                        //             .toString() ??
+                        //         ""),
+                        //     crossAxisAlignment: CrossAxisAlignment.start),
                         const Divider(),
                         GetBuilder<OnlinePaymentController>(
+                          id: 'addsubCopiesamount',
                           initState: (state) => controller.updatemiscAmount(
                               controller.paymentConfirmationModel.value[0]
                                   .miscellaneouspayment?[0].amount),
@@ -701,195 +703,303 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
                                 'Total Amount:',
                                 style: TextStyle(fontSize: 16),
                               ),
-                              secondWidget:
-                                  MyText(controller.miscamount.value.toString())),
+                              secondWidget: MyText(
+                                  controller.miscAmount.value.toString())),
                         ),
                         const Divider(),
                       ],
                     ),
                   ),
                 ),
-                GetBuilder<OnlinePaymentController>(
-                    builder: (c) => Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Checkbox(
-                                  value: c.misctcflag.value,
-                                  onChanged: (value) {
-                                    c.misctcflag.value = !c.misctcflag.value;
-                                  }),
-                              Expanded(
-                                child: RichText(
-                                  maxLines: 4,
-                                  text: TextSpan(
-                                    text:
-                                        'I have read instructions and agree to the payment ',
-                                    style: const TextStyle(
-                                        fontSize: 11.0, color: Colors.black),
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                        text: 'terms and conditions',
-                                        style: const TextStyle(
-                                          fontSize: 11.0,
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
-                                        ),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const TermsAndConditionView(),
-                                              ),
-                                            );
-                                          },
-                                      ),
-                                      const TextSpan(
-                                        text: '.',
-                                        style: TextStyle(
-                                            fontSize: 16.0,
-                                            color: Colors.black),
-                                      ),
-                                    ],
-                                  ),
+                // GetBuilder<OnlinePaymentController>(
+                //     builder: (c) =>
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Checkbox(
+                          value: controller.misctcflag.value,
+                          onChanged: (value) {
+                            controller.misctcflag.value =
+                                !controller.misctcflag.value;
+                          }),
+                      Expanded(
+                        child: RichText(
+                          maxLines: 4,
+                          text: TextSpan(
+                            text:
+                                'I have read instructions and agree to the payment ',
+                            style: const TextStyle(
+                                fontSize: 11.0, color: Colors.black),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'terms and conditions',
+                                style: const TextStyle(
+                                  fontSize: 11.0,
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
                                 ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const TermsAndConditionView(),
+                                      ),
+                                    );
+                                  },
                               ),
-                            ])),
+                              const TextSpan(
+                                text: '.',
+                                style: TextStyle(
+                                    fontSize: 16.0, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ]),
 
+                GetBuilder<OnlinePaymentController>(
+                    id: 'checkAndConfirmMiscAmountloading',
+                    builder: (_) {
+                      return Center(child: paymentButton(context, _));
+                    })
+                //               controller.misctcflag.value
+                //                   ? Padding(
+                //                       padding: const EdgeInsets.all(8.0),
+                //                       child: MyButton(
+                //                           onPressed: () async {
 
-                controller.misctcflag.value
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: MyButton(
-                            onPressed: () async {
+                //                             var amount =
+                //                                 controller.miscAmount.value.toString();
+                //                             log(amount, error: '', name: "PPPPPPPP");
+                //                             try {
+                //                               if (controller
+                //                                       .miscSubcopyformKey.currentState !=
+                //                                   null) {
+                //                                 if (controller
+                //                                     .miscSubcopyformKey.currentState!
+                //                                     .validate()) {
+                //                                controller.startPayment(
+                //                                   instId:controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0].instId.toString() ,
+                //                                   miscDescription: controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0].paymentDesc
 
+                //                                       .toString(),
+                //                                   merchantKey: controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0]
+                //                                       .paymentKey
+                //                                       .toString(),
+                //                                   context: context,
+                //                                   amount: controller.miscAmount.value,
+                //                                   cat: controller.ctypeValue.toString(),
+                //                                   subcat: controller.stypeValue.toString(),
+                //                                   academicYearId: controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0]
+                //                                       .academicYearId
+                //                                       .toString(),
+                //                                 );
+                //                                 }
+                //                               } else if (controller
+                //                                           .amountformKey.currentState !=
+                //                                       null &&
+                //                                   controller.discformKey.currentState !=
+                //                                       null) {
+                //                                 if (controller.amountformKey.currentState!
+                //                                         .validate() &&
+                //                                     controller.discformKey.currentState!
+                //                                         .validate()) {
+                //                                               controller.startPayment(
+                //                                                 instId:controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0].instId.toString() ,
 
-                              
-                              var amount =
-                                  controller.miscamount.value.toString();
-                              log(amount, error: '', name: "PPPPPPPP");
-                              try {
-                                if (controller
-                                        .miscSubcopyformKey.currentState !=
-                                    null) {
-                                  if (controller
-                                      .miscSubcopyformKey.currentState!
-                                      .validate()) {
-                                 controller.startPayment(
-                                    instId:controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0].instId.toString() ,
-                                    miscDescription: controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0].paymentDesc
-                                        
-                                        .toString(),
-                                    merchantKey: controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0]
-                                        .paymentKey
-                                        .toString(),
-                                    context: context,
-                                    amount: controller.miscamount.value,
-                                    cat: controller.ctypeValue.toString(),
-                                    subcat: controller.stypeValue.toString(),
-                                    academicYearId: controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0]
-                                        .academicYearId
-                                        .toString(),
-                                  );
-                                  }
-                                } else if (controller
-                                            .amountformKey.currentState !=
-                                        null &&
-                                    controller.discformKey.currentState !=
-                                        null) {
-                                  if (controller.amountformKey.currentState!
-                                          .validate() &&
-                                      controller.discformKey.currentState!
-                                          .validate()) {
-                                                controller.startPayment(
-                                                  instId:controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0].instId.toString() ,
-                                    
-                                    miscDescription: controller.miscdescController.value.text,
-                                    merchantKey: controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0]
-                                        .paymentKey
-                                        .toString(),
-                                    context: context,
-                                    amount: controller.miscamount.value,
-                                    cat: controller.ctypeValue.toString(),
-                                    subcat: controller.stypeValue.toString(),
-                                    academicYearId: controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0]
-                                        .academicYearId
-                                        .toString(),
-                                  );
-                                   
-                                  }
-                                } else {
-                                  // Function? download;
-                                  controller.startPayment(
-                                    instId:controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0].instId.toString() ,
-                                    miscDescription: controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment?[0]
-                                        .paymentDesc
-                                        .toString(),
-                                    merchantKey: controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0]
-                                        .paymentKey
-                                        .toString(),
-                                    context: context,
-                                    amount: controller.miscamount.value,
-                                    cat: controller.ctypeValue.toString(),
-                                    subcat: controller.stypeValue.toString(),
-                                    academicYearId: controller
-                                        .paymentConfirmationModel
-                                        .value[0]
-                                        .miscellaneouspayment![0]
-                                        .academicYearId
-                                        .toString(),
-                                  );
-                                  
-                                }
-                                // controller.
-                                //  print( controller.updatemiscAmount(""));
-                              } catch (e, s) {
-                                log(e.toString(), error: s, name: "pay button");
-                              }
-                            },
-                            name:MyText('PAY', style:  GoogleFonts.roboto(
-    fontSize: 15,
-    fontWeight: FontWeight.w500,
-    color: Colors.white,
-  ),  )),
-                      )
-                    : const SizedBox(),
+                //                                   miscDescription: controller.miscdescController.value.text,
+                //                                   merchantKey: controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0]
+                //                                       .paymentKey
+                //                                       .toString(),
+                //                                   context: context,
+                //                                   amount: controller.miscAmount.value,
+                //                                   cat: controller.ctypeValue.toString(),
+                //                                   subcat: controller.stypeValue.toString(),
+                //                                   academicYearId: controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0]
+                //                                       .academicYearId
+                //                                       .toString(),
+                //                                 );
+
+                //                                 }
+                //                               } else {
+                //                                 // Function? download;
+                //                                 controller.startPayment(
+                //                                   instId:controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0].instId.toString() ,
+                //                                   miscDescription: controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment?[0]
+                //                                       .paymentDesc
+                //                                       .toString(),
+                //                                   merchantKey: controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0]
+                //                                       .paymentKey
+                //                                       .toString(),
+                //                                   context: context,
+                //                                   amount: controller.miscAmount.value,
+                //                                   cat: controller.ctypeValue.toString(),
+                //                                   subcat: controller.stypeValue.toString(),
+                //                                   academicYearId: controller
+                //                                       .paymentConfirmationModel
+                //                                       .value[0]
+                //                                       .miscellaneouspayment![0]
+                //                                       .academicYearId
+                //                                       .toString(),
+                //                                 );
+
+                //                               }
+                //                               // controller.
+                //                               //  print( controller.updatemiscAmount(""));
+                //                             } catch (e, s) {
+                //                               log(e.toString(), error: s, name: "pay button");
+                //                             }
+                //                           },
+                //                           name:MyText('PAY', style:  GoogleFonts.roboto(
+                //   fontSize: 15,
+                //   fontWeight: FontWeight.w500,
+                //   color: Colors.white,
+                // ),  )),
+                //                     )
+                //                   : const SizedBox(),
               ],
             ),
           );
   }
-  
-}
 
+  Widget paymentButton(BuildContext context, OnlinePaymentController _) {
+    void startPayment({
+      required String miscDescription,
+      required String merchantKey,
+      required BuildContext context,
+      required String amount,
+      required String cat,
+      required String subcat,
+      required String academicYearId,
+    }) {
+      controller.startPayment(
+        miscDescription: miscDescription,
+        merchantKey: merchantKey,
+        context: context,
+        amount: amount,
+        cat: cat,
+        subcat: subcat,
+        academicYearId: academicYearId,
+      );
+    }
+
+    void handlePayment(BuildContext context) async {
+      // var amount = controller.miscAmount.value.toString();
+      // log(amount, error: '', name: "PPPPPPPP");
+
+      try {
+        final paymentDetails = controller
+            .paymentConfirmationModel.value[0].miscellaneouspayment![0];
+        final merchantKey = paymentDetails.paymentKey.toString();
+        final academicYearId = paymentDetails.academicYearId.toString();
+        final cat = controller.ctypeValue.toString();
+        final subcat = controller.stypeValue.toString();
+        final amount = controller.miscAmount.value;
+        final result =
+            await controller.checkAndConfirmMiscAmount(paymentDetails);
+        if (controller.miscSubcopyformKey.currentState != null) {
+          if (controller.miscSubcopyformKey.currentState!.validate() &&
+              result &&
+              context.mounted) {
+            print('misc paymnet  $result');
+            print('misc confirm amount  ${controller.miscConfirmAmountToPay}');
+
+            startPayment(
+              miscDescription: paymentDetails.paymentDesc.toString(),
+              merchantKey: merchantKey,
+              context: context,
+              amount: amount,
+              cat: cat,
+              subcat: subcat,
+              academicYearId: academicYearId,
+            );
+          }
+        } else if ((controller.amountformKey.currentState != null &&
+                context.mounted) &&
+            (controller.discformKey.currentState != null)) {
+          if ((controller.amountformKey.currentState!.validate()) &&
+              (controller.discformKey.currentState!.validate())&&result) {
+            print('misc paymnet  $result');
+            print('misc confirm amount  ${controller.miscConfirmAmountToPay}');
+            startPayment(
+              miscDescription: controller.miscdescController.value.text,
+              merchantKey: merchantKey,
+              context: context,
+              amount: amount,
+              cat: cat,
+              subcat: subcat,
+              academicYearId: academicYearId,
+            );
+          }
+        } else {
+          if (context.mounted&&result) {
+            print('misc paymnet  $result');
+            print('misc confirm amount  ${controller.miscConfirmAmountToPay}');
+          
+          startPayment(
+            miscDescription: paymentDetails.paymentDesc.toString(),
+            merchantKey: merchantKey,
+            context: context,
+            amount: amount,
+            cat: cat,
+            subcat: subcat,
+            academicYearId: academicYearId,
+          );
+        }
+        }
+      } catch (e, s) {
+        log(e.toString(), error: s, name: "pay button");
+      }
+    }
+
+    return _.misctcflag.value
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: MyButton(
+              // width: Get.width*1,
+              onPressed: () => handlePayment(context),
+              name: _.checkAndConfirmMiscAmountloading.value
+                  ? SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: Get.find<PaymentConfig>().loadingWidget)
+                  : PesuText("Pay"),
+            ),
+          )
+        : const SizedBox();
+  }
+}

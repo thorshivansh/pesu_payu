@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
-import 'package:pesu_payu/src/utils/my_button.dart';
+// import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
+// import 'package:pesu_payu/src/utils/my_button.dart';
+import 'package:pesua/app/modules/student_modules/online_payment/src/presentation/controller/payment_controller.dart';
+import 'package:pesua/app/modules/student_modules/online_payment/src/utils/my_button.dart';
 
 
 
@@ -40,7 +42,7 @@ class RetryException extends GetView<OnlinePaymentController> {
         //   height: 20,
         // ),
         const SizedBox(height: 30),
-     Obx(()=>
+    //  Obx(()=>
        MyButton(
         height: Get.height*0.06,
         width: Get.width*0.5,
@@ -49,7 +51,7 @@ class RetryException extends GetView<OnlinePaymentController> {
           onTap();
            HapticFeedback.heavyImpact();
         }, label: "Retry"  ),
-     )
+    //  )
       ],
     );
   }

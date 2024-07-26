@@ -7,12 +7,12 @@ import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/transactionDetail.dart';
 import 'package:pesu_payu/src/utils/my_text.dart';
 
-
 class AnnualFee extends GetView<OnlinePaymentController> {
   // final 
   const AnnualFee({super.key});
   @override
   Widget build(BuildContext context) {
+    
     return RefreshIndicator.adaptive(
                 onRefresh: ()async {
 controller.getCTypeListResponse();
@@ -95,15 +95,9 @@ controller.getCTypeListResponse();
 controller. setisotherAmountAvailable(i);
         Get.to(() => TransactionDetailView(
               annualfeeIndex: i,
-            ));
-        // showModalBottomSheet<void>(
-        //   backgroundColor: Properties.themeColor.white,
-
-        //   context: context,
-        //   builder: (BuildContext context) {
-        //     return annualFreeListTile(i);
-        //   },
-        // );
+              
+            ), transition: Transition.cupertino);
+      
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:pesu_payu/config.dart';
 import 'package:pesu_payu/src/utils/color/colors.dart';
 
-class MiscTextfield extends StatelessWidget {
+class MiscTextfield extends GetView<PaymentConfig> {
   const MiscTextfield(
       {super.key,
       required this.textController,
@@ -16,7 +18,7 @@ class MiscTextfield extends StatelessWidget {
       this.onChanged,
       this.enable,
       this.validator,
-      this.formKey});
+      this.formKey,  this.textFieldLabel, this.hintText});
 
   final TextEditingController textController;
   final double? height;
@@ -30,6 +32,8 @@ class MiscTextfield extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final void Function(String)? onChanged;
+  final Widget? textFieldLabel;
+  final String? hintText;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +44,7 @@ class MiscTextfield extends StatelessWidget {
         // width: width ?? Get.width * 0.4,
         margin: margin ?? const EdgeInsets.only(top: 7, bottom: 7),
         child: TextFormField(
+          
           onTapOutside: (event) => FocusScope.of(context).unfocus(),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: validator,
@@ -53,17 +58,19 @@ class MiscTextfield extends StatelessWidget {
             //           RegExp(r'^[1-9]\d{0,1}(\.\d{1,2})?$')),
             //     ],
             keyboardType: keyboardType ?? TextInputType.number,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(
+            decoration:  InputDecoration(
+              hintText: hintText,
+              label: textFieldLabel,
+              border: const OutlineInputBorder(
                 borderRadius: BorderRadius.zero, // Square edges
               ),
-              focusedBorder: OutlineInputBorder(
+              focusedBorder:  OutlineInputBorder(
                 borderRadius: BorderRadius.zero, // Square edges when focused
                 borderSide: BorderSide(
-                    color:
-                        MyColors.darkBlue1), // Custom border color
+                    color:controller.primaryColor??MyColors.darkBlue1
+                        ), // Custom border color
               ),
-              enabledBorder: OutlineInputBorder(
+              enabledBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.zero, // Square edges when enabled
                 borderSide:
                     BorderSide(color: Colors.grey), // Custom border color

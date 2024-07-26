@@ -24,10 +24,12 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
     final int instId;
     final Dio dio;
     final SharedPreferences _preferences;
-  const OnlinePaymentView(this.dio, this.instId, this._preferences, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
+    final CancelToken _cancelToken;
+  const OnlinePaymentView(this.dio, this.instId, this._preferences, this._cancelToken, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
   @override
   Widget build(BuildContext context) {
-     Get.put<OnlinePaymentController>(OnlinePaymentController(dio, _preferences),);
+
+     Get.put<OnlinePaymentController>(OnlinePaymentController(dio, _preferences, _cancelToken),);
      controller.userInfo=ValueNotifier({ 'name': name,
     'email': email,
     'mobileNumber': mobileNumber,

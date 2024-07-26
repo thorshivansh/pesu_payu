@@ -7,15 +7,15 @@ class CTypeModel {
     if (json['ctype'] != null) {
       ctype = <Ctype>[];
       json['ctype'].forEach((v) {
-        ctype!.add(new Ctype.fromJson(v));
+        ctype!.add(Ctype.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.ctype != null) {
-      data['ctype'] = this.ctype!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (ctype != null) {
+      data['ctype'] = ctype!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -44,12 +44,12 @@ class Ctype {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Id'] = this.id;
-    data['Name'] = this.name;
-    data['IsDisable'] = this.isDisable;
-    data['InstId'] = this.instId;
-    data['MiscellaneousPaymentConfigId'] = this.miscellaneousPaymentConfigId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Id'] = id;
+    data['Name'] = name;
+    data['IsDisable'] = isDisable;
+    data['InstId'] = instId;
+    data['MiscellaneousPaymentConfigId'] = miscellaneousPaymentConfigId;
     return data;
   }
 }

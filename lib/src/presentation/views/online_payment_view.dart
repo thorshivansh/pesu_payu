@@ -6,14 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
 import 'package:payu_checkoutpro_flutter/payu_checkoutpro_flutter.dart';
+import 'package:pesu_payu/src/config/api_config.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 
 import '../sub_widgets/payment_status.dart';
 // import 'src/presentation/controller/payment_controller.dart';
 // import 'src/presentation/sub_widgets/payment_status.dart';
-
-
-typedef Pesupay = void Function(VoidCallback pay);
 
 class PesuPaymentPage extends StatefulWidget {
   final Widget? loadingWidget;
@@ -129,16 +127,16 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
         PayUPaymentParamKey.enableNativeOTP: true,
         // String - "0" for Production and "1" for Test
         PayUPaymentParamKey.transactionId: 
-          _controller.pesutxnId.value
+          _controller.pesuTxnId.value
             , //TODO for ios txid canot be more than 25 lenght
         // transactionId Cannot be null or empty and should be unique for each transaction. Maximum allowed length is 25 characters. It cannot contain special characters like: -_/
         PayUPaymentParamKey.userCredential:
             "${widget.merchantKey}:${_controller.userInfo.value['email'] }", //TODO  change merchant key
         //  Format: <testmerchantKey>:<userId> ... UserId is any id/email/phone number to uniquely identify the user.
-        PayUPaymentParamKey.android_surl:_controller.androidSurl,
-        PayUPaymentParamKey.android_furl: _controller.androidFurl,
-        PayUPaymentParamKey.ios_surl: _controller.iosSurl,
-        PayUPaymentParamKey.ios_furl: _controller.iosFurl
+        PayUPaymentParamKey.android_surl:ApiConfig.androidSurl,
+        PayUPaymentParamKey.android_furl: ApiConfig.androidFurl,
+        PayUPaymentParamKey.ios_surl: ApiConfig.iosSurl,
+        PayUPaymentParamKey.ios_furl: ApiConfig.iosFurl
       };
       log(payuParam.toString(), name: 'payuparams');
       return payuParam;
@@ -150,8 +148,8 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
 
   @override
   void dispose() { 
-    super.dispose();
    _controller.clean();
+    super.dispose();
   }
 //  payuresponse=ValueNotifier({})
   @override
@@ -166,6 +164,7 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
         body: Obx(() => _controller.payupaymentstarted.value
             ?  Center(child: widget.loadingWidget??const CircularProgressIndicator.adaptive())
             : PaymentStatus(
+              
   paymenntStatus: _controller.payuresponse.value['status'] ?? '1',
   errorType: _controller.payuresponse.value['id'] ?? '1',
   date: _getDateValue(_controller.payuresponse.value),
@@ -221,7 +220,7 @@ String _getErrorReason(Map<dynamic, dynamic>? response) {
     try {
       var hash = await _controller.getserverDynamicHash(
         instId: widget.instId,//TODO add InnstId 
-        trxnId:_controller.pesutxnId.value,
+        trxnId:_controller.pesuTxnId.value,
         misctype: widget.misctype,
         merchantKey: widget.merchantKey,
         hash: jsonEncode(response),

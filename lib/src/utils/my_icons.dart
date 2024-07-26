@@ -2,19 +2,22 @@
 
  
  import 'package:flutter/material.dart';
-import 'package:pesu_payu/src/utils/color/colors.dart';
+// import 'package:pesu_payu/src/utils/color/colors.dart';
 
 class MyIcons extends StatelessWidget {
   final IconData? icon;
   final Color? color;
   final double? size;
-   const MyIcons(this.icon,{super.key,    this.color,  this.size});
+  final void Function()? onPressed;
+   const MyIcons(this.icon,{super.key,    this.color,  this.size, this.onPressed});
  
    @override
    Widget build(BuildContext context) {
-     return Icon(icon?? Icons.circle, color:color??Colors.black,
+     return IconButton(onPressed: onPressed??()=>Navigator.of(context).pop(), icon:
      
-     size: size??8.0,
-     );
+     Icon(icon?? Icons.circle, color:color??Colors.black,
+     
+     size: size??20.0,
+     ));
    }
  }

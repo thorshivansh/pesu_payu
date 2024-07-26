@@ -5,10 +5,6 @@ import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/utils/toast.dart';
-// import 'package:pesua/app/modules/student_modules/online_payment/controllers/online_payment_controller.dart';
-// import 'package:pesua/utils/properties.dart';
-// import 'package:pesua/utils/widgets/dialogs/toast.dart';
-
 
 class PaymentHistoryView extends GetView<OnlinePaymentController> {
   const PaymentHistoryView({super.key});
@@ -140,7 +136,7 @@ class PaymentHistoryView extends GetView<OnlinePaymentController> {
                       },
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             LucideIcons.copy,
                             // color: Properties.themeColor.skyblue1,
                             size: 16,

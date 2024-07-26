@@ -13,4 +13,15 @@ class ApiConfig {
   static void setOpenPdf({required String newOpenPdfValue}) {
     openPdf = newOpenPdfValue;
   }
+
+     ///Payu surl $ furl
+
+ static const  androidFurl =
+      "https://www.pesuacademy.com/MAcademy/payment/PayuPaymentResponse/failed";
+  static const androidSurl =
+      "https://www.pesuacademy.com/MAcademy/payment/PayuPaymentResponse/success";
+ static const iosFurl =
+      "https://www.pesuacademy.com/MAcademy/payment/PayuPaymentResponse/failed";
+ static const iosSurl =
+      "https://wwww.pesuacademy.com/MAcademy/payment/PayuPaymentResponse/success";
 }

@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
-import '../../core/api_config.dart';
+import '../../config/api_config.dart';
 // import 'package:pesua/utils/properties.dart';
 
 abstract class PaymentDetailRepo {
-  factory PaymentDetailRepo(Dio dio) = PaymentDetailService;
+  factory PaymentDetailRepo(Dio dio, CancelToken cancelToken) = PaymentDetailService;
   Future<Either<Exception, dynamic>> getPaymentDetail(String userId);
   Future<Either<Exception, dynamic>> getTransactionDetail(dynamic academicYearId, dynamic feeType, String userId);
   Future<Either<Exception, dynamic>> getDynamicHash({
@@ -33,8 +33,9 @@ abstract class PaymentDetailRepo {
 }
 
 class PaymentDetailService implements PaymentDetailRepo {
-  PaymentDetailService(this._dio);
+  PaymentDetailService(this._dio, this._cancelToken);
   final Dio _dio;
+  final CancelToken _cancelToken;
 
   @override
   Future<Either<Exception, dynamic>> getPaymentDetail(String userId) async {
@@ -50,7 +51,7 @@ class PaymentDetailService implements PaymentDetailRepo {
         'userId': userId,
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body);
+      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
       log(res.toString(), name: 'paymentDetail Response');
       if(res.statusCode==200){
         return Right(res.data);
@@ -83,7 +84,7 @@ class PaymentDetailService implements PaymentDetailRepo {
         'feeType': feeType
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body);
+      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
       log(res.toString(), name: 'Transaction Response');
       if(res.statusCode==200){
         return Right(res.data);
@@ -188,7 +189,7 @@ class PaymentDetailService implements PaymentDetailRepo {
         'instId':instId,
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body);
+      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
       log(res.toString(), name: 'CType Response');
       if (res.statusCode == 200) {
         return Right(res.data);
@@ -220,7 +221,7 @@ class PaymentDetailService implements PaymentDetailRepo {
         'type': 0 // AS FOR NOW IT IS DYNAMIC - RITHESH CONFIRMED
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body);
+      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
       log(res.toString(), name: 'SType Response');
       if(res.statusCode==200){
         return Right(res.data);
@@ -256,7 +257,7 @@ class PaymentDetailService implements PaymentDetailRepo {
         "feeType":2
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body);
+      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
       log(res.toString(), name: 'getPaymentConfirmationDetail');
       if(res.statusCode==200){
         return Right(res.data);
@@ -286,7 +287,7 @@ FormData body = FormData.fromMap({
         'mode': 6,
         "instId":instId
 });
-var res =await _dio.post(ApiConfig.dispatecher, data: body);
+var res =await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
 log(res.toString(), name: 'getPaymenttandc');
 if(res.statusCode==200){
   return Right(res.data);

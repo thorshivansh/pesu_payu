@@ -8,7 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:number_to_text_converter/number_to_text_converter.dart';
@@ -18,27 +18,12 @@ import 'package:pesu_payu/src/presentation/views/online_payment_view.dart';
 import 'package:pesu_payu/src/utils/page_route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// import 'package:pesua/app/data/api/api_client.dart';
-// import 'package:pesua/app/data/models/payment_models/TransactionModel.dart';
-// import 'package:pesua/app/data/models/payment_models/c_type_model.dart';
-// import 'package:pesua/app/data/models/payment_models/payment_confirmation_model.dart';
-// import 'package:pesua/app/data/models/TransactionModel.dart';
-// import 'package:pesua/app/data/models/payment_models/payment_detail_model.dart';
-// import 'package:pesua/app/data/models/payment_models/s_type_model.dart';
-// import 'package:pesua/app/modules/student_modules/online_payment/views/payment_page.dart';
-// import 'package:pesua/app/data/models/payment_detail_model.dart';
-// import 'package:pesua/utils/connectivity.dart';
-// import 'package:pesua/utils/custom_page/fullpage_dialog.dart';
-// import 'package:pesua/utils/locator.dart';
-// import 'package:pesua/utils/properties.dart';
-// import 'package:pesua/utils/rxstatus.dart';
 import '../../data/models/TransactionModel.dart';
 import '../../data/models/c_type_model.dart';
 import '../../data/models/payment_confirmation_model.dart';
 import '../../data/models/payment_detail_model.dart';
 import '../../data/models/s_type_model.dart';
 import '../../data/repo/payment_repo.dart';
-import '../../../pesupay.dart';
 import '../../utils/enums/rxtstatus.dart';
 import '../../utils/toast.dart';
 import 'package:screenshot/screenshot.dart';
@@ -48,13 +33,13 @@ import 'package:uuid/uuid.dart';
 class OnlinePaymentController extends GetxController {
   // OnlinePaymentController( this._dio);
   static const Uuid _uuid = Uuid();
-  OnlinePaymentController(this._dio, this._preferences);
+  OnlinePaymentController(this._dio, this._preferences, this._cancelToken);
   final Dio _dio;
- late final  SharedPreferences _preferences;
-late PaymentDetailRepo _paymentDetailRepo;
+  late final SharedPreferences _preferences;
+  late PaymentDetailRepo _paymentDetailRepo;
 // final PaymentDetailService _api=PaymentDetailService(_dio);
   ///stores trxn Id
-  final Rx<dynamic> pesutxnId = Rx<dynamic>(null);
+  final Rx<dynamic> pesuTxnId = Rx<dynamic>(null);
 
   ///stors ptrxn time in case user caacelled trxn
   final Rx<dynamic> trxnTime = Rx<dynamic>(null);
@@ -62,37 +47,41 @@ late PaymentDetailRepo _paymentDetailRepo;
   final paymentDetailModel = Rx<PaymentDetailModel>(PaymentDetailModel());
   final transactionDetailModel =
       Rx<TransactionDetailModel>(TransactionDetailModel());
-  final ctypeModel = Rx<CTypeModel>(CTypeModel());
-  final stypeModel = Rx<List<STypeModel>>([]);
-  final paymentConfirmationModel =
-      Rx<List<PaymentConfirmModel>>([]);
+  final cTypeModel = Rx<CTypeModel>(CTypeModel());
+  final sTypeModel = Rx<List<STypeModel>>([]);
+  final paymentConfirmationModel = Rx<List<PaymentConfirmModel>>([]);
   List<dynamic> emptystype = [];
   // final connectionController = Get.put(ConnectionController());
   var rejectedCount = 0.obs;
   var pendingCount = 0.obs;
   var paidCount = 0.obs;
+
+  ///confirm amount to pay
   final partialAmountController = TextEditingController();
-
-  ///misc paymnet page
-  final miscSubcopies = TextEditingController();
-  final miscdescController = TextEditingController();
-  final miscdynamicamount = TextEditingController();
-
-//terms and conditions
-Rx<dynamic> termsandcondition = Rx<dynamic>(null);
-Rx<dynamic> termsLoading = Rx<dynamic>(null);
-
+  RxBool isotherAmountNotAvailable = false.obs;
+  RxBool otherAmountflag = false.obs;
+  String confirmAmountToPay = '';
 
   ///formKey
   final amountformKey = GlobalKey<FormState>();
   final discformKey = GlobalKey<FormState>();
   final miscSubcopyformKey = GlobalKey<FormState>();
 
-  final RxString miscamount = RxString('');
-  //
-  final paymentloading = Rx<bool>(false);
+  ///misc paymnet page
+  final miscSubcopies = TextEditingController();
+  final miscdescController = TextEditingController();
+  final miscdynamicamount = TextEditingController();
 
-  final RxBool miscloading = RxBool(false);
+  String miscConfirmAmountToPay = '';
+  final Rx<dynamic> miscAmount = Rx<dynamic>(null);
+  //
+  final paymentLoading = Rx<bool>(false);
+
+  final RxBool miscLoading = RxBool(false);
+
+//terms and conditions
+  Rx<dynamic> termsandcondition = Rx<dynamic>(null);
+  Rx<dynamic> termsLoading = Rx<dynamic>(null);
 
   ///
   ScreenshotController screenshotController = ScreenshotController();
@@ -112,8 +101,6 @@ Rx<dynamic> termsLoading = Rx<dynamic>(null);
 //
   final payupaymentstarted = RxBool(false);
   final count = 0.obs;
-  RxBool otherAmountflag = false.obs;
-  RxBool isotherAmountAvailable = false.obs;
   RxBool annulatcflag = false.obs;
   RxBool misctcflag = false.obs;
   dynamic ctypeValue;
@@ -121,31 +108,108 @@ Rx<dynamic> termsLoading = Rx<dynamic>(null);
   // dynamic partialAmount;
   RxBool pcflag = false.obs;
 
+  ///amount in words
+  Rx<dynamic> amountInWords = Rx<dynamic>(null);
+  var converter = NumberToTextConverter.forIndianNumberingSystem();
 
-///amount in words 
-RxString amountInWords = RxString('');
-    var converter = NumberToTextConverter.forIndianNumberingSystem();
-
-
-
+  CancelToken _cancelToken;
 
   @override
   void onInit() async {
-    _paymentDetailRepo = PaymentDetailRepo(_dio);
-  
+    _paymentDetailRepo = PaymentDetailRepo(_dio, _cancelToken);
+
     super.onInit();
   }
 
   @override
   void onReady() {
-       getPaymentDetail();
+    getPaymentDetail();
     getCTypeListResponse();
     super.onReady();
     getTermsAndConditions();
   }
-ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
-// Future<ValueNotifier<Map<String, dynamic>> > getUserInfo({required String name,required int instId, required String email,required String mobileNumber, required String userId, required String loginId}) async {
 
+  ///
+//
+  final RxBool amountVerifying = RxBool(false);
+  /// verify final amount 
+  Future<bool> checkandConfirmAnnualAmount(
+      STUDENTPAYMENTDETAILS studentDetails) async {
+    amountVerifying.value = true;
+    confirmAmountToPay = '';
+    try {
+      if (otherAmountflag.value) {
+        if (isotherAmountNotAvailable.value) {
+          if (partialAmountController.value.text.isEmpty) {
+            // else if (_.partialAmountController.text.isEmpty) {
+            amountVerifying.value = false;
+            showToast('amount is empty');
+            // }
+            return false;
+          } else if (partialAmountController.text.isNotEmpty) {
+            var number =
+                partialAmountController.value.text.toIntEither(() => false);
+
+            number.fold((l) {
+              amountVerifying.value = false;
+              return false;
+            }, (amount) {
+              // if (amount < 1) return false;
+              // if(amount<)
+
+              if (amount > studentDetails.dueAmount!) {
+                showToast('Amount is more than your total due amount');
+                amountVerifying.value = false;
+                return false;
+              } else if (amount < 5000) {
+                showToast('Minimum amount should be Rs. 5000');
+                amountVerifying.value = false;
+                return false;
+              }
+              confirmAmountToPay = amount.toString();
+              amountVerifying.value = false;
+              return true;
+            });
+          }
+        } else if (isotherAmountNotAvailable.value == false) {
+          final amount = studentDetails.minAmount ?? 0.0;
+          if (amount < 1) {
+            showToast("amount can't be zero");
+            amountVerifying.value = false;
+            return false;
+          }
+          confirmAmountToPay = amount.toString();
+          amountVerifying.value = false;
+          return true;
+        }
+      } else {
+        double? amount = studentDetails.totalDue ?? 0.0;
+
+        if (amount < 1) {
+          amountVerifying.value = false;
+          showToast("amount can't be zero");
+          return false;
+        } else {
+          confirmAmountToPay = amount.toString();
+          amountVerifying.value = false;
+          return true;
+        }
+        // confirmAmountToPay = studentDetails.dueAmount.toString();
+        // amountVerifying.value=false;
+        // return true;
+      }
+    } catch (e) {
+      amountVerifying.value = false;
+      print(e);
+      return false;
+    }
+    amountVerifying.value = false;
+    update();
+    return false;
+  }
+
+  ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
+// Future<ValueNotifier<Map<String, dynamic>> > getUserInfo({required String name,required int instId, required String email,required String mobileNumber, required String userId, required String loginId}) async {
 
 //   return userInfo=ValueNotifier({
 //     'name': name,
@@ -172,19 +236,20 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
     miscSubcopies.clear();
     miscdescController.clear();
     miscdynamicamount.clear();
-    miscamount.value = '';
+    miscAmount.value = null;
+    // sTypeModel.value.clear();
+    update(['counterId']);
   }
 
-  ///Payu surl $ furl
+  void annualFeeClean() {
+    confirmAmountToPay = '';
+    otherAmountflag.value = false;
+    // isotherAmountNotAvailable.value = false;
+    annulatcflag.value = false;
+    amountInWords.value = null;
+    partialAmountController.clear();
+  }
 
-  final androidFurl =
-      "https://www.pesuacademy.com/MAcademy/payment/PayuPaymentResponse/failed";
-  final androidSurl =
-      "https://www.pesuacademy.com/MAcademy/payment/PayuPaymentResponse/success";
-  final iosFurl =
-      "https://www.pesuacademy.com/MAcademy/payment/PayuPaymentResponse/failed";
-  final iosSurl =
-      "https://wwww.pesuacademy.com/MAcademy/payment/PayuPaymentResponse/success";
   final testmerchantKey = "3TnMpV";
   //  "Kc9iwJ"; // Add you Merchant Key
   final livemerchantKey = "OZBkWu"; // Add you Merchant Key
@@ -244,7 +309,7 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
         PayUCheckoutProConfigKeys.merchantLogo: "@drawable/peslogo",
         PayUCheckoutProConfigKeys.showExitConfirmationOnCheckoutScreen: true,
         PayUCheckoutProConfigKeys.showExitConfirmationOnPaymentScreen: true,
-        // PayUCheckoutProConfigKeys.cartDetails: cartDetails, 
+        // PayUCheckoutProConfigKeys.cartDetails: cartDetails,
 
         // PayUCheckoutProConfigKeys.paymentModesOrder: paymentModesOrder,
         PayUCheckoutProConfigKeys.merchantResponseTimeout: 50000,
@@ -264,31 +329,183 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
   }
 
 
+void sum(String value){
+  switch (value) {
+  case 'value1':
+    // Code to execute when variableName matches value1
+    
+    break;
+  case 'value2':
+    // Code to execute when variableName matches value2
+    break;
+  // Add more cases as needed
+  default:
+    // Code to execute if variableName doesn't match any of the cases
+    break;
+   }
+}
+
+
+final RxBool checkAndConfirmMiscAmountloading = RxBool(false);
+Future<bool> checkAndConfirmMiscAmount(Miscellaneouspayment paymentDetails) async {
+  miscConfirmAmountToPay = '';
+  // const bool value = false;
+
+checkAndConfirmMiscAmountloading.value=true;
+  try {
+    final bool isDescEmpty = paymentDetails.paymentDesc == '' || paymentDetails.paymentDesc == null;
+    final bool isAmountEmpty = paymentDetails.amount == '' || paymentDetails.amount == null || paymentDetails.amount == '0';
+    final bool isLabelEmpty = paymentDetails.label == null || paymentDetails.label == 'NA' || paymentDetails.label == '';
+    final bool isDataValue1Empty = paymentDetails.dataValue1 == 'NA' || paymentDetails.dataValue1 == null || paymentDetails.dataValue1 == '';
+
+  late  PaymentDetailState state;
+    if (isDescEmpty && isAmountEmpty && amountformKey.currentState != null && discformKey.currentState != null && miscSubcopyformKey.currentState == null) {
+      state = PaymentDetailState.descAmtEmpty;
+    } else if (!isAmountEmpty && !isDescEmpty) {
+      if (isLabelEmpty && isDataValue1Empty) {
+        state = PaymentDetailState.amountDesNotEmpty;
+      } else if (!isLabelEmpty && !isDataValue1Empty) {
+        state = PaymentDetailState.misSubCopyReq;
+      }
+   
+    }
+
+    switch (state) {
+      case PaymentDetailState.descAmtEmpty:
+        final amount = miscdynamicamount.value.text.toIntEither(() => false);
+        return amount.fold((l) => false, (total) {
+          if (total < 1) return false;
+          miscConfirmAmountToPay = total.toString();
+
+checkAndConfirmMiscAmountloading.value=false;
+update(['checkAndConfirmMiscAmountloading']);
+          return true;
+        });
+
+      case PaymentDetailState.amountDesNotEmpty:
+        final apiAmount = miscAmount.toString().toIntEither(() => false);
+        return apiAmount.fold((l) => false, (r) {
+          if (r < 1) return false;
+          miscConfirmAmountToPay = r.toString();
+          update(['addsubCopiesamount']);
+          checkAndConfirmMiscAmountloading.value=false;
+          update(['checkAndConfirmMiscAmountloading']);
+          return true;
+        });
+
+      case PaymentDetailState.misSubCopyReq:
+        final totalAmount = miscAmount.value.toString().toDoubleEither(() => false);
+        return totalAmount.fold((l) {
+          print('6666 $l');
+          return false;
+        }, (rupees) {
+          print(rupees);
+          if (rupees < 1) return false;
+          
+          miscConfirmAmountToPay = rupees.toString();
+          checkAndConfirmMiscAmountloading.value=false;
+          update(['checkAndConfirmMiscAmountloading']);
+          return true;
+        });
+     
+    }
+  } catch (e) {
+    log(e.toString(), error: e, name: 'name');
+    checkAndConfirmMiscAmountloading.value=false;
+    update(['checkAndConfirmMiscAmountloading']);
+    return false;
+  }
+
+  // return false;
+}
+
+  // Future<bool> checkandConfirmMiscAmount(
+  //     Miscellaneouspayment paymentDetails) async {
+  //   miscConfirmAmountToPay = '';
+  //   const bool value =false;
+  //   try {
+  //     final bool isdescEmpty = paymentDetails.paymentDesc == '' ||
+  //         paymentDetails.paymentDesc == null;
+  //     final bool isamountEmpty = paymentDetails.amount == '' ||
+  //         paymentDetails.amount == null ||
+  //         paymentDetails.amount == '0';
+  //         final bool isLabelEmpty =paymentDetails.label==null||paymentDetails.label=='NA'||paymentDetails.label=='';
+  //         final bool isDataValue1Empty = paymentDetails.dataValue1=='NA'||paymentDetails.dataValue1==null||paymentDetails.dataValue1=='';
+  //         final apiAmount = paymentDetails.amount!.toIntEither(()=>false);
+  //     if (isdescEmpty && isamountEmpty&&amountformKey.currentState!=null&&discformKey.currentState!=null&&miscSubcopyformKey.currentState==null) {
+  //       print('1111111');
+  //       final amount= miscdynamicamount.value.text.toDoubleEither(() => false);
+  //       amount.fold((l) => false, (total) {
+  //         if(total<1)return false;
+  //         miscConfirmAmountToPay = total.toString();
+  //         return true;
+  //       });
+       
+        
+       
+  //     }else if(!isamountEmpty&&!isdescEmpty){
+
+  //       if(isLabelEmpty&&isDataValue1Empty){
+  //         apiAmount.getRight();
+  //         apiAmount.fold((l) => false,(r){
+  //           if(r<1) return false;
+  //           miscConfirmAmountToPay = r.toString();
+  //           return true;
+  //         });
+
+  //               // print('3333333');
+  //               // return false;
+  //       }else if(!isLabelEmpty&&!isDataValue1Empty){
+
+  //         print('4444444');
+  //       apiAmount.fold((l) {
+  //         print('6666 $l');
+  //         return false;
+  //       }, (rupees) {
+  //         print(rupees);
+  //         if(rupees<1) return false;
+  //         miscConfirmAmountToPay = rupees.toString();
+  //         return true;
+  //       });
+  //     // return false;
+  //       }
+  //       // print('2222222');
+
+        
+  //       // miscConfirmAmountToPay=
+
+  //     }
+  //     return value;
+  //     //else if()
+  //   } catch (e) {
+  //     log(e.toString(), error: e, name: 'name');
+  //     return false;
+  //   }
+
+  //   // return false;
+  // }
 
   ///misc payment
   Future<void> startPayment(
       {required String amount,
       required String cat,
-
       required String subcat,
-   
       required String academicYearId,
       String? miscDescription,
       String? instId,
-    required  String merchantKey,
+      required String merchantKey,
       required BuildContext context}) async {
     var miscCatSubcat = "1&$cat&$subcat&2&2&1";
     Get.back();
-    stypeValue=null;
-    stypedrop.value=null;
-    stypeModel.value.clear();
+    // stypeValue=null;
+    // stypedrop.value=null;
+    // sTypeModel.value.clear();
     Navigator.push(
         context,
         FullDialogRoute(
             builder: ((context) => PesuPaymentPage(
-           
-              // loadingWidget: ,
-            instId: instId,
+                  // loadingWidget: ,
+                  instId: instId,
                   paymentDescription: miscDescription,
                   isMiscpayment: true,
                   dueAmount: amount,
@@ -305,19 +522,20 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
       setRxRequestStatus(RequestStatus.LOADING);
     }
     try {
-      // paymentloading.value = true;
+      // paymentLoading.value = true;
       var response =
           await _paymentDetailRepo.getPaymentDetail(userInfo.value['userId']!);
       // if (response.statuscode == 200) {
       response.fold((error) {
-        // paymentloading.value = false;
+        // paymentLoading.value = false;
         setRxRequestStatus(RequestStatus.ERROR);
       }, (res) {
         paymentDetailModel.value = PaymentDetailModel.fromJson(res);
         pendingCount.value = paymentDetailModel.value.sTUDENTPAYMENTDETAILS!
             .where((detail) =>
                 detail.verifiedStatus == 'Pending' ||
-                detail.verifiedStatus == 'Partially Paid'||detail.paymentStatus=='Partially Paid')
+                detail.verifiedStatus == 'Partially Paid' ||
+                detail.paymentStatus == 'Partially Paid')
             .length;
         // paidCount.value = paymentDetailModel.value.sTUDENTPAYMENTDETAILS!
         //     .where((detail) =>
@@ -331,37 +549,39 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
       //     .where((detail) => detail.verifiedStatus == 'Rejected')
       //     .length;
       // }
-      // paymentloading.value = false;
+      // paymentLoading.value = false;
     } catch (e, s) {
       setRxRequestStatus(RequestStatus.ERROR);
       log('$e', error: s);
-      // paymentloading.value = false;
+      // paymentLoading.value = false;
     }
   }
 
   Future<void> getTransactionDetail(
-      dynamic academicYearId, dynamic feeType,) async {
+    dynamic academicYearId,
+    dynamic feeType,
+  ) async {
     try {
-      paymentloading.value = true;
-      var response = await _paymentDetailRepo
-          .getTransactionDetail(academicYearId, feeType,userInfo.value['userId']);
+      paymentLoading.value = true;
+      var response = await _paymentDetailRepo.getTransactionDetail(
+          academicYearId, feeType, userInfo.value['userId']);
       // if (response.statuscode == 200) {
       response.fold((left) {
-        paymentloading.value = false;
+        paymentLoading.value = false;
       }, (res) {
         transactionDetailModel.value = TransactionDetailModel.fromJson(res);
       });
 
       // }
-      paymentloading.value = false;
+      paymentLoading.value = false;
     } catch (e, s) {
       log('$e', error: s);
-      paymentloading.value = false;
+      paymentLoading.value = false;
     }
   }
 
   void setisotherAmountAvailable(int annualfeeIndex) {
-    isotherAmountAvailable.value = paymentDetailModel
+    isotherAmountNotAvailable.value = paymentDetailModel
                 .value.sTUDENTPAYMENTDETAILS![annualfeeIndex].minAmount ==
             null ||
         paymentDetailModel
@@ -378,27 +598,28 @@ ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
   //   }
   // }
 
-
-
-///
-void updateAnount(){
-  if (partialAmountController.value.text.isNotEmpty) {
-      amountInWords.value =                                converter.convert(int.tryParse(partialAmountController.value.text.removeAllWhitespace)!).toUpperCase();
-  }
-update();
+  ///
+  void updateAnount() {
+    if (partialAmountController.value.text.isNotEmpty) {
+      amountInWords.value = converter
+          .convert(int.tryParse(
+              partialAmountController.value.text.removeAllWhitespace)!)
+          .toUpperCase();
+    }
+    update();
 // return convertedtext;
-}
+  }
+
   ///Get trannsactionHas Id
   ///
 
   Future<String> getUuidTrxnId() async {
-    
     try {
-      pesutxnId.value = null;
+      pesuTxnId.value = null;
       var txnId = _uuid.v7obj().toString();
 
-      pesutxnId.value = txnId.substring(0,18);
-      log('${pesutxnId.value}}', name: 'txnId');
+      pesuTxnId.value = txnId.substring(14);
+      log('${pesuTxnId.value}', name: 'txnId');
       return txnId;
     } catch (e, s) {
       log('$e', error: s, name: 'uuid');
@@ -406,10 +627,10 @@ update();
     }
   }
 
-  Future<void> getnewTrxnId()async
-{
-// Rand
-}
+//   Future<void> getnewTrxnId()async
+// {
+// // Rand
+// }
   Future<String> getTrxnTime() async {
     try {
       var now = DateTime.now();
@@ -429,45 +650,43 @@ update();
   }
 
   ///Get Dynamic Hashes from server
-  Future<Map> getserverDynamicHash(
-      {required String hash,
-      required String trxnId,
-      required String misctype,
-      required String academicyear,
-      required String demandId,
-      required String dueAmount,
-      required String feeName,
-      required String fdFeeTypeId,
-      required String merchantKey,
-      String? instId, 
-      //  required String name,
-  // required String email,
-  // required String mobileNumber,
-  // required String userId,
-  // required String loginId,
-  
+  Future<Map> getserverDynamicHash({
+    required String hash,
+    required String trxnId,
+    required String misctype,
+    required String academicyear,
+    required String demandId,
+    required String dueAmount,
+    required String feeName,
+    required String fdFeeTypeId,
+    required String merchantKey,
+    String? instId,
+    //  required String name,
+    // required String email,
+    // required String mobileNumber,
+    // required String userId,
+    // required String loginId,
   }) async {
     // String hash='';
     payupaymentstarted.value = true;
     var serverhash;
     try {
-      var response = await _paymentDetailRepo
-          .getDynamicHash(
-            name:  userInfo.value['name'],
-            email:  userInfo.value['email'],
-            mobileNumber:  userInfo.value['mobileNumber'],
-            userId:  userInfo.value['userId'],
-            loginId:  userInfo.value['loginId'],
-              txnId:trxnId,
-              hash: hash,
-              academicyear: academicyear,
-              misctype: misctype,
-              demandId: demandId,
-              dueAmount: dueAmount,
-              feeName: feeName,
-              fdFeeTypeId: fdFeeTypeId,
-              instId: instId??userInfo.value['instId'] ,
-              merchantKey: merchantKey);
+      var response = await _paymentDetailRepo.getDynamicHash(
+          name: userInfo.value['name'],
+          email: userInfo.value['email'],
+          mobileNumber: userInfo.value['mobileNumber'],
+          userId: userInfo.value['userId'],
+          loginId: userInfo.value['loginId'],
+          txnId: trxnId,
+          hash: hash,
+          academicyear: academicyear,
+          misctype: misctype,
+          demandId: demandId,
+          dueAmount: dueAmount,
+          feeName: feeName,
+          fdFeeTypeId: fdFeeTypeId,
+          instId: instId ?? userInfo.value['instId'].toString(),
+          merchantKey: merchantKey);
       response.fold((error) {
         payupaymentstarted.value = false;
 
@@ -488,15 +707,15 @@ update();
   }
 
   ///
-  void shareScreenshot() async {
+  Future<void> shareScreenshot() async {
     try {
       final image = await screenshotController.capture();
       if (image != null) {
-        final directory = await getApplicationDocumentsDirectory();
+        final directory = await getTemporaryDirectory();
         final imagePath =
             await File('${directory.path}/screenshot.png').create();
         await imagePath.writeAsBytes(image);
-        Share.shareXFiles([
+        await Share.shareXFiles([
           XFile.fromData(image, name: 'screenshot.png', mimeType: 'image/png')
         ]);
       }
@@ -525,109 +744,139 @@ update();
   }
 
   ///
+  final RxBool downloadStarted = RxBool(false);
+  Future<void> download(String trxId) async {
+    try {
+      downloadStarted.value = true;
+      final directory = await getDownloadPath(); //from path_provide package
+      String fileName = '/$trxId.png';
+      print(directory);
+      var path = '$directory';
 
-  void download(String trxId) async {
-   
-    final directory = await getDownloadPath(); //from path_provide package
-    String fileName = '/$trxId.png';
-    print(directory);
-    var path = '$directory';
+      final String? result = await screenshotController.captureAndSave(
+          path, //set path where screenshot will be saved
+          fileName: fileName);
 
-    screenshotController.captureAndSave(
-        path, //set path where screenshot will be saved
-        fileName: fileName);
-         showToast('Downloaded Successfully');
+      log(result.toString());
+      downloadStarted.value = false;
+      showToast('Downloaded Successfully');
+    } catch (e) {
+      downloadStarted.value = false;
+      log(e.toString());
+      showToast('Download Failed');
+    }
   }
 
   Future<void> getCTypeListResponse() async {
     try {
-      // paymentloading.value = true;
-      ctypeModel.value.ctype?.clear();
+      // paymentLoading.value = true;
+      cTypeModel.value.ctype?.clear();
       var response =
           await _paymentDetailRepo.getCTypeList(userInfo.value['instId']!);
 
       response.fold((error) {
-        paymentloading.value = false;
+        paymentLoading.value = false;
       }, (response) {
-        ctypeModel.value = CTypeModel.fromJson(response);
+        cTypeModel.value = CTypeModel.fromJson(response);
 
-        // paymentloading.value = false;
+        // paymentLoading.value = false;
       });
       // }
-      // paymentloading.value = false;
+      // paymentLoading.value = false;
     } catch (e, s) {
       log('$e', error: s);
-      // paymentloading.value = false;
+      // paymentLoading.value = false;
     }
   }
-
-
 
   Future<void> getSTypeListResponse(int id) async {
     try {
-      // paymentloading.value = true;
-          stypeModel.value.clear();
-      
-      miscloading.value = true;
+      // paymentLoading.value = true;
+      sTypeModel.value.clear();
+
+      miscLoading.value = true;
       var response =
-          await _paymentDetailRepo.getSTypeList(id,  userInfo.value['instId']);
+          await _paymentDetailRepo.getSTypeList(id, userInfo.value['instId']);
       response.fold((error) {
-        miscloading.value = false;
+        miscLoading.value = false;
       }, (response) {
         print(response);
-        stypeModel.value.add( STypeModel.fromJson(response));
-        if (stypeModel.value[0].stype!.isEmpty) showToast('No Data');
-        miscloading.value = false;
-        // log('${stypeModel.value.stype!}', name: 'stpe');
+        sTypeModel.value.add(STypeModel.fromJson(response));
+        if (sTypeModel.value[0].stype!.isEmpty) showToast('No Data');
+        miscLoading.value = false;
+        // log('${sTypeModel.value.stype!}', name: 'stpe');
       });
       // }
-      // paymentloading.value = false;
+      // paymentLoading.value = false;
     } catch (e, s) {
       log('$e', error: s);
-      miscloading.value = false;
+      miscLoading.value = false;
     }
   }
 
-  Future<void> getPaymentConfirmationResponse(int ctypeId, int stypeId, ) async {
+  Future<void> getPaymentConfirmationResponse(
+    int ctypeId,
+    int stypeId,
+  ) async {
     try {
-
-      miscloading.value = true;
+      miscLoading.value = true;
       paymentConfirmationModel.value.clear();
-      var response = await _paymentDetailRepo
-          .getPaymentConfirmationDetail(ctypeId, stypeId, userInfo.value['userId']);
+      var response = await _paymentDetailRepo.getPaymentConfirmationDetail(
+          ctypeId, stypeId, userInfo.value['userId']);
 
       response.fold((error) {
-        miscloading.value = false;
+        miscLoading.value = false;
       }, (response) {
-        paymentConfirmationModel.value.add( PaymentConfirmModel.fromJson(response));
-        miscloading.value = false;
+        paymentConfirmationModel.value
+            .add(PaymentConfirmModel.fromJson(response));
+        miscLoading.value = false;
         if (paymentConfirmationModel.value[0].miscellaneouspayment != []) {
           pcflag.value = true;
         } else {
           pcflag.value = false;
         }
-        miscloading.value = false;
+        miscLoading.value = false;
       });
 
       // }
-      // paymentloading.value = false;
+      // paymentLoading.value = false;
     } catch (e, s) {
       log('$e', error: s);
-      miscloading.value = false;
+      miscLoading.value = false;
     }
   }
 //
 
   void addsubCopiesamount({int? copy, required String amount}) {
     // if(copy==0){}else{
-    double value = double.tryParse(amount)! +
-        (int.tryParse(miscSubcopies.value.text.toString())! *
-            double.tryParse(paymentConfirmationModel
-                .value[0].miscellaneouspayment![0].dataValue2!)!);
-    miscamount.value = value.toString();
+    miscAmount.value = null;
+try{
+final value=amount.toDoubleEither(() => throw Exception());
+final noOfCopy = miscSubcopies.value.text.toIntEither(() => throw Exception());
+final copyAmount  =paymentConfirmationModel
+                .value[0].miscellaneouspayment![0].dataValue2!.toDoubleEither(() => throw Exception()); 
+
+value.fold((l) => null, (amount) {
+  noOfCopy.fold((l) => throw Exception(), (copy) {
+    copyAmount.fold((l) => throw Exception(), (copyAmount) {
+    miscAmount.value = amount + copy*copyAmount;
+    print(miscAmount);
+
+    });
+  });
+  // miscAmount.value = r
+  // ;
+});
+    // double value = double.tryParse(amount)! +
+    //     (int.tryParse(miscSubcopies.value.text.toString())! *
+    //         double.tryParse(paymentConfirmationModel
+    //             .value[0].miscellaneouspayment![0].dataValue2!)!);
+    // miscAmount.value = value.toString();
     log(value.toString(), error: '', name: "amount");
-    // update();
-    // }
+    update(['addsubCopiesamount']);
+    }catch(e){
+      miscAmount.value = null;
+    }
   }
 
   void updatemiscAmount(String? amout) {
@@ -638,17 +887,14 @@ update();
                 .value[0].miscellaneouspayment?[0].dataValue3 ??
             '';
       }
-      
-      miscamount.value = '';
+
+      miscAmount.value = null;
       if (amout == "null" || amout == null || amout == "0") {
-        miscamount.value = miscdynamicamount.value.text;
-
-// return miscamount.value;
+        miscAmount.value = miscdynamicamount.value.text;
       } else {
-        miscamount.value = '';
+        miscAmount.value = null;
 
-        miscamount.value = amout;
-        // return miscamount.value;
+        miscAmount.value = amout;
       }
     } catch (e) {
       if (kDebugMode) {
@@ -656,70 +902,76 @@ update();
       }
     }
     update([
-      {'id': "292992"}
+      'addsubCopiesamount'
     ]);
-// return miscamount.value;
   }
-
 
 //TODO add locala Storage for terms and conditons
   ///get Terms & conditions api
   ///
   Future<void> getTermsAndConditions() async {
-termsLoading.value='load';
+    termsLoading.value = true;
 // if(rxRequestStatus.value!=RequestStatus.LOADING)    setRxRequestStatus(RequestStatus.LOADING);
-    var localTermsandCond =await getLocaltermsConditions();
+    var localTermsandCond = await getLocaltermsConditions();
     try {
-      var response = await _paymentDetailRepo.getPaymenttandc(userInfo.value['instId']);
+      var response =
+          await _paymentDetailRepo.getPaymenttandc(userInfo.value['instId']);
       response.fold((error) {
         if (kDebugMode) {
           print('error $error');
-          }
-          termsLoading.value='fail';
+        }
+        termsLoading.value = false;
         throw Exception(error);
-
-
       }, (res) {
         saveLocaltermsConditions(res);
-termsandcondition.value=res['termsandcondtions'][0]['description'];
-log(termsandcondition.value.toString());
-termsLoading.value='Success';
+        termsandcondition.value = res['termsandcondtions'][0]['description'];
+        log(termsandcondition.value.toString(), name: 'pppppppp');
+        termsLoading.value = false;
 // setRxRequestStatus(RequestStatus.SUCCESS);
       });
-      
-  }catch(e){
-    termsLoading.value='fail';
-    if(localTermsandCond!=null){
-termsandcondition.value=jsonDecode(localTermsandCond);
+    } catch (e, s) {
+      log(e.toString(), name: 'pppppppp', error: s);
+      if (localTermsandCond != null) {
+        var result = jsonDecode(localTermsandCond);
+        termsandcondition.value =result['termsandcondtions'][0]['description'];
 // setRxRequestStatus(RequestStatus.SUCCESS);
-    }else{
-      // setRxRequestStatus(RequestStatus.ERROR);
-    }
-
-    if(kDebugMode){
-      print('getTermsAndConditions $e');
+        termsLoading.value = false;
+      } else {
+        // setRxRequestStatus(RequestStatus.ERROR);
+        termsLoading.value = false;
       }
+
+      if (kDebugMode) {
+        print('getTermsAndConditions $e');
+      }
+    }
+    update(['terms']);
   }
-  update();
+
+  Future<bool> saveLocaltermsConditions(dynamic value) async {
+    final bool done =
+        await _preferences.setString("terms-cond", jsonEncode(value));
+    return done;
   }
 
+  Future<String?> getLocaltermsConditions() async {
+    final String? data = _preferences.getString("terms-cond");
 
-Future<bool> saveLocaltermsConditions(String value)async{
-
-  final bool done = await  _preferences.setString("terms-cond", jsonEncode(value));
-  return done;
-}
-
-
-Future<String?> getLocaltermsConditions()async{
-  final String? data= _preferences.getString("terms-cond");
-
-  return data;
-}
-
+    return data;
+  }
 }
 
 class HashError implements Exception {
   final String message;
   HashError(this.message);
+}
+
+
+enum PaymentDetailState {
+  descAmtEmpty,
+  amountDesNotEmpty,
+  misSubCopyReq,
+
+  // dataValue1Empty,
+  // validDetails
 }

@@ -1,23 +1,34 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pesu_payu/src/utils/color/colors.dart';
-import 'package:pesu_payu/src/utils/my_text.dart';
 import 'package:pesu_payu/src/utils/styles/my_text_styles.dart';
+import 'my_text.dart';
 
 class MyButton extends StatefulWidget {
   final Widget? name;
   final String? label;
   final Function() onPressed;
   final Color? backgrounColor;
-   final double? height;
-   final double? width;
-   final bool? repeat;
-   final TextStyle? labelstyle;
-  const MyButton({super.key,  this.name,required this.onPressed, this.backgrounColor, this.height, this.width, this.repeat, this.label, this.labelstyle});
+  final double? height;
+  final double? width;
+  final bool? repeat;
+  final bool? isDisabled;
+  final TextStyle? labelstyle;
+  final Widget? secondWidgetInRow;
+  const MyButton(
+      {super.key,
+      this.name,
+      required this.onPressed,
+      this.backgrounColor,
+      this.height,
+      this.width,
+      this.repeat,
+      this.label,
+      this.labelstyle,
+      this.secondWidgetInRow, this.isDisabled});
 
   @override
- State<MyButton> createState() => _AnimatedTapButton1State();
+  State<MyButton> createState() => _AnimatedTapButton1State();
 }
 
 class _AnimatedTapButton1State extends State<MyButton>
@@ -30,24 +41,26 @@ class _AnimatedTapButton1State extends State<MyButton>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration:const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
     );
     _animation = Tween<double>(
-  begin: 1.0,
-  end: 1.1,
-).animate(
-  CurvedAnimation(
-    parent: _animationController,
-    curve: Curves.easeInOut,
-  ),
-);
+      begin: 1.0,
+      end: 1.1,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
     _animationController.addListener(() {
       setState(() {});
     });
     _animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-      widget.repeat??false? _animationController.stop():_animationController.reverse();
-        widget. onPressed();
+        widget.repeat ?? false
+            ? _animationController.stop()
+            : _animationController.reverse();
+        widget.onPressed();
       }
     });
   }
@@ -56,29 +69,38 @@ class _AnimatedTapButton1State extends State<MyButton>
   Widget build(BuildContext context) {
     return SafeArea(
       child: InkWell(
-        onTap: () {
-      
+        onTap:widget.isDisabled??false?(){}: () {
           _animationController.forward();
-      HapticFeedback.selectionClick();
-          // Here you can add any other actions you want to happen when the button is tapped
+          HapticFeedback.selectionClick();
         },
         child: Transform.scale(
           scale: _animation.value,
-          child: Container(
-            height:widget.height,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            height: widget.height ?? 40.0,
             width: widget.width,
             decoration: BoxDecoration(
-              color:widget.backgrounColor?? MyColors.darkBlue1,
-              borderRadius: BorderRadius.circular(1.0),
-              boxShadow: const [BoxShadow(color: Colors.white)]
-            ),
-            padding:const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+                color: widget.backgrounColor ?? MyColors.darkBlue1,
+                borderRadius: BorderRadius.circular(1.0),
+                boxShadow: const [BoxShadow(color: Colors.white)]),
+            // padding:const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-               widget.name??MyText(widget.label??'Retry', style:widget.labelstyle?? MyTextStyle.text16_700.copyWith(color: Colors.white))
-      
-                  // ,
+                widget.name ??
+                    MyText(widget.label ?? 'Retry',
+                        style: widget.labelstyle ??
+                            MyTextStyle.text16_700
+                                .copyWith(color: Colors.white)),
+                widget.secondWidgetInRow == null
+                    ? const SizedBox()
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          child: widget.secondWidgetInRow,
+                        ),
+                      )
+                // ,
               ],
             ),
           ),
