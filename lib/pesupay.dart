@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:pesu_payu/config.dart';
 
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/annualFees.dart';
@@ -25,7 +26,8 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
     final Dio dio;
     final SharedPreferences _preferences;
     final CancelToken _cancelToken;
-  const OnlinePaymentView(this.dio, this.instId, this._preferences, this._cancelToken, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
+    final PaymentConfig config;
+  const OnlinePaymentView(this.dio, this.instId, this._preferences, this._cancelToken, this.config, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
   @override
   Widget build(BuildContext context) {
 
