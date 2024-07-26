@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-// import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
-// import 'package:pesu_payu/src/utils/my_button.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/src/presentation/controller/payment_controller.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/src/utils/my_button.dart';
+import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
+import 'package:pesu_payu/src/utils/my_button.dart';
+
 
 
 

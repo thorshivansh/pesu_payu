@@ -8,10 +8,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/config.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/src/utils/my_button.dart';
-import 'package:pesua/app/modules/student_modules/online_payment/src/widget/appbar.dart';
-import 'package:pesua/utils/widgets/buttons/animated_button.dart';
+import 'package:pesu_payu/config.dart';
+import 'package:pesu_payu/src/utils/my_button.dart';
+
 
 import '../controller/payment_controller.dart';
 import '../../utils/color/colors.dart';
