@@ -288,80 +288,84 @@ class OnlinePaymentController extends GetxController {
   /// this function just another function to check and confirm payments amount and all fields 
   /// Whether amount is empty or less tha 1 and update values accordingly
   /// 
-  Future<bool> checkandConfirmAnnualAmount(
-      STUDENTPAYMENTDETAILS studentDetails) async {
-    amountVerifying.value = true;
-    confirmAmountToPay = '';
-    try {
-      if (otherAmountflag.value) {
-        if (isotherAmountNotAvailable.value) {
-          if (partialAmountController.value.text.isEmpty) {
-            // else if (_.partialAmountController.text.isEmpty) {
+  
+ Future<dynamic> checkAndConfirmAnnualAmount(STUDENTPAYMENTDETAILS studentDetails) async {
+  amountVerifying.value = true;
+  confirmAmountToPay = '';
+
+  try {
+    if (otherAmountflag.value) {
+      if (isotherAmountNotAvailable.value) {
+        if (partialAmountController.value.text.isEmpty) {
+          amountVerifying.value = false;
+          showToast('amount is empty');
+          return false;
+        } else {
+          var number = partialAmountController.value.text.toIntEither(() => false);
+          return number.fold((l) {
             amountVerifying.value = false;
-            showToast('amount is empty');
-            // }
             return false;
-          } else if (partialAmountController.text.isNotEmpty) {
-            var number =
-                partialAmountController.value.text.toIntEither(() => false);
+          }, (amount) {
+            StudentPaymentState state;
+            if (amount > studentDetails.dueAmount!) {
+              state = StudentPaymentState.amountMoreThanDue;
+            } else if (amount < 5000) {
+              state = StudentPaymentState.amountLessThanMinimum;
+            } else {
+              state = StudentPaymentState.confirmAmount;
+            }
 
-            number.fold((l) {
-              amountVerifying.value = false;
-              return false;
-            }, (amount) {
-              // if (amount < 1) return false;
-              // if(amount<)
-
-              if (amount > studentDetails.dueAmount!) {
+            switch (state) {
+              case StudentPaymentState.amountMoreThanDue:
                 showToast('Amount is more than your total due amount');
                 amountVerifying.value = false;
                 return false;
-              } else if (amount < 5000) {
+
+              case StudentPaymentState.amountLessThanMinimum:
                 showToast('Minimum amount should be Rs. 5000');
                 amountVerifying.value = false;
                 return false;
-              }else{
-              confirmAmountToPay = amount.toString();
-              amountVerifying.value = false;
-              return true;
-            }  });
-          }
-        } else if (isotherAmountNotAvailable.value == false) {
-          final amount = studentDetails.minAmount ?? 0.0;
-          if (amount < 1) {
-            showToast("amount can't be zero");
-            amountVerifying.value = false;
-            return false;
-          }
-          confirmAmountToPay = amount.toString();
-          amountVerifying.value = false;
-          return true;
+
+              case StudentPaymentState.confirmAmount:
+                confirmAmountToPay = amount.toString();
+                amountVerifying.value = false;
+                return true;
+            }
+          });
         }
       } else {
-        double? amount = studentDetails.totalDue ?? 0.0;
-
+        final amount = studentDetails.minAmount ?? 0.0;
         if (amount < 1) {
-          amountVerifying.value = false;
           showToast("amount can't be zero");
+          amountVerifying.value = false;
           return false;
         } else {
           confirmAmountToPay = amount.toString();
           amountVerifying.value = false;
           return true;
         }
-        // confirmAmountToPay = studentDetails.dueAmount.toString();
-        // amountVerifying.value=false;
-        // return true;
       }
-    } catch (e) {
-      amountVerifying.value = false;
-      print(e);
-      return false;
+    } else {
+      double? amount = studentDetails.totalDue ?? 0.0;
+      if (amount < 1) {
+        amountVerifying.value = false;
+        showToast("amount can't be zero");
+        return false;
+      } else {
+        confirmAmountToPay = amount.toString();
+        amountVerifying.value = false;
+        return true;
+      }
     }
+  } catch (e) {
     amountVerifying.value = false;
-    update();
+    print(e);
     return false;
   }
+  amountVerifying.value = false;
+  update();
+}
+
 
 
 
@@ -616,7 +620,7 @@ class OnlinePaymentController extends GetxController {
     }
   }
 
-  void setisotherAmountAvailable(int annualfeeIndex) {
+  void setisotherAmountAvailableorNot(int annualfeeIndex) {
     isotherAmountNotAvailable.value = paymentDetailModel
                 .value.sTUDENTPAYMENTDETAILS![annualfeeIndex].minAmount ==
             null ||
@@ -1025,4 +1029,15 @@ class OnlinePaymentController extends GetxController {
     await Future<void>.delayed(const Duration(seconds: 30));
     await listener.cancel();
   }
+}
+
+
+enum StudentPaymentState {
+  // otherAmountNotAvailable,
+  // partialAmountNotEmpty,
+  amountMoreThanDue,
+  amountLessThanMinimum,
+  confirmAmount,
+  // totalDue,
+  // amountZero
 }

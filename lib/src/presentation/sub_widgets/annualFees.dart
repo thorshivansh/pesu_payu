@@ -93,7 +93,7 @@ controller.getCTypeListResponse();
                     .finDemandFeeTypeId
                     .toString() ??
                 0);
-controller. setisotherAmountAvailable(i);
+controller. setisotherAmountAvailableorNot(i);
         Get.to(() => TransactionDetailView(
               annualfeeIndex: i,
               
