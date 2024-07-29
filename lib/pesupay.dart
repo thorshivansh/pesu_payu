@@ -1,7 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,67 +12,72 @@ import 'package:pesu_payu/src/presentation/sub_widgets/disclaimer.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/miscellaneous.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/paymentHistoryView.dart';
 import 'package:pesu_payu/src/utils/enums/rxtstatus.dart';
+import 'package:pesu_payu/src/widget/appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class OnlinePaymentView extends GetView<OnlinePaymentController> {
-    final String name;
-    final String email;
-    final String mobileNumber;
-    final String userId;
-    final String loginId;
-    final int instId;
-    final Dio dio;
-    final SharedPreferences _preferences;
-    final CancelToken _cancelToken;
-    final PaymentConfig config;
-  const OnlinePaymentView(this.dio, this.instId, this._preferences, this._cancelToken, this.config, {required this.name,required this.email,required this.mobileNumber,required this.userId,required this.loginId, super.key});
+class OnlinePaymentView extends StatefulWidget {
+  final String name;
+  final String email;
+  final String mobileNumber;
+  final String userId;
+  final String loginId;
+  final int instId;
+  final Dio dio;
+  final SharedPreferences preferences;
+  final CancelToken cancelToken;
+  final PaymentConfig config;
+  const OnlinePaymentView(
+      {required this.dio,
+      required this.instId,
+      required this.preferences,
+      required this.cancelToken,
+      required this.config,
+      required this.name,
+      required this.email,
+      required this.mobileNumber,
+      required this.userId,
+      required this.loginId,
+      super.key});
+
+  @override
+  State<OnlinePaymentView> createState() => _OnlinePaymentViewState();
+}
+
+
+class _OnlinePaymentViewState extends State<OnlinePaymentView> {
+  late final OnlinePaymentController controller ;
+@override
+void initState() {
+controller= Get.put<OnlinePaymentController>(
+    OnlinePaymentController(widget.dio, widget.preferences, widget.cancelToken),
+  );
+  // Get.put();
+  controller.userInfo = ValueNotifier({
+    'name': widget.name,
+    'email': widget.email,
+    'mobileNumber': widget.mobileNumber,
+    'loginId': widget.loginId,
+    'userId': widget.userId,
+    'instId': widget.instId,
+  });
+  super.initState();
+}
+
+final config = Get.find<PaymentConfig>();
   @override
   Widget build(BuildContext context) {
-
-     Get.put<OnlinePaymentController>(OnlinePaymentController(dio, _preferences, _cancelToken),);
-     controller.userInfo=ValueNotifier({ 'name': name,
-    'email': email,
-    'mobileNumber': mobileNumber,
-    'loginId': loginId,
-    'userId': userId,
-    'instId': instId,});
-// controller.getUserInfo(email: email, name: name,mobileNumber: mobileNumber,userId: userId,loginId: loginId, instId:instId);
-
-    
-    // Get.put<OnlinePaymentController>(OnlinePaymentController());
     TabBar tabBar = TabBar(
-     
-      tabAlignment: TabAlignment.start,
+        tabAlignment: TabAlignment.start,
         onTap: (index) {
-          // if(index==0||index==2){
-          // controller.stypeModel.value.stype!.clear();
-          // }
-          //   controller.ctcCategory.value=controller
-          //       .placementRegisteredTopicwise.value.cTCWISE![0].cTCS1ID.toString();
-          // }else if(index==1){
-          //   controller.ctcCategory.value=controller
-          //       .placementRegisteredTopicwise.value.cTCWISE![0].cTCS2ID.toString();
-          // }else if(index == 2){
-          //   controller.ctcCategory.value=controller
-          //       .placementRegisteredTopicwise.value.cTCWISE![0].cTCS3ID.toString();
-          // }else if(index == 3){
-          //   controller.ctcCategory.value=controller
-          //       .placementRegisteredTopicwise.value.cTCWISE![0].cTCS4ID.toString();
-          // }else if(index == 4){
-          //   controller.ctcCategory.value=controller
-          //       .placementRegisteredTopicwise.value.cTCWISE![0].cTCS5ID.toString();
-          // }else if(index == 5){
-          //   controller.ctcCategory.value=controller
-          //       .placementRegisteredTopicwise.value.cTCWISE![0].cTCS6ID.toString();
-          // }
+
         },
         enableFeedback: true,
-        // indicatorColor: Properties.themeColor.appVersion,
+        // indicatorColor: config.appVersion,
         indicatorWeight: 4,
         indicatorSize: TabBarIndicatorSize.label,
         isScrollable: true,
-        // labelColor: Properties.themeColor.darkBlue1,
-        // unselectedLabelColor: Properties.themeColor.darkBlue1,
+        labelColor: config.primaryColor,
+        unselectedLabelColor: config.primaryColor,
         tabs: const [
           Tab(
             text: "Annual Fees",
@@ -86,9 +89,9 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Online Payments"),
-          actions: [
+        appBar: paymentAppBar(
+          appBarTitle: "Online Payments",
+          appBarAction: [
             Padding(
               padding: const EdgeInsets.only(right: 14),
               child: GestureDetector(
@@ -124,7 +127,7 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
             preferredSize: tabBar.preferredSize,
             child: Material(
               // color: Properties.themeColor.darkBlue3,
-              //<-- SEE HERE
+            
               child: SizedBox(
                   width: MediaQuery.of(context).size.width, child: tabBar),
             ),
@@ -136,57 +139,26 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
           // backgroundColor: Properties.themeColor.secondaryColor,
         ),
         body: Obx(
-          () => controller.rxRequestStatus.value==RequestStatus.LOADING
+          () => controller.rxRequestStatus.value == RequestStatus.LOADING
               ? const Center(child: CircularProgressIndicator.adaptive())
-              : controller.rxRequestStatus.value==RequestStatus.ERROR ?
-            GestureDetector(onTap: (){
-              // controller.getPaymentDetail();
-              // controller.getCTypeListResponse();
-            })
-              
-              // const Center(child: Text("No Data Available"),)
-              : const TabBarView(
-                 physics:  NeverScrollableScrollPhysics(),
-                    children: [
-                      AnnualFee(),
-                      Miscellaneous(),
-                      PaymentHistoryView(),
-                    ],
-                  ),
-              ),
-        
+              : controller.rxRequestStatus.value == RequestStatus.ERROR
+                  ? GestureDetector(onTap: () {
+                      controller.getPaymentDetail();
+                      controller.getCTypeListResponse();
+                      controller.getTermsAndConditions();
+                    })
+
+                  // const Center(child: Text("No Data Available"),)
+                  : const TabBarView(
+                      physics: NeverScrollableScrollPhysics(),
+                      children: [
+                        AnnualFee(),
+                        Miscellaneous(),
+                        PaymentHistoryView(),
+                      ],
+                    ),
+        ),
       ),
     );
   }
 }
-class UserInfo {
-  final String name;
-  final String email;
-  final String mobile;
-  final String instId;
-  final String userId;
-  final String loginId;
-  UserInfo({
-    required this.name,
-    required this.email,
-    required this.mobile,
-    required this.instId,
-    required this.userId,
-    required this.loginId,
-  });
-  
-
-  void updatinfo(){
-
-  
-  ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({
- 'name': name,
-    'email': email,
-    'mobileNumber': mobile,
-    'loginId': loginId,
-    'userId': userId,
-    'instId': instId,
-
-  });
-  }
-  }

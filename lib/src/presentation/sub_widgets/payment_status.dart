@@ -1,22 +1,17 @@
 import 'dart:developer';
-import 'dart:math' hide log;
 
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:pesu_payu/config.dart';
+import 'package:pesu_payu/src/core/routes.dart';
 import 'package:pesu_payu/src/utils/my_button.dart';
 
 
 import '../controller/payment_controller.dart';
-import '../../utils/color/colors.dart';
 import '../../widget/alignrow_widget.dart';
 import '../../widget/autosize_text.dart';
-import '../../widget/common_button.dart';
 import 'package:screenshot/screenshot.dart';
 
 class PaymentStatus extends StatefulWidget {
@@ -79,16 +74,16 @@ class _PaymentStatusState extends State<PaymentStatus>
     ));
   }
 
+    final config = Get.find<PaymentConfig>();
   @override
   Widget build(BuildContext context) {
-    final config = Get.find<PaymentConfig>();
     log(_paymentController.payuresponse.value.toString(), name: 'payu');
 
     return PopScope(
       onPopInvoked: (_) async {
         // Get.back();
-        // _paymentController.getPaymentDetail();
-        // Get.find<DashBoardController>().offAllPreventDuplicate1(Paths.ONLINE_PAYMENT, context);
+  _paymentController.getPaymentDetail();
+                                          PaymentRoutes.preventDuplicate('/OnlinePaymentView', context);
         // Get.off(OnlinePaymentView());
 
         // return false;
@@ -134,8 +129,8 @@ class _PaymentStatusState extends State<PaymentStatus>
                                             color: Colors.white),
                                         onPressed: () {
                                           // Get.back();
-                                          // _paymentController.getPaymentDetail();
-                                          //  Get.find<DashBoardController>().offAllPreventDuplicate1(Paths.ONLINE_PAYMENT, context);
+                                          _paymentController.getPaymentDetail();
+                                          PaymentRoutes.preventDuplicate('/OnlinePaymentView', context);
                                         },
                                       ),
                                     ),
