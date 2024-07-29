@@ -320,11 +320,11 @@ class OnlinePaymentController extends GetxController {
                 showToast('Minimum amount should be Rs. 5000');
                 amountVerifying.value = false;
                 return false;
-              }
+              }else{
               confirmAmountToPay = amount.toString();
               amountVerifying.value = false;
               return true;
-            });
+            }  });
           }
         } else if (isotherAmountNotAvailable.value == false) {
           final amount = studentDetails.minAmount ?? 0.0;
