@@ -126,7 +126,7 @@ class _PaymentStatusState extends State<PaymentStatus>
                                       // Get.back();
                                       _paymentController.getPaymentDetail();
                                       PaymentRoutes.preventDuplicate(
-                                          '/OnlinePaymentView', context);
+                                          '/online-payment', context);
                                     },
                                   ),
                                 ),

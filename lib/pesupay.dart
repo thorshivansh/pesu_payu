@@ -15,7 +15,7 @@ import 'package:pesu_payu/src/utils/enums/rxtstatus.dart';
 import 'package:pesu_payu/src/widget/appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class OnlinePaymentView extends StatefulWidget {
+class OnlinePaymentView extends StatelessWidget {
   final String name;
   final String email;
   final String mobileNumber;
@@ -39,33 +39,25 @@ class OnlinePaymentView extends StatefulWidget {
       required this.loginId,
       super.key});
 
+
+
+
   @override
-  State<OnlinePaymentView> createState() => _OnlinePaymentViewState();
-}
-
-
-class _OnlinePaymentViewState extends State<OnlinePaymentView> {
-  late final OnlinePaymentController controller ;
-@override
-void initState() {
-controller= Get.put<OnlinePaymentController>(
-    OnlinePaymentController(widget.dio, widget.preferences, widget.cancelToken),
+  Widget build(BuildContext context) {
+final config = Get.find<PaymentConfig>();
+   final OnlinePaymentController controller 
+= Get.put<OnlinePaymentController>(
+    OnlinePaymentController(dio, preferences, cancelToken),
   );
   // Get.put();
   controller.userInfo = ValueNotifier({
-    'name': widget.name,
-    'email': widget.email,
-    'mobileNumber': widget.mobileNumber,
-    'loginId': widget.loginId,
-    'userId': widget.userId,
-    'instId': widget.instId,
+    'name':  name,
+    'email':  email,
+    'mobileNumber':  mobileNumber,
+    'loginId':  loginId,
+    'userId':  userId,
+    'instId':  instId,
   });
-  super.initState();
-}
-
-final config = Get.find<PaymentConfig>();
-  @override
-  Widget build(BuildContext context) {
     TabBar tabBar = TabBar(
         tabAlignment: TabAlignment.start,
         onTap: (index) {
