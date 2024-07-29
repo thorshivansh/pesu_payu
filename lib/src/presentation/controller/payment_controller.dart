@@ -1,5 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -10,11 +11,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:get/get.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:number_to_text_converter/number_to_text_converter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
 import 'package:pesu_payu/src/presentation/views/online_payment_view.dart';
+import 'package:pesu_payu/src/utils/enums/misc_enums.dart';
 import 'package:pesu_payu/src/utils/page_route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -116,23 +119,176 @@ class OnlinePaymentController extends GetxController {
 
   @override
   void onInit() async {
+    // Check internet connection with singleton (no custom values allowed)
+    await execute(InternetConnectionChecker());
+
+    // Create customized instance which can be registered via dependency injection
+    final InternetConnectionChecker customInstance =
+        InternetConnectionChecker.createInstance(
+      checkTimeout: const Duration(seconds: 1),
+      checkInterval: const Duration(seconds: 1),
+    );
+
+    // Check internet connection with created instance
+    await execute(customInstance);
     _paymentDetailRepo = PaymentDetailRepo(_dio, _cancelToken);
 
     super.onInit();
   }
 
   @override
-  void onReady() {
-    getPaymentDetail();
+  void onReady()async {
+   await getPaymentDetail();
     getCTypeListResponse();
     super.onReady();
     getTermsAndConditions();
   }
 
+
+/// This [userInfo] saves all user info of Usder passed from app 
+  ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
+// Future<ValueNotifier<Map<String, dynamic>> > getUserInfo({required String name,required int instId, required String email,required String mobileNumber, required String userId, required String loginId}) async {
+
+//   return userInfo=ValueNotifier({
+//     'name': name,
+//     'email': email,
+//     'mobileNumber': mobileNumber,
+//     'loginId': loginId,
+//     'userId': userId,
+//     'instId': instId,
+//   });
+// }
+
+  @override
+  void onClose() {
+  userInfo.dispose();
+  payuresponse.dispose();
+    miscSubcopies.dispose();
+    miscdescController.dispose();
+    miscdynamicamount.dispose();
+    payuresponse.dispose();
+    super.onClose();
+  }
+
+
+//TODO Just COnfirm whether all Values are clearing or not 
+/// This Function clear miscellaneouns fee payments  Values and refresh to ber used again
+  void clean() {
+     trxnTime.value=null;
+    pesuTxnId.value=null;
+    misctcflag.value = false;
+    miscSubcopies.clear();
+    miscdescController.clear();
+    miscdynamicamount.clear();
+    miscAmount.value = null;
+    // sTypeModel.value.clear();
+    update(['counterId']);
+  }
+
+
+
+//TODO Just COnfirm whether all Values are clearing or not 
+/// This Function clear annual fee payments  Values and refresh to ber used again
+  void annualFeeClean() {
+    trxnTime.value=null;
+    pesuTxnId.value=null;
+    confirmAmountToPay = '';
+    otherAmountflag.value = false;
+    // isotherAmountNotAvailable.value = false;
+    annulatcflag.value = false;
+    amountInWords.value = null;
+    partialAmountController.clear();
+  }
+
+
+
+  /// This Functions retuns payu configs
+  ///
+  /// if any modification nedd to do in payu checkout page
+  Map createPayUConfigParams() {
+    try {
+      // var paymentModesOrder = [
+      //   {"UPI": "Google Pay"},
+      //   {"UPI": "PHONEPE"},
+      //   {"UPI": "PAYTM"},
+      //   {"CARD": ""},
+      //   {"UPI_INTENT": ""},
+      //   {"NB": ""},
+      // ];
+
+      // var cartDetails = [
+      //   {"Fee": "5%"},
+      //   {"Delivery Date": "25 Dec"},
+      //   {"Status": "In Progress"}
+      // ];
+      // var enforcePaymentList = [
+      //   {"payment_type": "CARD"},
+      //   {"payment_type": "L1_OPTION"},
+      //   {"payment_type": "NB"},
+      //   {"payment_type": "UPI"},
+      //   {"payment_type": "UPI_INTENT"},
+      //   {"payment_type": "NEFTRTGS",},
+      // ];
+
+
+///Custom Notes is just Caution message for users while they are doing Transaction
+      var customNotes = [
+        {
+          "custom_note":
+              "Please Don't click back Button while Transaction is processing",
+          "custom_note_category": [
+            PayUPaymentTypeKeys.upi,
+            PayUPaymentTypeKeys.card,
+            PayUPaymentTypeKeys.nb,
+          ]
+        },
+        {
+          "custom_note":
+              "Please Don't close the app while Transaction is processing",
+          "custom_note_category": [
+            PayUPaymentTypeKeys.upiIntent,
+            PayUPaymentTypeKeys.upi
+          ]
+        }
+      ];
+
+
+/// Here We are passing config values to payu as required by Payu
+      var payUCheckoutProConfig = {
+        PayUCheckoutProConfigKeys.primaryColor: "#4994EC",
+        PayUCheckoutProConfigKeys.secondaryColor: "#FFFFFF",
+        PayUCheckoutProConfigKeys.merchantName: "PES University",
+        PayUCheckoutProConfigKeys.merchantLogo: "@drawable/peslogo",
+        PayUCheckoutProConfigKeys.showExitConfirmationOnCheckoutScreen: true,
+        PayUCheckoutProConfigKeys.showExitConfirmationOnPaymentScreen: true,
+        // PayUCheckoutProConfigKeys.cartDetails: cartDetails,
+
+        // PayUCheckoutProConfigKeys.paymentModesOrder: paymentModesOrder,
+        PayUCheckoutProConfigKeys.merchantResponseTimeout: 50000,
+        PayUCheckoutProConfigKeys.customNotes: customNotes,
+        PayUCheckoutProConfigKeys.autoSelectOtp: true,
+        // PayUCheckoutProConfigKeys.enforcePaymentList: enforcePaymentList,
+        PayUCheckoutProConfigKeys.waitingTime: 50000,
+        PayUCheckoutProConfigKeys.autoApprove: true,
+        PayUCheckoutProConfigKeys.merchantSMSPermission: true,
+        PayUCheckoutProConfigKeys.showCbToolbar: true,
+      };
+      return payUCheckoutProConfig;
+    } catch (e, s) {
+      log(e.toString(), error: s, name: 'name');
+      throw Exception();
+    }
+  }
+
+
+
   ///
 //
   final RxBool amountVerifying = RxBool(false);
-  /// verify final amount 
+//TODO Please verify once more for  more accurate data parsing 
+  /// this function just another function to check and confirm payments amount and all fields 
+  /// Whether amount is empty or less tha 1 and update values accordingly
+  /// 
   Future<bool> checkandConfirmAnnualAmount(
       STUDENTPAYMENTDETAILS studentDetails) async {
     amountVerifying.value = true;
@@ -208,216 +364,98 @@ class OnlinePaymentController extends GetxController {
     return false;
   }
 
-  ValueNotifier<Map<String, dynamic>> userInfo = ValueNotifier({});
-// Future<ValueNotifier<Map<String, dynamic>> > getUserInfo({required String name,required int instId, required String email,required String mobileNumber, required String userId, required String loginId}) async {
 
-//   return userInfo=ValueNotifier({
-//     'name': name,
-//     'email': email,
-//     'mobileNumber': mobileNumber,
-//     'loginId': loginId,
-//     'userId': userId,
-//     'instId': instId,
-//   });
-// }
 
-  @override
-  void onClose() {
-    // amountformKey.currentState:?.dispose();
-    miscSubcopies.dispose();
-    miscdescController.dispose();
-    miscdynamicamount.dispose();
-    payuresponse.dispose();
-    super.onClose();
-  }
 
-  void clean() {
-    misctcflag.value = false;
-    miscSubcopies.clear();
-    miscdescController.clear();
-    miscdynamicamount.clear();
-    miscAmount.value = null;
-    // sTypeModel.value.clear();
-    update(['counterId']);
-  }
 
-  void annualFeeClean() {
-    confirmAmountToPay = '';
-    otherAmountflag.value = false;
-    // isotherAmountNotAvailable.value = false;
-    annulatcflag.value = false;
-    amountInWords.value = null;
-    partialAmountController.clear();
-  }
 
-  final testmerchantKey = "3TnMpV";
-  //  "Kc9iwJ"; // Add you Merchant Key
-  final livemerchantKey = "OZBkWu"; // Add you Merchant Key
+//TODO Please verify once more for  more accurate data parsing 
+  final RxBool checkAndConfirmMiscAmountloading = RxBool(false);
+  /// this function just another function to check and confirm payments amount and all fields 
+  /// Whether amount is empty or less tha 1 and update values accordingly
+  /// 
+  Future<bool> checkAndConfirmMiscAmount(
+      Miscellaneouspayment paymentDetails) async {
+    miscConfirmAmountToPay = '';
+    // const bool value = false;
 
-  ///payu configs
-  ///
-  /// for modification in payu checkout page
-  Map createPayUConfigParams() {
+    checkAndConfirmMiscAmountloading.value = true;
     try {
-      // var paymentModesOrder = [
-      //   {"UPI": "Google Pay"},
-      //   {"UPI": "PHONEPE"},
-      //   {"UPI": "PAYTM"},
-      //   {"CARD": ""},
-      //   {"UPI_INTENT": ""},
-      //   {"NB": ""},
-      // ];
+      final bool isDescEmpty = paymentDetails.paymentDesc == '' ||
+          paymentDetails.paymentDesc == null;
+      final bool isAmountEmpty = paymentDetails.amount == '' ||
+          paymentDetails.amount == null ||
+          paymentDetails.amount == '0';
+      final bool isLabelEmpty = paymentDetails.label == null ||
+          paymentDetails.label == 'NA' ||
+          paymentDetails.label == '';
+      final bool isDataValue1Empty = paymentDetails.dataValue1 == 'NA' ||
+          paymentDetails.dataValue1 == null ||
+          paymentDetails.dataValue1 == '';
 
-      // var cartDetails = [
-      //   {"Fee": "5%"},
-      //   {"Delivery Date": "25 Dec"},
-      //   {"Status": "In Progress"}
-      // ];
-      // var enforcePaymentList = [
-      //   {"payment_type": "CARD"},
-      //   {"payment_type": "L1_OPTION"},
-      //   {"payment_type": "NB"},
-      //   {"payment_type": "UPI"},
-      //   {"payment_type": "UPI_INTENT"},
-      //   {"payment_type": "NEFTRTGS",},
-      // ];
-
-      var customNotes = [
-        {
-          "custom_note":
-              "Please Don't click back Button while Transaction is processing",
-          "custom_note_category": [
-            PayUPaymentTypeKeys.upi,
-            PayUPaymentTypeKeys.card,
-            PayUPaymentTypeKeys.nb,
-          ]
-        },
-        {
-          "custom_note":
-              "Please Don't close the app while Transaction is processing",
-          "custom_note_category": [
-            PayUPaymentTypeKeys.upiIntent,
-            PayUPaymentTypeKeys.upi
-          ]
+      late PaymentDetailState state;
+      if (isDescEmpty &&
+          isAmountEmpty &&
+          amountformKey.currentState != null &&
+          discformKey.currentState != null &&
+          miscSubcopyformKey.currentState == null) {
+        state = PaymentDetailState.descAmtEmpty;
+      } else if (!isAmountEmpty && !isDescEmpty) {
+        if (isLabelEmpty && isDataValue1Empty) {
+          state = PaymentDetailState.amountDesNotEmpty;
+        } else if (!isLabelEmpty && !isDataValue1Empty) {
+          state = PaymentDetailState.misSubCopyReq;
         }
-      ];
-
-      var payUCheckoutProConfig = {
-        PayUCheckoutProConfigKeys.primaryColor: "#4994EC",
-        PayUCheckoutProConfigKeys.secondaryColor: "#FFFFFF",
-        PayUCheckoutProConfigKeys.merchantName: "PES University",
-        PayUCheckoutProConfigKeys.merchantLogo: "@drawable/peslogo",
-        PayUCheckoutProConfigKeys.showExitConfirmationOnCheckoutScreen: true,
-        PayUCheckoutProConfigKeys.showExitConfirmationOnPaymentScreen: true,
-        // PayUCheckoutProConfigKeys.cartDetails: cartDetails,
-
-        // PayUCheckoutProConfigKeys.paymentModesOrder: paymentModesOrder,
-        PayUCheckoutProConfigKeys.merchantResponseTimeout: 50000,
-        PayUCheckoutProConfigKeys.customNotes: customNotes,
-        PayUCheckoutProConfigKeys.autoSelectOtp: true,
-        // PayUCheckoutProConfigKeys.enforcePaymentList: enforcePaymentList,
-        PayUCheckoutProConfigKeys.waitingTime: 50000,
-        PayUCheckoutProConfigKeys.autoApprove: true,
-        PayUCheckoutProConfigKeys.merchantSMSPermission: true,
-        PayUCheckoutProConfigKeys.showCbToolbar: true,
-      };
-      return payUCheckoutProConfig;
-    } catch (e, s) {
-      log(e.toString(), error: s, name: 'name');
-      throw Exception();
-    }
-  }
-
-
-void sum(String value){
-  switch (value) {
-  case 'value1':
-    // Code to execute when variableName matches value1
-    
-    break;
-  case 'value2':
-    // Code to execute when variableName matches value2
-    break;
-  // Add more cases as needed
-  default:
-    // Code to execute if variableName doesn't match any of the cases
-    break;
-   }
-}
-
-
-final RxBool checkAndConfirmMiscAmountloading = RxBool(false);
-Future<bool> checkAndConfirmMiscAmount(Miscellaneouspayment paymentDetails) async {
-  miscConfirmAmountToPay = '';
-  // const bool value = false;
-
-checkAndConfirmMiscAmountloading.value=true;
-  try {
-    final bool isDescEmpty = paymentDetails.paymentDesc == '' || paymentDetails.paymentDesc == null;
-    final bool isAmountEmpty = paymentDetails.amount == '' || paymentDetails.amount == null || paymentDetails.amount == '0';
-    final bool isLabelEmpty = paymentDetails.label == null || paymentDetails.label == 'NA' || paymentDetails.label == '';
-    final bool isDataValue1Empty = paymentDetails.dataValue1 == 'NA' || paymentDetails.dataValue1 == null || paymentDetails.dataValue1 == '';
-
-  late  PaymentDetailState state;
-    if (isDescEmpty && isAmountEmpty && amountformKey.currentState != null && discformKey.currentState != null && miscSubcopyformKey.currentState == null) {
-      state = PaymentDetailState.descAmtEmpty;
-    } else if (!isAmountEmpty && !isDescEmpty) {
-      if (isLabelEmpty && isDataValue1Empty) {
-        state = PaymentDetailState.amountDesNotEmpty;
-      } else if (!isLabelEmpty && !isDataValue1Empty) {
-        state = PaymentDetailState.misSubCopyReq;
       }
-   
+
+      switch (state) {
+        case PaymentDetailState.descAmtEmpty:
+          final amount = miscdynamicamount.value.text.toIntEither(() => false);
+          return amount.fold((l) => false, (total) {
+            if (total < 1) return false;
+            miscConfirmAmountToPay = total.toString();
+
+            checkAndConfirmMiscAmountloading.value = false;
+            update(['checkAndConfirmMiscAmountloading']);
+            return true;
+          });
+
+        case PaymentDetailState.amountDesNotEmpty:
+          final apiAmount = miscAmount.toString().toIntEither(() => false);
+          return apiAmount.fold((l) => false, (r) {
+            if (r < 1) return false;
+            miscConfirmAmountToPay = r.toString();
+            update(['addsubCopiesamount']);
+            checkAndConfirmMiscAmountloading.value = false;
+            update(['checkAndConfirmMiscAmountloading']);
+            return true;
+          });
+
+        case PaymentDetailState.misSubCopyReq:
+          final totalAmount =
+              miscAmount.value.toString().toDoubleEither(() => false);
+          return totalAmount.fold((l) {
+            print('6666 $l');
+            return false;
+          }, (rupees) {
+            print(rupees);
+            if (rupees < 1) return false;
+
+            miscConfirmAmountToPay = rupees.toString();
+            checkAndConfirmMiscAmountloading.value = false;
+            update(['checkAndConfirmMiscAmountloading']);
+            return true;
+          });
+      }
+    } catch (e) {
+      log(e.toString(), error: e, name: 'name');
+      checkAndConfirmMiscAmountloading.value = false;
+      update(['checkAndConfirmMiscAmountloading']);
+      return false;
     }
 
-    switch (state) {
-      case PaymentDetailState.descAmtEmpty:
-        final amount = miscdynamicamount.value.text.toIntEither(() => false);
-        return amount.fold((l) => false, (total) {
-          if (total < 1) return false;
-          miscConfirmAmountToPay = total.toString();
-
-checkAndConfirmMiscAmountloading.value=false;
-update(['checkAndConfirmMiscAmountloading']);
-          return true;
-        });
-
-      case PaymentDetailState.amountDesNotEmpty:
-        final apiAmount = miscAmount.toString().toIntEither(() => false);
-        return apiAmount.fold((l) => false, (r) {
-          if (r < 1) return false;
-          miscConfirmAmountToPay = r.toString();
-          update(['addsubCopiesamount']);
-          checkAndConfirmMiscAmountloading.value=false;
-          update(['checkAndConfirmMiscAmountloading']);
-          return true;
-        });
-
-      case PaymentDetailState.misSubCopyReq:
-        final totalAmount = miscAmount.value.toString().toDoubleEither(() => false);
-        return totalAmount.fold((l) {
-          print('6666 $l');
-          return false;
-        }, (rupees) {
-          print(rupees);
-          if (rupees < 1) return false;
-          
-          miscConfirmAmountToPay = rupees.toString();
-          checkAndConfirmMiscAmountloading.value=false;
-          update(['checkAndConfirmMiscAmountloading']);
-          return true;
-        });
-     
-    }
-  } catch (e) {
-    log(e.toString(), error: e, name: 'name');
-    checkAndConfirmMiscAmountloading.value=false;
-    update(['checkAndConfirmMiscAmountloading']);
-    return false;
+    // return false;
   }
-
-  // return false;
-}
 
   // Future<bool> checkandConfirmMiscAmount(
   //     Miscellaneouspayment paymentDetails) async {
@@ -440,9 +478,7 @@ update(['checkAndConfirmMiscAmountloading']);
   //         miscConfirmAmountToPay = total.toString();
   //         return true;
   //       });
-       
-        
-       
+
   //     }else if(!isamountEmpty&&!isdescEmpty){
 
   //       if(isLabelEmpty&&isDataValue1Empty){
@@ -471,7 +507,6 @@ update(['checkAndConfirmMiscAmountloading']);
   //       }
   //       // print('2222222');
 
-        
   //       // miscConfirmAmountToPay=
 
   //     }
@@ -485,7 +520,7 @@ update(['checkAndConfirmMiscAmountloading']);
   //   // return false;
   // }
 
-  ///misc payment
+  ///This Funtion Just Gets Data from misc payment pay Screen and Pass to Payments Page
   Future<void> startPayment(
       {required String amount,
       required String cat,
@@ -497,26 +532,25 @@ update(['checkAndConfirmMiscAmountloading']);
       required BuildContext context}) async {
     var miscCatSubcat = "1&$cat&$subcat&2&2&1";
     Get.back();
-    // stypeValue=null;
-    // stypedrop.value=null;
-    // sTypeModel.value.clear();
+
     Navigator.push(
-        context,
-        FullDialogRoute(
-            builder: ((context) => PesuPaymentPage(
-                  // loadingWidget: ,
-                  instId: instId,
-                  paymentDescription: miscDescription,
-                  isMiscpayment: true,
-                  dueAmount: amount,
-                  feeName: miscDescription,
-                  misctype: miscCatSubcat,
-                  merchantKey: merchantKey,
-                  academicyear: academicYearId,
-                ))));
+      context,
+      FullDialogRoute(
+        builder: ((context) => PesuPaymentPage(
+              instId: instId,
+              paymentDescription: miscDescription,
+              isMiscpayment: true,
+              dueAmount: amount,
+              feeName: miscDescription,
+              misctype: miscCatSubcat,
+              merchantKey: merchantKey,
+              academicyear: academicYearId,
+            )),
+      ),
+    );
   }
 
-//
+  /// Get All payment details from server
   Future<void> getPaymentDetail() async {
     if (rxRequestStatus.value != RequestStatus.LOADING) {
       setRxRequestStatus(RequestStatus.LOADING);
@@ -557,6 +591,9 @@ update(['checkAndConfirmMiscAmountloading']);
     }
   }
 
+  /// Get all transaction detils in transaction details view page
+  ///
+  /// of payments user has done in past of that demand Id
   Future<void> getTransactionDetail(
     dynamic academicYearId,
     dynamic feeType,
@@ -588,17 +625,8 @@ update(['checkAndConfirmMiscAmountloading']);
                 .value.sTUDENTPAYMENTDETAILS![annualfeeIndex].minAmount ==
             0.0;
   }
-  // void convertToInt(dynamic val) {
-  //   try {
-  //     int value = int.parse(val);
 
-  //     partialAmount = value;
-  //   } catch (e) {
-  //     // partialAmount = 'Invalid number';
-  //   }
-  // }
-
-  ///
+  ///this Function update amount in words in text
   void updateAnount() {
     if (partialAmountController.value.text.isNotEmpty) {
       amountInWords.value = converter
@@ -606,13 +634,11 @@ update(['checkAndConfirmMiscAmountloading']);
               partialAmountController.value.text.removeAllWhitespace)!)
           .toUpperCase();
     }
-    update();
-// return convertedtext;
+    update(['amountinwords']);
   }
 
-  ///Get trannsactionHas Id
-  ///
-
+  ///This function Generates Unique TransactionId Every Time User clicks
+  ///Pay Button
   Future<String> getUuidTrxnId() async {
     try {
       pesuTxnId.value = null;
@@ -627,12 +653,16 @@ update(['checkAndConfirmMiscAmountloading']);
     }
   }
 
-//   Future<void> getnewTrxnId()async
-// {
-// // Rand
-// }
+  /// This Function Generates Gives Treansaction time when user has cancelled trasanction
+  ///
+  /// or
+  ///
+  /// transaction got failed or any Error happened to show in Payment status
+  ///
+  ///
   Future<String> getTrxnTime() async {
     try {
+      trxnTime.value = null;
       var now = DateTime.now();
       // DateTime.parse(formattedString);
 
@@ -644,12 +674,13 @@ update(['checkAndConfirmMiscAmountloading']);
       trxnTime.value = formattedDate;
       return formattedDate;
     } catch (e, s) {
+      trxnTime.value = null;
       log('$e', error: s, name: 'trxnTime');
       throw Exception();
     }
   }
 
-  ///Get Dynamic Hashes from server
+  ///Get Dynamic Hashes from server as per SDK demands for payments
   Future<Map> getserverDynamicHash({
     required String hash,
     required String trxnId,
@@ -661,13 +692,7 @@ update(['checkAndConfirmMiscAmountloading']);
     required String fdFeeTypeId,
     required String merchantKey,
     String? instId,
-    //  required String name,
-    // required String email,
-    // required String mobileNumber,
-    // required String userId,
-    // required String loginId,
   }) async {
-    // String hash='';
     payupaymentstarted.value = true;
     var serverhash;
     try {
@@ -692,7 +717,6 @@ update(['checkAndConfirmMiscAmountloading']);
 
         throw Exception(error);
       }, (hashresponse) async {
-        //  _checkoutPro.hashGenerated(hash: ha);
         serverhash = hashresponse;
         log(hashresponse.toString(), error: '', name: "payupaymentstarted");
         return serverhash;
@@ -700,13 +724,13 @@ update(['checkAndConfirmMiscAmountloading']);
     } catch (e, s) {
       payupaymentstarted.value = false;
       log('$e', error: s, name: 'cont');
-      // return e.toString();
+
       return {"error": "$e"};
     }
     return serverhash;
   }
 
-  ///
+  /// For Sharing Screenshot of paymnets status
   Future<void> shareScreenshot() async {
     try {
       final image = await screenshotController.capture();
@@ -724,7 +748,7 @@ update(['checkAndConfirmMiscAmountloading']);
     }
   }
 
-  ///
+  /// Gets and returns DownLoad Paths from device
   Future<String?> getDownloadPath() async {
     Directory? directory;
     try {
@@ -743,7 +767,7 @@ update(['checkAndConfirmMiscAmountloading']);
     return directory?.path;
   }
 
-  ///
+  ///This function Donwload receipts or payments pdf from server
   final RxBool downloadStarted = RxBool(false);
   Future<void> download(String trxId) async {
     try {
@@ -767,6 +791,7 @@ update(['checkAndConfirmMiscAmountloading']);
     }
   }
 
+  ///This Fucntion Get Category dropdown Data for miscellaneous payments
   Future<void> getCTypeListResponse() async {
     try {
       // paymentLoading.value = true;
@@ -789,6 +814,7 @@ update(['checkAndConfirmMiscAmountloading']);
     }
   }
 
+  ///This Fucntion Get Sub-Category dropdown Data for miscellaneous payments after User selects [getCTypeListResponse] Category dropdown value
   Future<void> getSTypeListResponse(int id) async {
     try {
       // paymentLoading.value = true;
@@ -814,6 +840,8 @@ update(['checkAndConfirmMiscAmountloading']);
     }
   }
 
+  /// This Function Gets payments details and payment type whenn user has selected [getSTypeListResponse]
+  ///
   Future<void> getPaymentConfirmationResponse(
     int ctypeId,
     int stypeId,
@@ -847,38 +875,37 @@ update(['checkAndConfirmMiscAmountloading']);
   }
 //
 
+  /// this funntion add amount as per subcopies user require and adds amount to final amount [miscAmount]
   void addsubCopiesamount({int? copy, required String amount}) {
     // if(copy==0){}else{
     miscAmount.value = null;
-try{
-final value=amount.toDoubleEither(() => throw Exception());
-final noOfCopy = miscSubcopies.value.text.toIntEither(() => throw Exception());
-final copyAmount  =paymentConfirmationModel
-                .value[0].miscellaneouspayment![0].dataValue2!.toDoubleEither(() => throw Exception()); 
+    try {
+      final value = amount.toDoubleEither(() => throw Exception());
+      final noOfCopy =
+          miscSubcopies.value.text.toIntEither(() => throw Exception());
+      final copyAmount = paymentConfirmationModel
+          .value[0].miscellaneouspayment![0].dataValue2!
+          .toDoubleEither(() => throw Exception());
 
-value.fold((l) => null, (amount) {
-  noOfCopy.fold((l) => throw Exception(), (copy) {
-    copyAmount.fold((l) => throw Exception(), (copyAmount) {
-    miscAmount.value = amount + copy*copyAmount;
-    print(miscAmount);
+      value.fold((l) => null, (amount) {
+        noOfCopy.fold((l) => throw Exception(), (copy) {
+          copyAmount.fold((l) => throw Exception(), (copyAmount) {
+            miscAmount.value = amount + copy * copyAmount;
+            print(miscAmount);
+          });
+        });
+        // miscAmount.value = r
+        // ;
+      });
 
-    });
-  });
-  // miscAmount.value = r
-  // ;
-});
-    // double value = double.tryParse(amount)! +
-    //     (int.tryParse(miscSubcopies.value.text.toString())! *
-    //         double.tryParse(paymentConfirmationModel
-    //             .value[0].miscellaneouspayment![0].dataValue2!)!);
-    // miscAmount.value = value.toString();
-    log(value.toString(), error: '', name: "amount");
-    update(['addsubCopiesamount']);
-    }catch(e){
+      log(value.toString(), error: '', name: "amount");
+      update(['addsubCopiesamount']);
+    } catch (e) {
       miscAmount.value = null;
     }
   }
 
+  /// This Function Gives and Updates initial amount [miscAmount] and no of copies [miscSubcopies] coming from servver
   void updatemiscAmount(String? amout) {
     try {
       if (paymentConfirmationModel.value[0].miscellaneouspayment?[0].label !=
@@ -901,17 +928,14 @@ value.fold((l) => null, (amount) {
         print('update amoutnt ' + "$e");
       }
     }
-    update([
-      'addsubCopiesamount'
-    ]);
+    update(['addsubCopiesamount']);
   }
 
-//TODO add locala Storage for terms and conditons
-  ///get Terms & conditions api
+  ///This Function gets Terms & conditions from server api and Stores json in local Storage [getLocaltermsConditions]
   ///
+  ///In Case if any Exception or Internet is not There
   Future<void> getTermsAndConditions() async {
     termsLoading.value = true;
-// if(rxRequestStatus.value!=RequestStatus.LOADING)    setRxRequestStatus(RequestStatus.LOADING);
     var localTermsandCond = await getLocaltermsConditions();
     try {
       var response =
@@ -927,17 +951,14 @@ value.fold((l) => null, (amount) {
         termsandcondition.value = res['termsandcondtions'][0]['description'];
         log(termsandcondition.value.toString(), name: 'pppppppp');
         termsLoading.value = false;
-// setRxRequestStatus(RequestStatus.SUCCESS);
       });
     } catch (e, s) {
       log(e.toString(), name: 'pppppppp', error: s);
       if (localTermsandCond != null) {
         var result = jsonDecode(localTermsandCond);
-        termsandcondition.value =result['termsandcondtions'][0]['description'];
-// setRxRequestStatus(RequestStatus.SUCCESS);
+        termsandcondition.value = result['termsandcondtions'][0]['description'];
         termsLoading.value = false;
       } else {
-        // setRxRequestStatus(RequestStatus.ERROR);
         termsLoading.value = false;
       }
 
@@ -948,30 +969,61 @@ value.fold((l) => null, (amount) {
     update(['terms']);
   }
 
+  /// Saves Terms and Conditions
   Future<bool> saveLocaltermsConditions(dynamic value) async {
     final bool done =
         await _preferences.setString("terms-cond", jsonEncode(value));
     return done;
   }
 
+  /// Gets and returns locally Saved terms nad conditons
   Future<String?> getLocaltermsConditions() async {
     final String? data = _preferences.getString("terms-cond");
 
     return data;
   }
-}
 
-class HashError implements Exception {
-  final String message;
-  HashError(this.message);
-}
+  /// This Functions emits Whtther Internet is Available or not
+  Future<void> execute(
+    InternetConnectionChecker internetConnectionChecker,
+  ) async {
+    // Simple check to see if we have Internet
+    // ignore: avoid_print
+    print('''The statement 'this machine is connected to the Internet' is: ''');
+    final bool isConnected = await InternetConnectionChecker().hasConnection;
+    // ignore: avoid_print
+    print(
+      isConnected.toString(),
+    );
+    // returns a bool
 
+    // We can also get an enum instead of a bool
+    // ignore: avoid_print
+    print(
+      'Current status: ${await InternetConnectionChecker().connectionStatus}',
+    );
+    // Prints either InternetConnectionStatus.connected
+    // or InternetConnectionStatus.disconnected
 
-enum PaymentDetailState {
-  descAmtEmpty,
-  amountDesNotEmpty,
-  misSubCopyReq,
+    // actively listen for status updates
+    final StreamSubscription<InternetConnectionStatus> listener =
+        InternetConnectionChecker().onStatusChange.listen(
+      (InternetConnectionStatus status) {
+        switch (status) {
+          case InternetConnectionStatus.connected:
+            // ignore: avoid_print
+            print('Data connection is available.');
+            break;
+          case InternetConnectionStatus.disconnected:
+            // ignore: avoid_print
+            print('You are disconnected from the internet.');
+            break;
+        }
+      },
+    );
 
-  // dataValue1Empty,
-  // validDetails
+    // close listener after 30 seconds, so the program doesn't run forever
+    await Future<void>.delayed(const Duration(seconds: 30));
+    await listener.cancel();
+  }
 }

@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:pesu_payu/config.dart';
+import 'package:pesu_payu/src/config/config.dart';
 // import 'package:pesua/app/modules/student_modules/online_payment/config.dart';
 import '../controller/payment_controller.dart';
 class OnlinePaymentBinding extends Bindings {

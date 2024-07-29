@@ -8,7 +8,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesu_payu/config.dart';
+import 'package:pesu_payu/src/config/config.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
 import 'package:pesu_payu/src/utils/dropdown.dart';

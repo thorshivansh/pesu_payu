@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:pesu_payu/config.dart';
+import 'package:pesu_payu/src/config/config.dart';
 import 'package:pesu_payu/src/utils/color/colors.dart';
 
 class MiscTextfield extends GetView<PaymentConfig> {

@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesu_payu/config.dart';
+import 'package:pesu_payu/src/config/config.dart';
 import 'package:pesu_payu/src/core/routes.dart';
 import 'package:pesu_payu/src/utils/my_button.dart';
-
 
 import '../controller/payment_controller.dart';
 import '../../widget/alignrow_widget.dart';
@@ -74,7 +73,7 @@ class _PaymentStatusState extends State<PaymentStatus>
     ));
   }
 
-    final config = Get.find<PaymentConfig>();
+  final config = Get.find<PaymentConfig>();
   @override
   Widget build(BuildContext context) {
     log(_paymentController.payuresponse.value.toString(), name: 'payu');
@@ -82,8 +81,8 @@ class _PaymentStatusState extends State<PaymentStatus>
     return PopScope(
       onPopInvoked: (_) async {
         // Get.back();
-  _paymentController.getPaymentDetail();
-                                          PaymentRoutes.preventDuplicate('/OnlinePaymentView', context);
+        _paymentController.getPaymentDetail();
+        PaymentRoutes.preventDuplicate('/OnlinePaymentView', context);
         // Get.off(OnlinePaymentView());
 
         // return false;
@@ -99,105 +98,103 @@ class _PaymentStatusState extends State<PaymentStatus>
                 children: [
                   // Stack(
                   //   children: [
-                      Container(
-                        
-                        alignment: Alignment.center,
-                        height: MediaQuery.of(context).size.height / 2.0,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: widget.decoration ??
-                            BoxDecoration(
-                              
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(80),
-                                bottomRight: Radius.circular(80),
-                              ),
-                              color: widget.color ?? config.successColor
+                  Container(
+                    alignment: Alignment.center,
+                    height: MediaQuery.of(context).size.height / 2.0,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: widget.decoration ??
+                        BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(80),
+                              bottomRight: Radius.circular(80),
                             ),
-                        child: SingleChildScrollView(
-                          child: Column(
+                            color: widget.color ?? config.successColor),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Visibility(
+                                  child: IconButton(
+                                    icon: const Icon(Icons.arrow_back_ios,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      // Get.back();
+                                      _paymentController.getPaymentDetail();
+                                      PaymentRoutes.preventDuplicate(
+                                          '/OnlinePaymentView', context);
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Image.asset(
+                                    config.assetString!,
+                                    height: 50,
+                                  ),
+                                ),
+                                Visibility(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 18.0),
+                                    child: InkWell(
+                                      onTap: () => setState(() {
+                                        isScreenshotMode = true;
+                                        _paymentController
+                                            .shareScreenshot()
+                                            .then((_) {
+                                          setState(() {
+                                            isScreenshotMode = false;
+                                          });
+                                        });
+                                      }),
+                                      child: const Icon(LucideIcons.share2,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Icon(
+                                  widget.errorType == '1'
+                                      ? Icons.cancel_outlined
+                                      : LucideIcons.checkCircle2,
+                                  color: widget.errorType == '1'
+                                      ? Colors.red
+                                      : Colors.green,
+                                  size: 50)
+                              .animate()
+                              .scale(duration: 500.ms),
+                          const SizedBox(height: 20),
+                          PesuText(
+                            'Payment ${widget.paymenntStatus}',
+                          ).animate().fadeIn(duration: 500.ms),
+                          const SizedBox(height: 20),
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Visibility(
-                                      child: IconButton(
-                                        icon: const Icon(Icons.arrow_back_ios,
-                                            color: Colors.white),
-                                        onPressed: () {
-                                          // Get.back();
-                                          _paymentController.getPaymentDetail();
-                                          PaymentRoutes.preventDuplicate('/OnlinePaymentView', context);
-                                        },
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: Image.asset(
-                                        config.assetString!,
-                                        height: 50,
-                                      ),
-                                    ),
-                                    Visibility(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(right: 18.0),
-                                        child: InkWell(
-                                          onTap: () => setState(() {
-                                            isScreenshotMode = true;
-                                            _paymentController.shareScreenshot().
-                                            then((_) {
-                                              setState(() {
-                                                isScreenshotMode = false;
-                                              });
-                                            });
-                                          }),
-                                          child: const Icon(LucideIcons.share2,
-                                              color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Icon(
-                                      widget.errorType == '1'
-                                          ? Icons.cancel_outlined
-                                          : LucideIcons.checkCircle2,
-                                      color: widget.errorType == '1'
-                                          ? Colors.red
-                                          : Colors.green,
-                                      size: 50)
-                                  .animate()
-                                  .scale(duration: 500.ms),
-                              const SizedBox(height: 20),
-                              PesuText(
-                                'Payment ${widget.paymenntStatus}',
-                              ).animate().fadeIn(duration: 500.ms),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const PesuText("Amount : "),
-                                  PesuText(widget.amount ?? "0.0"),
-                                ],
-                              ),
-                              const SizedBox(height: 5.0),
-                              const PesuText('Transaction ID :'),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  PesuText(
-                                      '${widget.trxnId == "0" ? "N.A" : widget.trxnId}'),
-                                ],
-                              ),
+                              const PesuText("Amount : "),
+                              PesuText(widget.amount ?? "0.0"),
                             ],
                           ),
-                        ),
+                          const SizedBox(height: 5.0),
+                          const PesuText('Transaction ID :'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              PesuText(
+                                  '${widget.trxnId == "0" ? "N.A" : widget.trxnId}'),
+                            ],
+                          ),
+                        ],
                       ),
+                    ),
+                  ),
                   //   ],
                   // ),
                   Builder(
@@ -228,54 +225,45 @@ class _PaymentStatusState extends State<PaymentStatus>
                                 AlignRowWidget(
                                   firstText: 'Name',
                                   secondText: widget.name,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
                                 AlignRowWidget(
                                   firstText: 'SRN',
                                   secondText: widget.srn,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
                                 AlignRowWidget(
                                   firstText: 'Transaction ID',
                                   secondText: widget.trxnId == "0"
                                       ? "N.A"
                                       : widget.trxnId,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
                                 AlignRowWidget(
                                   firstText: 'Amount',
                                   secondText: widget.amount,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
                                 AlignRowWidget(
                                   firstText: 'Product Info',
                                   secondText: widget.feeType,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
                                 AlignRowWidget(
                                   firstText: 'Date & Time',
                                   secondText: widget.date,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
                                 AlignRowWidget(
                                   firstText: 'Payment Mode',
-                                  secondText:
-                                      payMode(widget.paymentMode!),
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  secondText: payMode(widget.paymentMode!),
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
                                 AlignRowWidget(
                                   firstText: 'Status of Transaction',
                                   secondText: widget.errorReason ??
                                       widget.paymenntStatus,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                 ),
                               ],
                             ),
@@ -286,18 +274,15 @@ class _PaymentStatusState extends State<PaymentStatus>
                   ),
                   Visibility(
                     child: Padding(
-                      padding:
-                          const EdgeInsets.only(right: 15.0, top: 20, bottom: 20),
+                      padding: const EdgeInsets.only(
+                          right: 15.0, top: 20, bottom: 20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           MyButton(
-                            width:Get.width*0.4,
-                            height: Get.height*0.08,
-                            
-              
-                            secondWidgetInRow:const Icon( LucideIcons.download),
-                           
+                            width: Get.width * 0.4,
+                            height: Get.height * 0.08,
+                            secondWidgetInRow: const Icon(LucideIcons.download),
                             onPressed: () =>
                                 _paymentController.download(widget.trxnId!),
                             label: 'Download',

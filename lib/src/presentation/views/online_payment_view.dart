@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
@@ -10,8 +9,6 @@ import 'package:pesu_payu/src/config/api_config.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 
 import '../sub_widgets/payment_status.dart';
-// import 'src/presentation/controller/payment_controller.dart';
-// import 'src/presentation/sub_widgets/payment_status.dart';
 
 class PesuPaymentPage extends StatefulWidget {
   final Widget? loadingWidget;
@@ -26,10 +23,8 @@ class PesuPaymentPage extends StatefulWidget {
   final String? paymentDescription;
   final bool isMiscpayment;
 
-
   const PesuPaymentPage({
     super.key,
-    
     required this.academicyear,
     required this.misctype,
     this.demandId,
@@ -38,7 +33,9 @@ class PesuPaymentPage extends StatefulWidget {
     this.fdFeeTypeId,
     required this.merchantKey,
     this.paymentDescription,
-    required this.isMiscpayment, this.loadingWidget, this.instId,
+    required this.isMiscpayment,
+    this.loadingWidget,
+    this.instId,
     // this.pay
   });
 
@@ -105,35 +102,35 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
   Map payuparams() {
     try {
       var additionnalParms = {
-        PayUAdditionalParamKeys.udf1:_controller.userInfo.value['userId'],
-        PayUAdditionalParamKeys.udf2: _controller.userInfo.value['mobileNumber'],
+        PayUAdditionalParamKeys.udf1: _controller.userInfo.value['userId'],
+        PayUAdditionalParamKeys.udf2:
+            _controller.userInfo.value['mobileNumber'],
         PayUAdditionalParamKeys.udf3: _controller.userInfo.value['loginId'],
         PayUAdditionalParamKeys.udf4: widget.academicyear,
         PayUAdditionalParamKeys.udf5: widget.misctype
       };
 
       var payuParam = {
-        PayUPaymentParamKey.key:widget.merchantKey,
-            // _controller.testmerchantKey, //TODO  change merchant key
+        PayUPaymentParamKey.key: widget.merchantKey,
+        // _controller.testmerchantKey, //TODO  change merchant key
         PayUPaymentParamKey.amount: widget.dueAmount,
         PayUPaymentParamKey.productInfo: widget.isMiscpayment
             ? widget.paymentDescription
             : widget.feeName, //TODO paymnnet description if misc
         PayUPaymentParamKey.firstName: _controller.userInfo.value['name'],
-        PayUPaymentParamKey.email: _controller.userInfo.value['email'] ,
+        PayUPaymentParamKey.email: _controller.userInfo.value['email'],
         PayUPaymentParamKey.phone: _controller.userInfo.value['mobileNumber'],
         PayUPaymentParamKey.environment: "0", //TODO  change ennviroment key
         PayUPaymentParamKey.additionalParam: additionnalParms,
         PayUPaymentParamKey.enableNativeOTP: true,
         // String - "0" for Production and "1" for Test
-        PayUPaymentParamKey.transactionId: 
-          _controller.pesuTxnId.value
-            , //TODO for ios txid canot be more than 25 lenght
+        PayUPaymentParamKey.transactionId: _controller
+            .pesuTxnId.value, //TODO for ios txid canot be more than 25 lenght
         // transactionId Cannot be null or empty and should be unique for each transaction. Maximum allowed length is 25 characters. It cannot contain special characters like: -_/
         PayUPaymentParamKey.userCredential:
-            "${widget.merchantKey}:${_controller.userInfo.value['email'] }", //TODO  change merchant key
+            "${widget.merchantKey}:${_controller.userInfo.value['email']}", //TODO  change merchant key
         //  Format: <testmerchantKey>:<userId> ... UserId is any id/email/phone number to uniquely identify the user.
-        PayUPaymentParamKey.android_surl:ApiConfig.androidSurl,
+        PayUPaymentParamKey.android_surl: ApiConfig.androidSurl,
         PayUPaymentParamKey.android_furl: ApiConfig.androidFurl,
         PayUPaymentParamKey.ios_surl: ApiConfig.iosSurl,
         PayUPaymentParamKey.ios_furl: ApiConfig.iosFurl
@@ -147,10 +144,11 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
   }
 
   @override
-  void dispose() { 
-   _controller.clean();
+  void dispose() {
+    _controller.clean();
     super.dispose();
   }
+
 //  payuresponse=ValueNotifier({})
   @override
   Widget build(BuildContext context) {
@@ -162,72 +160,82 @@ class _PesuPaymentPageState extends State<PesuPaymentPage>
       top: false,
       child: Scaffold(
         body: Obx(() => _controller.payupaymentstarted.value
-            ?  Center(child: widget.loadingWidget??const CircularProgressIndicator.adaptive())
+            ? Center(
+                child: widget.loadingWidget ??
+                    const CircularProgressIndicator.adaptive())
             : PaymentStatus(
-              
-  paymenntStatus: _controller.payuresponse.value['status'] ?? '1',
-  errorType: _controller.payuresponse.value['id'] ?? '1',
-  date: _getDateValue(_controller.payuresponse.value),
-  paymentMode: _getPaymentModeValue(_controller.payuresponse.value),
-  feeType: widget.feeName,
-  trxnId: _getTransactionId(_controller.payuresponse.value),
-  amount: widget.dueAmount,
-  name: _controller.userInfo.value['name'],
-  srn: _controller.userInfo.value['loginId'],
-  errorReason: _getErrorReason(_controller.payuresponse.value),
-)),
+                paymenntStatus: _controller.payuresponse.value['status'] ?? '1',
+                errorType: _controller.payuresponse.value['id'] ?? '1',
+                date: _getDateValue(_controller.payuresponse.value),
+                paymentMode:
+                    _getPaymentModeValue(_controller.payuresponse.value),
+                feeType: widget.feeName,
+                trxnId: _getTransactionId(_controller.payuresponse.value),
+                amount: widget.dueAmount,
+                name: _controller.userInfo.value['name'],
+                srn: _controller.userInfo.value['loginId'],
+                errorReason: _getErrorReason(_controller.payuresponse.value),
+              )),
       ),
     );
   }
 
-  //Don't use this method get the hash from your backend.
-  String getSHA512Hash(String hashData) {
-    var bytes = utf8.encode(hashData); // data being hashed
-    var hash = sha512.convert(bytes);
-    return hash.toString();
-  }
 // Helper functions to extract values safely
-String _getDateValue(Map<dynamic, dynamic>? response) {
-  if (response == null || response['status'] == 'Cancelled' || response['status'] == 'Error' || response['response'] == null) {
-    return _controller.trxnTime.value??'N.A';
+  String _getDateValue(Map<dynamic, dynamic>? response) {
+    if (response == null ||
+        response['status'] == 'Cancelled' ||
+        response['status'] == 'Error' ||
+        response['response'] == null) {
+      return _controller.trxnTime.value ?? 'N.A';
+    }
+    return response['response']['addedon'] ??
+        response['response']['result']['addedon'] ??
+        'N.A';
   }
-  return response['response']['addedon'] ?? response['response']['result']['addedon'] ?? 'N.A';
-}
 
-String _getPaymentModeValue(Map<dynamic, dynamic>? response) {
-  if (response == null || response['status'] == 'Cancelled' || response['status'] == 'Error' || response['response'] == null ||
-      response['response']['PG_TYPE'] == null || response['response']['result'] == null) {
-    return 'N.A';
+  String _getPaymentModeValue(Map<dynamic, dynamic>? response) {
+    if (response == null ||
+        response['status'] == 'Cancelled' ||
+        response['status'] == 'Error' ||
+        response['response'] == null ||
+        response['response']['PG_TYPE'] == null ||
+        response['response']['result'] == null) {
+      return 'N.A';
+    }
+    return response['response']['PG_TYPE'] ??
+        response['response']['result']['PG_TYPE'] ??
+        'N.A';
   }
-  return response['response']['PG_TYPE'] ?? response['response']['result']['PG_TYPE'] ?? 'N.A';
-}
 
-String _getTransactionId(Map<dynamic, dynamic>? response) {
-  if (response == null || response['response'] == null) {
-    return '0';
+  String _getTransactionId(Map<dynamic, dynamic>? response) {
+    if (response == null || response['response'] == null) {
+      return '0';
+    }
+    return "${response['response']['id'] ?? response['response']['result']['mihpayid'] ?? '0'}";
   }
-  return "${response['response']['id'] ?? response['response']['result']['mihpayid'] ?? '0'}";
-}
 
-String _getErrorReason(Map<dynamic, dynamic>? response) {
-  if (response == null || response['response'] == null || response['status'] == 'Cancelled') {
-    return response?['reason'] ?? 'N.A';
+  String _getErrorReason(Map<dynamic, dynamic>? response) {
+    if (response == null ||
+        response['response'] == null ||
+        response['status'] == 'Cancelled') {
+      return response?['reason'] ?? 'N.A';
+    }
+    return response['response']['field9'] ?? 'N.A';
   }
-  return response['response']['field9'] ?? 'N.A';
-}
+
   @override
   generateHash(Map response) async {
     try {
       var hash = await _controller.getserverDynamicHash(
-        instId: widget.instId,//TODO add InnstId 
-        trxnId:_controller.pesuTxnId.value,
+        instId: widget.instId, //TODO add InnstId
+        trxnId: _controller.pesuTxnId.value,
         misctype: widget.misctype,
         merchantKey: widget.merchantKey,
         hash: jsonEncode(response),
         academicyear: widget.academicyear,
-        fdFeeTypeId:widget.isMiscpayment?"2": widget.fdFeeTypeId!,
+        fdFeeTypeId: widget.isMiscpayment ? "2" : widget.fdFeeTypeId!,
         feeName: widget.feeName!,
-        demandId:widget.isMiscpayment?"0": widget.demandId!,
+        demandId: widget.isMiscpayment ? "0" : widget.demandId!,
         dueAmount: widget.dueAmount,
       );
 
@@ -256,7 +264,6 @@ String _getErrorReason(Map<dynamic, dynamic>? response) {
       "id": "1",
       "reason": "Payment Error ${response!['errorCode']}"
     });
-
   }
 
   @override
@@ -280,7 +287,6 @@ String _getErrorReason(Map<dynamic, dynamic>? response) {
     }
     // PaymentSuccessScreen(status: 'cancelled',
     //  response!.addAll(response);respionse: response,);
-
   }
 
   @override
@@ -291,7 +297,6 @@ String _getErrorReason(Map<dynamic, dynamic>? response) {
     // PaymentSuccessScreen(status: 'failed',respionse: response,);
     _controller.payuresponse =
         ValueNotifier({"status": "Failed", "response": res, "id": "1"});
-
   }
 
   @override
@@ -303,82 +308,8 @@ String _getErrorReason(Map<dynamic, dynamic>? response) {
       // PaymentSuccessScreen(status: 'Success',respionse: response,);
       _controller.payuresponse =
           ValueNotifier({"status": "Successfull", "response": res, "id": "0"});
-
     } catch (e) {
       log(e.toString(), name: 'responnse');
     }
-  }
-
-
-}
-
-class HashService {
-// static const Uuid _uuid = Uuid();
-// static String UuidtxnId ='';
-// static String getUuid(){
-//  List op=[];
-//   op.sort();
-
-//     UuidtxnId = _uuid.v7obj().toString();
-// return UuidtxnId;
-//  }
-//Find the test credentials from dev guide: https://devguide.payu.in/flutter-sdk-integration/getting-started-flutter-sdk/mobile-sdk-test-environment/
-//Keep the hash in backend for Security reasons.
-// static const livemerchantSalt = "XGnf2PQnMT1tXTGVB01CVYDpnXBVkwCB";// Add you Salt here.
-  static const testemerchantSalt = "g0nGFe03"; // Add you Salt here.
-  static const merchantSecretKey = ""; // Add Merchant Secrete Key - Optional
-
-  static Map generateHash(Map response) {
-    log('print------------PESU---------- :sdk hash: $response');
-    var hashName = response[PayUHashConstantsKeys.hashName];
-    var hashStringWithoutSalt = response[PayUHashConstantsKeys.hashString];
-    var hashType = response[PayUHashConstantsKeys.hashType];
-    var postSalt = response[PayUHashConstantsKeys.postSalt];
-
-    var hash = "";
-
-    if (hashType == PayUHashConstantsKeys.hashVersionV2) {
-      hash = getHmacSHA256Hash(hashStringWithoutSalt, testemerchantSalt);
-    } else if (hashName == PayUHashConstantsKeys.mcpLookup) {
-      hash = getHmacSHA1Hash(hashStringWithoutSalt, merchantSecretKey);
-    } else {
-      log('print------------PESU---------- :hasnname: $hashName');
-      log('print------------PESU---------- :hashStringWithoutSalt: $hashStringWithoutSalt');
-      var hashDataWithSalt = "$hashStringWithoutSalt$testemerchantSalt";
-      if (postSalt != null) {
-        hashDataWithSalt = hashDataWithSalt + postSalt;
-      }
-      log('print------------PESU---------- :haswithsalt: $hashDataWithSalt');
-      hash = getSHA512Hash(hashDataWithSalt);
-      log('print------------PESU---------- :getSHA512Hash: ${hash.toString()}');
-    }
-    //Don't use this method, get the hash from your backend.
-    var finalHash = {hashName: hash};
-    log('print------------PESU---------- :final hash: ${finalHash.toString()}');
-    return finalHash;
-  }
-
-  //Don't use this method get the hash from your backend.
-  static String getSHA512Hash(String hashData) {
-    var bytes = utf8.encode(hashData); // data being hashed
-    var hash = sha512.convert(bytes);
-    return hash.toString();
-  }
-
-  //Don't use this method get the hash from your backend.
-  static String getHmacSHA256Hash(String hashData, String salt) {
-    var key = utf8.encode(salt);
-    var bytes = utf8.encode(hashData);
-    final hmacSha256 = Hmac(sha256, key).convert(bytes).bytes;
-    final hmacBase64 = base64Encode(hmacSha256);
-    return hmacBase64;
-  }
-
-  static String getHmacSHA1Hash(String hashData, String salt) {
-    var key = utf8.encode(salt);
-    var bytes = utf8.encode(hashData);
-    var hmacSha1 = Hmac(sha1, key); // HMAC-SHA1
-    var hash = hmacSha1.convert(bytes);
-    return hash.toString();
   }
 }

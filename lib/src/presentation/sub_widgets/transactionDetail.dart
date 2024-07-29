@@ -1,11 +1,13 @@
+// ignore_for_file: file_names
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesu_payu/config.dart';
+import 'package:pesu_payu/src/config/config.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/disclaimer.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
@@ -28,296 +30,292 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
   @override
   Widget build(BuildContext context) {
     final config = Get.find<PaymentConfig>();
-    return Scaffold(
-        appBar: paymentAppBar(
-          appBarLeadingOnTap: () => Get.back(),
-          appBarTitle: "Transaction Detail",
-          appBarBackgroundColor: config.primaryColor,
-          appBarLeadingIconSize: 25.0,
-        ),
-        body: Obx(() => controller.paymentLoading.value
-            ? Center(child: config.loadingWidget)
-            : SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // MyText("1", //style: Properties.textsStyles.text18_600),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.only(left: 8),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  MyText(
-                                    controller
-                                            .paymentDetailModel
-                                            .value
-                                            .sTUDENTPAYMENTDETAILS?[
-                                                annualfeeIndex]
-                                            .finDemandFeeType ??
-                                        '',
-                               
-                                  ),
-                                  MyText(
-                                      "${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].academicYear ?? ""}  -  ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].branch ?? ""} "),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 10,
+    CancelToken token = CancelToken();
+    return PopScope(
+      onPopInvoked: (didPop) => token.cancel(),
+      child: Scaffold(
+          appBar: paymentAppBar(
+            appBarLeadingOnTap: () {
+              token.cancel();
+              Get.back();
+            },
+            appBarTitle: "Transaction Detail",
+            appBarBackgroundColor: config.primaryColor,
+            appBarLeadingIconSize: 25.0,
+          ),
+          body: Obx(() => controller.paymentLoading.value
+              ? Center(child: config.loadingWidget)
+              : SingleChildScrollView(
+                  child: Container(
+                    margin: const EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // MyText("1", //style: Properties.textsStyles.text18_600),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    MyText(
+                                      controller
+                                              .paymentDetailModel
+                                              .value
+                                              .sTUDENTPAYMENTDETAILS?[
+                                                  annualfeeIndex]
+                                              .finDemandFeeType ??
+                                          '',
                                     ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const MyText(
-                                          "Demand Amount",
-                                     
-                                        ),
-                                        MyText(
-                                          "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].demandAmount.toString() ?? '0.0'}",
-                                      
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const MyText(
-                                        "Paid Amount",
-                              
+                                    MyText(
+                                        "${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].academicYear ?? ""}  -  ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].branch ?? ""} "),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 10,
                                       ),
-                                      MyText(
-                                        "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].paidAmount.toString() ?? '0.0'}",
-                                     
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const MyText(
-                                        "Balance Due",
-                             
-                                      ),
-                                      MyText(
-                                        "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].totalDue.toString() ?? '0.0'}",
-                              
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const MyText(
-                                        "Due Date",
-                                        
-                                      ),
-                                      MyText(
-                                        '${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].dueDate}',
-                                    
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10, bottom: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const MyText(
-                                          "Status",
-                                       
-                                        ),
-                                        MyText(
-                                          controller
-                                                  .paymentDetailModel
-                                                  .value
-                                                  .sTUDENTPAYMENTDETAILS?[
-                                                      annualfeeIndex]
-                                                  .paymentStatus ??
-                                              '',
-                                          //style:
-                                          // Properties.textsStyles.text14_600,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                
-                                  // const SizedBox(
-                                  //   height: 10,
-                                  // ),
-                                  ((controller
-                                                  .paymentDetailModel
-                                                  .value
-                                                  .sTUDENTPAYMENTDETAILS?[
-                                                      annualfeeIndex]
-                                                  .paymentStatus
-                                                  .toString() ==
-                                              "Pending" ||
-                                          controller
-                                                  .paymentDetailModel
-                                                  .value
-                                                  .sTUDENTPAYMENTDETAILS?[
-                                                      annualfeeIndex]
-                                                  .paymentStatus
-                                                  .toString() ==
-                                              "Partially Paid"))
-                                      ? Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 10),
-                                          child: Center(
-                                            child: MyButton(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width /
-                                                    1.3,
-                                                onPressed: () {
-                                                
-                                                  showModalBottomSheet(
-                                                    isDismissible: false,
-                                                    isScrollControlled: true,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    elevation: 0.0,
-                                                    shape:
-                                                        const RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.vertical(
-                                                        top: Radius.circular(0),
-                                                      ),
-                                                    ),
-                                                    context: context,
-                                                    enableDrag: false,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                          bottom: MediaQuery.of(
-                                                                  context)
-                                                              .viewInsets
-                                                              .bottom,
-                                                        ),
-                                                        child: PopScope(
-                                                          onPopInvoked:
-                                                              (didPop) {
-                                                            if (didPop) {
-                                                              // print("object");
-                                                              controller
-                                                                  .annualFeeClean();
-                                                            }
-                                                          },
-                                                          child:
-                                                              SingleChildScrollView(
-                                                                  child:
-                                                                      confirmationDialogBox(
-                                                            context,
-                                                            controller
-                                                                .paymentDetailModel
-                                                                .value
-                                                                .sTUDENTPAYMENTDETAILS?[
-                                                                    annualfeeIndex]
-                                                                .totalDue
-                                                                .toString(),
-                                                            annualfeeIndex,
-                                                          )),
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                name: MyText('PAY',
-                                                    color: Colors.white,
-                                                    style: MyTextStyle
-                                                        .text16_700
-                                                        .copyWith(
-                                                            color:
-                                                                Colors.white))),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const MyText(
+                                            "Demand Amount",
                                           ),
-                                        )
-                                      : Container(),
+                                          MyText(
+                                            "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].demandAmount.toString() ?? '0.0'}",
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const MyText(
+                                          "Paid Amount",
+                                        ),
+                                        MyText(
+                                          "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].paidAmount.toString() ?? '0.0'}",
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const MyText(
+                                          "Balance Due",
+                                        ),
+                                        MyText(
+                                          "₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].totalDue.toString() ?? '0.0'}",
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const MyText(
+                                          "Due Date",
+                                        ),
+                                        MyText(
+                                          '${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[annualfeeIndex].dueDate}',
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, bottom: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const MyText(
+                                            "Status",
+                                          ),
+                                          MyText(
+                                            controller
+                                                    .paymentDetailModel
+                                                    .value
+                                                    .sTUDENTPAYMENTDETAILS?[
+                                                        annualfeeIndex]
+                                                    .paymentStatus ??
+                                                '',
+                                            //style:
+                                            // Properties.textsStyles.text14_600,
+                                          )
+                                        ],
+                                      ),
+                                    ),
 
-
-                                        controller.transactionDetailModel.value
-                                          .studentDetails!.isEmpty
-                                      ? const SizedBox()
-                                      : Padding(
-                                        padding: const EdgeInsets.only(top:20.0),
-                                        child: ExpansionTile(
-                                            tilePadding: EdgeInsets.zero,
-                                            iconColor:
-                                               config.primaryColor,
-                                            collapsedIconColor:
-                                                  config.primaryColor,
-                                            title: MyText(
-                                              'No.of Transaction(${controller.transactionDetailModel.value.studentDetails?.length ?? 0})',
-                                          
-                                            ),
-                                            // ),
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  ListView.builder(
-                                                      shrinkWrap: true,
-                                                      physics:
-                                                          const NeverScrollableScrollPhysics(),
-                                                      itemCount: controller
-                                                              .transactionDetailModel
-                                                              .value
-                                                              .studentDetails
-                                                              ?.length ??
-                                                          0,
-                                                      itemBuilder:
-                                                          (context, int index) {
-                                                        return noOfTransaction(
-                                                            index);
-                                                      }),
-                                                  (controller
-                                                          .transactionDetailModel
-                                                          .value
-                                                          .studentDetails!
-                                                          .isEmpty)
-                                                      ? Container()
-                                                      : const Padding(
+                                    // const SizedBox(
+                                    //   height: 10,
+                                    // ),
+                                    ((controller
+                                                    .paymentDetailModel
+                                                    .value
+                                                    .sTUDENTPAYMENTDETAILS?[
+                                                        annualfeeIndex]
+                                                    .paymentStatus
+                                                    .toString() ==
+                                                "Pending" ||
+                                            controller
+                                                    .paymentDetailModel
+                                                    .value
+                                                    .sTUDENTPAYMENTDETAILS?[
+                                                        annualfeeIndex]
+                                                    .paymentStatus
+                                                    .toString() ==
+                                                "Partially Paid"))
+                                        ? Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 10),
+                                            child: Center(
+                                              child: MyButton(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      1.3,
+                                                  onPressed: () {
+                                                    showModalBottomSheet(
+                                                      isDismissible: false,
+                                                      isScrollControlled: true,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      elevation: 0.0,
+                                                      shape:
+                                                          const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .vertical(
+                                                          top: Radius.circular(
+                                                              0),
+                                                        ),
+                                                      ),
+                                                      context: context,
+                                                      enableDrag: false,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return Padding(
                                                           padding:
                                                               EdgeInsets.only(
-                                                                  bottom: 15),
-                                                          child: Disclaimer(),
-                                                        )
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                      ),
+                                                            bottom:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .viewInsets
+                                                                    .bottom,
+                                                          ),
+                                                          child: PopScope(
+                                                            onPopInvoked:
+                                                                (didPop) {
+                                                              if (didPop) {
+                                                                // print("object");
+                                                                controller
+                                                                    .annualFeeClean();
+                                                              }
+                                                            },
+                                                            child:
+                                                                SingleChildScrollView(
+                                                                    child:
+                                                                        confirmationDialogBox(
+                                                              context,
+                                                              controller
+                                                                  .paymentDetailModel
+                                                                  .value
+                                                                  .sTUDENTPAYMENTDETAILS?[
+                                                                      annualfeeIndex]
+                                                                  .totalDue
+                                                                  .toString(),
+                                                              annualfeeIndex,
+                                                            )),
+                                                          ),
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  name: MyText('PAY',
+                                                      color: Colors.white,
+                                                      style: MyTextStyle
+                                                          .text16_700
+                                                          .copyWith(
+                                                              color: Colors
+                                                                  .white))),
+                                            ),
+                                          )
+                                        : Container(),
 
-                                  // const SizedBox(
-                                  //   height: 10,
-                                  // ),
-                                ],
+                                    controller.transactionDetailModel.value
+                                            .studentDetails!.isEmpty
+                                        ? const SizedBox()
+                                        : Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 20.0),
+                                            child: ExpansionTile(
+                                              tilePadding: EdgeInsets.zero,
+                                              iconColor: config.primaryColor,
+                                              collapsedIconColor:
+                                                  config.primaryColor,
+                                              title: MyText(
+                                                'No.of Transaction(${controller.transactionDetailModel.value.studentDetails?.length ?? 0})',
+                                              ),
+                                              // ),
+                                              children: [
+                                                Column(
+                                                  children: [
+                                                    ListView.builder(
+                                                        shrinkWrap: true,
+                                                        physics:
+                                                            const NeverScrollableScrollPhysics(),
+                                                        itemCount: controller
+                                                                .transactionDetailModel
+                                                                .value
+                                                                .studentDetails
+                                                                ?.length ??
+                                                            0,
+                                                        itemBuilder: (context,
+                                                            int index) {
+                                                          return noOfTransaction(
+                                                              index);
+                                                        }),
+                                                    (controller
+                                                            .transactionDetailModel
+                                                            .value
+                                                            .studentDetails!
+                                                            .isEmpty)
+                                                        ? Container()
+                                                        : const Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    bottom: 15),
+                                                            child: Disclaimer(),
+                                                          )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+
+                                    // const SizedBox(
+                                    //   height: 10,
+                                    // ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )));
+                ))),
+    );
   }
 
   Widget noOfTransaction(int transactionIndex) {
-    
     return (controller.transactionDetailModel.value.studentDetails == [])
         ? const MyText("Transaction Detail Missing")
         : Column(
@@ -331,7 +329,6 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                     children: [
                       const MyText(
                         "Date of transaction",
-                 
                       ),
                       MyText(
                         controller
@@ -341,7 +338,6 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                 .transactionDate
                                 .toString() ??
                             "",
-                 
                       ),
                     ],
                   ),
@@ -350,11 +346,9 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                     children: [
                       const MyText(
                         "Paid Amount",
-                  
                       ),
                       MyText(
                         "₹ ${controller.transactionDetailModel.value.studentDetails?[transactionIndex].amount.toString()}",
-                       
                       ),
                     ],
                   ),
@@ -464,12 +458,13 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                 right: 14,
               ),
               child: MyButton(
-                  width: 60,
-                  height: 30,
-                  onPressed: () {
-                    Get.back();
-                  },
-                  label: "OK", ),
+                width: 60,
+                height: 30,
+                onPressed: () {
+                  Get.back();
+                },
+                label: "OK",
+              ),
             ),
           ),
         ],
@@ -479,7 +474,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
 
   ///
   Widget confirmationDialogBox(BuildContext context, dynamic dueAmount, int i) {
-     final payConfig= Get.find<PaymentConfig>();
+    final payConfig = Get.find<PaymentConfig>();
     print(
         "controller.partialAmountController ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[i].minAmount}");
     return Obx(() => Column(
@@ -530,7 +525,6 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                           padding: EdgeInsets.only(bottom: 4),
                           child: MyText(
                             "ANNUAL FEE",
-                     
                           ),
                         ),
                         Row(
@@ -541,12 +535,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                             ),
                             Container(
                               padding: const EdgeInsets.only(left: 4, top: 4),
-                         
                               width: 195,
                               height: 30,
                               child: MyText(
                                 " ₹ $dueAmount",
-                       
                               ),
                             )
                           ],
@@ -646,6 +638,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                 ],
                               ),
                               GetBuilder<OnlinePaymentController>(
+                                id: 'amountinwords',
                                 builder: (_) => Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -681,7 +674,6 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               const Row(
-                           
                                 children: [
                                   MyText(
                                     'Min amount',
@@ -689,11 +681,9 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                 ],
                               ),
                               Row(
-                      
                                 children: [
                                   MyText(
                                     '${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].minAmount}',
-                           
                                   ),
                                 ],
                               )
@@ -726,7 +716,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
                                   children: <TextSpan>[
                                     TextSpan(
                                       text: 'Terms and Conditions',
-                                      style:  TextStyle(
+                                      style: TextStyle(
                                         fontSize: 15.0,
                                         color: payConfig.primaryColor,
                                         decoration: TextDecoration.underline,
@@ -928,12 +918,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
               const MyText("Fine Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-          
                 width: 195,
                 height: 30,
                 child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-                
                 ),
               )
             ],
@@ -944,7 +932,6 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
           padding: EdgeInsets.only(bottom: 4, left: 8),
           child: MyText(
             "Total Amount to Pay",
-        
           ),
         ),
         Padding(
@@ -955,12 +942,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
               const MyText("Due/min Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-               
                 width: 195,
                 height: 30,
                 child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-       
                 ),
               )
             ],
@@ -974,12 +959,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
               const MyText("Fine Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-          
                 width: 195,
                 height: 30,
                 child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-                  
                 ),
               )
             ],
@@ -993,12 +976,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
               const MyText("Partial Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-              
                 width: 195,
                 height: 30,
                 child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-                  
                 ),
               )
             ],
@@ -1012,12 +993,10 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
               const MyText("Total Amount"),
               Container(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-              
                 width: 195,
                 height: 30,
                 child: MyText(
                   " ₹ ${controller.paymentDetailModel.value.sTUDENTPAYMENTDETAILS?[0].estFineAmount}",
-              
                 ),
               )
             ],
