@@ -118,10 +118,10 @@ class OnlinePaymentController extends GetxController {
   CancelToken _cancelToken;
 
   @override
-  void onInit() async {
+  void onInit()  {
     // Check internet connection with singleton (no custom values allowed)
     _paymentDetailRepo = PaymentDetailRepo(_dio, _cancelToken);
-    await execute(InternetConnectionChecker());
+     execute(InternetConnectionChecker());
 
     // Create customized instance which can be registered via dependency injection
     final InternetConnectionChecker customInstance =
@@ -131,14 +131,14 @@ class OnlinePaymentController extends GetxController {
     );
 
     // Check internet connection with created instance
-    await execute(customInstance);
+     execute(customInstance);
 
     super.onInit();
   }
 
   @override
-  void onReady()async {
-   await getPaymentDetail();
+  void onReady() {
+    getPaymentDetail();
     getCTypeListResponse();
     super.onReady();
     getTermsAndConditions();
