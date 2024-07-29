@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesu_payu/src/config/config.dart';
+import 'package:pesu_payu/src/config/payments_config.dart';
 import 'package:pesu_payu/src/core/routes.dart';
 import 'package:pesu_payu/src/utils/my_button.dart';
 

@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesu_payu/src/config/config.dart';
+import 'package:pesu_payu/src/config/payments_config.dart';
 
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/annualFees.dart';
