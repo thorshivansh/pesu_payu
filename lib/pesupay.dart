@@ -15,7 +15,7 @@ import 'package:pesu_payu/src/utils/enums/rxtstatus.dart';
 import 'package:pesu_payu/src/widget/appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class OnlinePaymentView extends StatelessWidget {
+class OnlinePaymentView extends GetView<OnlinePaymentController> {
   final String name;
   final String email;
   final String mobileNumber;
