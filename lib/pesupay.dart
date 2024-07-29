@@ -45,8 +45,8 @@ class OnlinePaymentView extends GetView<OnlinePaymentController> {
   @override
   Widget build(BuildContext context) {
 final config = Get.find<PaymentConfig>();
-   final OnlinePaymentController controller 
-= Get.put<OnlinePaymentController>(
+ 
+Get.put<OnlinePaymentController>(
     OnlinePaymentController(dio, preferences, cancelToken),
   );
   // Get.put();
@@ -82,7 +82,7 @@ final config = Get.find<PaymentConfig>();
       length: 3,
       child: Scaffold(
         appBar: paymentAppBar(
-          appBarTitle: "Online Payments",
+          appBarTitle: "Online Payments",appBarBackgroundColor: config.primaryColor,
           appBarAction: [
             Padding(
               padding: const EdgeInsets.only(right: 14),

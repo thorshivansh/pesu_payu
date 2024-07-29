@@ -120,6 +120,7 @@ class OnlinePaymentController extends GetxController {
   @override
   void onInit() async {
     // Check internet connection with singleton (no custom values allowed)
+    _paymentDetailRepo = PaymentDetailRepo(_dio, _cancelToken);
     await execute(InternetConnectionChecker());
 
     // Create customized instance which can be registered via dependency injection
@@ -131,7 +132,6 @@ class OnlinePaymentController extends GetxController {
 
     // Check internet connection with created instance
     await execute(customInstance);
-    _paymentDetailRepo = PaymentDetailRepo(_dio, _cancelToken);
 
     super.onInit();
   }
@@ -161,8 +161,7 @@ class OnlinePaymentController extends GetxController {
 
   @override
   void onClose() {
-  userInfo.dispose();
-  payuresponse.dispose();
+  
     miscSubcopies.dispose();
     miscdescController.dispose();
     miscdynamicamount.dispose();
