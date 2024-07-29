@@ -13,6 +13,7 @@ import 'package:pesu_payu/src/presentation/sub_widgets/miscellaneous.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/paymentHistoryView.dart';
 import 'package:pesu_payu/src/utils/enums/rxtstatus.dart';
 import 'package:pesu_payu/src/widget/appbar.dart';
+import 'package:pesu_payu/src/widget/retry_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OnlinePaymentView extends GetView<OnlinePaymentController> {
@@ -132,9 +133,9 @@ Get.put<OnlinePaymentController>(
         ),
         body: Obx(
           () => controller.rxRequestStatus.value == RequestStatus.LOADING
-              ? const Center(child: CircularProgressIndicator.adaptive())
+              ?  Center(child: config.loadingWidget)
               : controller.rxRequestStatus.value == RequestStatus.ERROR
-                  ? GestureDetector(onTap: () {
+                  ? RetryException(onTap: () {
                       controller.getPaymentDetail();
                       controller.getCTypeListResponse();
                       controller.getTermsAndConditions();
