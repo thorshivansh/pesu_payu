@@ -803,7 +803,7 @@ class TransactionDetailView extends GetView<OnlinePaymentController> {
       final miscType = "0&0&0&1&$feeTypeId";
       final instId = studentDetails.instId.toString();
       final bool result =
-          await controller.checkandConfirmAnnualAmount(studentDetails);
+          await controller.checkAndConfirmAnnualAmount(studentDetails);
       if (_.annulatcflag.value && result) {
         navigateToPaymentPage(
           instId: instId,

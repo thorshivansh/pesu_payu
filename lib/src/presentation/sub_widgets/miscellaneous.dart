@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,227 +35,232 @@ class Miscellaneous extends GetView<OnlinePaymentController> {
     // controller.clean();
 
     Function? downlaod;
-    return Obx(() => controller.paymentLoading.value
-        ? const Center(child: CircularProgressIndicator.adaptive())
-        : Container(
-            margin: const EdgeInsets.all(12.0),
-            child: Column(
-              children: [
-//                 DropdownSearch<String>(
-
-//     popupProps: const PopupProps.menu(
-//       showSearchBox: true,
-//         showSelectedItems: true,
-//         // disabledItemFn: (String s) => s.startsWith('I'),
-//     ),
-//     items: controller.cTypeModel.value.ctype!.map((e) => e.name!).toList(),
-//     dropdownDecoratorProps: const DropDownDecoratorProps(
-//         dropdownSearchDecoration: InputDecoration(
-
-//             labelText: "",
-//             hintText: "",
-//         ),
-//     ),
-//     onChanged: print,
-//     // selectedItem: "Brazil",
-// ),
-
-// DropdownSearch<String>.multiSelection(
-//     items: ["Brazil", "Italia (Disabled)", "Tunisia", 'Canada'],
-//     popupProps: PopupPropsMultiSelection.menu(
-//         showSelectedItems: true,
-//         disabledItemFn: (String s) => s.startsWith('I'),
-//     ),
-
-                controller.cTypeModel.value.ctype == null
-                    ? const SizedBox()
-                    : Column(
-                        children: [
-                          // GetBuilder<OnlinePaymentController>(
-                          //   builder: (c) {
-                          //     return
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: ShowDropDown(
-                              // itemHeight: 50,
-                              icon: controller.miscLoading.value
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator.adaptive(
-                                        strokeCap: StrokeCap.round,
-                                        // backgroundColor: Properties.themeColor.d,
-                                        value: null,
-                                        strokeWidth: 3.0,
-                                      ),
-                                    )
-                                  : const MyIcons(
-                                      Icons.keyboard_arrow_down_rounded),
-                              menuMaxHeight: Get.width * 1.2,
-                              initialValue: controller.ctypedrop.value,
-                              hintText: 'Select Category',
-                              onChanged: (v) {
-                                controller.stypedrop.value = null;
-                                controller.sTypeModel.value.clear();
-                                controller.ctypedrop.value = v;
-                              },
-                              items: controller.cTypeModel.value.ctype!
-                                  .map((e) => DropdownMenuItem(
-                                        value: e,
-                                        onTap: () {
-                                          controller.stypedrop.value = "";
-
-                                          controller
-                                              .getSTypeListResponse(e.id ?? 0);
-                                          controller.ctypeValue = e.id;
-                                        },
-                                        child: MyText(
-                                          e.name ?? '',
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
+     CancelToken token = CancelToken();
+    
+    return PopScope(
+      onPopInvoked: (didPop) => token.cancel(),
+      child: Obx(() => controller.paymentLoading.value
+          ? const Center(child: CircularProgressIndicator.adaptive())
+          : Container(
+              margin: const EdgeInsets.all(12.0),
+              child: Column(
+                children: [
+      //                 DropdownSearch<String>(
+      
+      //     popupProps: const PopupProps.menu(
+      //       showSearchBox: true,
+      //         showSelectedItems: true,
+      //         // disabledItemFn: (String s) => s.startsWith('I'),
+      //     ),
+      //     items: controller.cTypeModel.value.ctype!.map((e) => e.name!).toList(),
+      //     dropdownDecoratorProps: const DropDownDecoratorProps(
+      //         dropdownSearchDecoration: InputDecoration(
+      
+      //             labelText: "",
+      //             hintText: "",
+      //         ),
+      //     ),
+      //     onChanged: print,
+      //     // selectedItem: "Brazil",
+      // ),
+      
+      // DropdownSearch<String>.multiSelection(
+      //     items: ["Brazil", "Italia (Disabled)", "Tunisia", 'Canada'],
+      //     popupProps: PopupPropsMultiSelection.menu(
+      //         showSelectedItems: true,
+      //         disabledItemFn: (String s) => s.startsWith('I'),
+      //     ),
+      
+                  controller.cTypeModel.value.ctype == null
+                      ? const SizedBox()
+                      : Column(
+                          children: [
+                            // GetBuilder<OnlinePaymentController>(
+                            //   builder: (c) {
+                            //     return
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: ShowDropDown(
+                                // itemHeight: 50,
+                                icon: controller.miscLoading.value
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator.adaptive(
+                                          strokeCap: StrokeCap.round,
+                                          // backgroundColor: Properties.themeColor.d,
+                                          value: null,
+                                          strokeWidth: 3.0,
                                         ),
-                                      ))
-                                  .toList(),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-//****************************************************************************** */
-                          GetBuilder<OnlinePaymentController>(
-                            id: 'counterId',
-                            builder: (_) => controller
-                                        .sTypeModel.value.isEmpty ||
-                                    controller
-                                        .sTypeModel.value[0].stype!.isEmpty
-                                ? const SizedBox()
-                                : Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 8.0, left: 8.0),
-                                    child: ShowDropDown(
-                                      menuMaxHeight: Get.width * 1.2,
-                                      initialValue: controller.stypedrop.value,
-                                      hintText: 'Select Sub-Category',
-                                      onChanged: (selectedValue) {
-                                        controller.stypedrop.value =
-                                            selectedValue;
-
-                                        // Handle onChanged event if needed
-                                        showModalBottomSheet(
-                                          enableDrag: false,
-                                          isScrollControlled: true,
-                                          isDismissible: false,
-                                          backgroundColor: Colors.white,
-                                          elevation: 0.0,
-                                          shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.vertical(
-                                              top: Radius.circular(0),
-                                            ),
-                                          ),
-                                          context: context,
-                                          builder: (context) {
-                                            return PopScope(
-                                              onPopInvoked: (didPop) {
-                                                if (didPop) {
-                                                  // print('object');
-                                                  // controller.sTypeModel.value.clear();
-                                                  controller.stypedrop.value =
-                                                      null;
-                                                  controller.stypeValue = null;
-                                                  controller.clean();
-                                                }
-                                              },
-                                              child: Obx(
-                                                () => SafeArea(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                      bottom:
-                                                          MediaQuery.of(context)
-                                                              .viewInsets
-                                                              .bottom,
-                                                    ),
-                                                    child: SingleChildScrollView(
-                                                        child: controller
-                                                                .miscLoading
-                                                                .value
-                                                            ? SizedBox(
-                                                                height: 150,
-                                                                child: Center(
-                                                                    child: config
-                                                                        .loadingWidget))
-                                                            : paymentConfirmation(
-                                                                context,
-                                                                0) // Replace with your bottom sheet content
-                                                        ),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
+                                      )
+                                    : const MyIcons(
+                                        Icons.keyboard_arrow_down_rounded),
+                                menuMaxHeight: Get.width * 1.2,
+                                initialValue: controller.ctypedrop.value,
+                                hintText: 'Select Category',
+                                onChanged: (v) {
+                                  controller.stypedrop.value = null;
+                                  controller.sTypeModel.value.clear();
+                                  controller.ctypedrop.value = v;
+                                },
+                                items: controller.cTypeModel.value.ctype!
+                                    .map((e) => DropdownMenuItem(
+                                          value: e,
+                                          onTap: () {
+                                            controller.stypedrop.value = "";
+      
+                                            controller
+                                                .getSTypeListResponse(e.id ?? 0);
+                                            controller.ctypeValue = e.id;
                                           },
-                                        );
-                                      },
-                                      items: controller
-                                          .sTypeModel.value[0].stype!
-                                          .map((e) => DropdownMenuItem(
-                                                value: e.name,
-                                                onTap: () {
-                                                  controller
-                                                      .getPaymentConfirmationResponse(
-                                                          controller.ctypeValue,
-                                                          e.id!);
-
-                                                  controller.miscdescController
-                                                      .clear();
-                                                  controller.stypeValue = e.id;
+                                          child: MyText(
+                                            e.name ?? '',
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+      //****************************************************************************** */
+                            GetBuilder<OnlinePaymentController>(
+                              id: 'counterId',
+                              builder: (_) => controller
+                                          .sTypeModel.value.isEmpty ||
+                                      controller
+                                          .sTypeModel.value[0].stype!.isEmpty
+                                  ? const SizedBox()
+                                  : Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 8.0, left: 8.0),
+                                      child: ShowDropDown(
+                                        menuMaxHeight: Get.width * 1.2,
+                                        initialValue: controller.stypedrop.value,
+                                        hintText: 'Select Sub-Category',
+                                        onChanged: (selectedValue) {
+                                          controller.stypedrop.value =
+                                              selectedValue;
+      
+                                          // Handle onChanged event if needed
+                                          showModalBottomSheet(
+                                            enableDrag: false,
+                                            isScrollControlled: true,
+                                            isDismissible: false,
+                                            backgroundColor: Colors.white,
+                                            elevation: 0.0,
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.vertical(
+                                                top: Radius.circular(0),
+                                              ),
+                                            ),
+                                            context: context,
+                                            builder: (context) {
+                                              return PopScope(
+                                                onPopInvoked: (didPop) {
+                                                  if (didPop) {
+                                                    // print('object');
+                                                    // controller.sTypeModel.value.clear();
+                                                    controller.stypedrop.value =
+                                                        null;
+                                                    controller.stypeValue = null;
+                                                    controller.clean();
+                                                  }
                                                 },
-                                                child: Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      1.0,
-                                                  // height: 90,
-                                                  color: Colors.white,
-                                                  child: MyText(
-                                                    e.name ?? '',
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
+                                                child: Obx(
+                                                  () => SafeArea(
+                                                    child: Padding(
+                                                      padding: EdgeInsets.only(
+                                                        bottom:
+                                                            MediaQuery.of(context)
+                                                                .viewInsets
+                                                                .bottom,
+                                                      ),
+                                                      child: SingleChildScrollView(
+                                                          child: controller
+                                                                  .miscLoading
+                                                                  .value
+                                                              ? SizedBox(
+                                                                  height: 150,
+                                                                  child: Center(
+                                                                      child: config
+                                                                          .loadingWidget))
+                                                              : paymentConfirmation(
+                                                                  context,
+                                                                  0) // Replace with your bottom sheet content
+                                                          ),
+                                                    ),
                                                   ),
                                                 ),
-                                              ))
-                                          .toList(),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        items: controller
+                                            .sTypeModel.value[0].stype!
+                                            .map((e) => DropdownMenuItem(
+                                                  value: e.name,
+                                                  onTap: () {
+                                                    controller
+                                                        .getPaymentConfirmationResponse(
+                                                            controller.ctypeValue,
+                                                            e.id!);
+      
+                                                    controller.miscdescController
+                                                        .clear();
+                                                    controller.stypeValue = e.id;
+                                                  },
+                                                  child: Container(
+                                                    width: MediaQuery.of(context)
+                                                            .size
+                                                            .width /
+                                                        1.0,
+                                                    // height: 90,
+                                                    color: Colors.white,
+                                                    child: MyText(
+                                                      e.name ?? '',
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                    ),
+                                                  ),
+                                                ))
+                                            .toList(),
+                                      ),
                                     ),
-                                  ),
-                          )
-                        ],
-                      ),
-
-                const SizedBox(
-                  height: 10,
-                ),
-                Expanded(
-                  child: RefreshIndicator.adaptive(
-                    onRefresh: () async {
-                      controller.getCTypeListResponse();
-                      controller.getPaymentDetail();
-                    },
-                    child: controller.paymentLoading.value
-                        ? const Center(
-                            child: CircularProgressIndicator.adaptive())
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: controller.paymentDetailModel.value
-                                    .misDetails?.length ??
-                                0,
-                            itemBuilder: (context, int i) {
-                              return annualFreeListTile1(context, i, downlaod);
-                            }),
+                            )
+                          ],
+                        ),
+      
+                  const SizedBox(
+                    height: 10,
                   ),
-                )
-              ],
-            ),
-          ));
+                  Expanded(
+                    child: RefreshIndicator.adaptive(
+                      onRefresh: () async {
+                        controller.getCTypeListResponse();
+                        controller.getPaymentDetail();
+                      },
+                      child: controller.paymentLoading.value
+                          ? const Center(
+                              child: CircularProgressIndicator.adaptive())
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: controller.paymentDetailModel.value
+                                      .misDetails?.length ??
+                                  0,
+                              itemBuilder: (context, int i) {
+                                return annualFreeListTile1(context, i, downlaod);
+                              }),
+                    ),
+                  )
+                ],
+              ),
+            )),
+    );
   }
 
   Widget annualFreeListTile1(BuildContext context, int i, Function? download) {

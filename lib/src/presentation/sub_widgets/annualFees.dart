@@ -1,4 +1,5 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,69 +13,73 @@ class AnnualFee extends GetView<OnlinePaymentController> {
   const AnnualFee({super.key});
   @override
   Widget build(BuildContext context) {
+    CancelToken token = CancelToken();
     
-    return RefreshIndicator.adaptive(
-                onRefresh: ()async {
-controller.getCTypeListResponse();
-               controller.getPaymentDetail();
-               controller.getTermsAndConditions();
-              //  return ;
-                },
-                child:SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              // color: Properties.themeColor.darkBlue3,
-              child: MyText(
-                  "Balance / Pending Amount(${controller.pendingCount.value})",
-                  style: GoogleFonts.merriweather(
-                    // textStyle: Properties.textsStyles.text16_500
-                    //     .copyWith(color: Properties.themeColor.darkBlue1),
-                  )),
-            ),
-            ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: controller
-                        .paymentDetailModel.value.sTUDENTPAYMENTDETAILS?.length ??
-                    0,
-                itemBuilder: (context, int i) {
-                  var status = controller.paymentDetailModel.value
-                      .sTUDENTPAYMENTDETAILS?[i].paymentStatus;
-                  return (status == "Pending" || status == "Partially Paid")
-                      ? annualFreeListTile1(context, i)
-                      : Container();
-                }),
-            // Container(
-            //   width: double.infinity,
-            //   padding: const EdgeInsets.all(10),
-            //   color: Properties.themeColor.darkBlue3,
-            //   child: MyText(
-            //       "Paid/Successful/Rejected Payment(${controller.paidCount.value})",
-            //       style: GoogleFonts.merriweather(
-            //         textStyle: Properties.textsStyles.text16_500
-            //             .copyWith(color: Properties.themeColor.darkBlue1),
-            //       )),
-            // ),
-            ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: controller
-                        .paymentDetailModel.value.sTUDENTPAYMENTDETAILS?.length ??
-                    0,
-                itemBuilder: (context, int i) {
-                  var status = controller.paymentDetailModel.value
-                      .sTUDENTPAYMENTDETAILS?[i].paymentStatus;
-                  return (status == "Successful" ||
-                          status == "Paid" ||
-                          status == "Rejected")
-                      ? annualFreeListTile1(context, i)
-                      : Container();
-                }),
-          ],
+    return PopScope(
+      onPopInvoked: (didPop) => token.cancel(),
+      child: RefreshIndicator.adaptive(
+                  onRefresh: ()async {
+      controller.getCTypeListResponse();
+                 controller.getPaymentDetail();
+                 controller.getTermsAndConditions();
+                //  return ;
+                  },
+                  child:SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                // color: Properties.themeColor.darkBlue3,
+                child: MyText(
+                    "Balance / Pending Amount(${controller.pendingCount.value})",
+                    style: GoogleFonts.merriweather(
+                      // textStyle: Properties.textsStyles.text16_500
+                      //     .copyWith(color: Properties.themeColor.darkBlue1),
+                    )),
+              ),
+              ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: controller
+                          .paymentDetailModel.value.sTUDENTPAYMENTDETAILS?.length ??
+                      0,
+                  itemBuilder: (context, int i) {
+                    var status = controller.paymentDetailModel.value
+                        .sTUDENTPAYMENTDETAILS?[i].paymentStatus;
+                    return (status == "Pending" || status == "Partially Paid")
+                        ? annualFreeListTile1(context, i)
+                        : Container();
+                  }),
+              // Container(
+              //   width: double.infinity,
+              //   padding: const EdgeInsets.all(10),
+              //   color: Properties.themeColor.darkBlue3,
+              //   child: MyText(
+              //       "Paid/Successful/Rejected Payment(${controller.paidCount.value})",
+              //       style: GoogleFonts.merriweather(
+              //         textStyle: Properties.textsStyles.text16_500
+              //             .copyWith(color: Properties.themeColor.darkBlue1),
+              //       )),
+              // ),
+              ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: controller
+                          .paymentDetailModel.value.sTUDENTPAYMENTDETAILS?.length ??
+                      0,
+                  itemBuilder: (context, int i) {
+                    var status = controller.paymentDetailModel.value
+                        .sTUDENTPAYMENTDETAILS?[i].paymentStatus;
+                    return (status == "Successful" ||
+                            status == "Paid" ||
+                            status == "Rejected")
+                        ? annualFreeListTile1(context, i)
+                        : Container();
+                  }),
+            ],
+          ),
         ),
       ),
     );
