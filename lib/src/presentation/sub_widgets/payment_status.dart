@@ -82,7 +82,7 @@ class _PaymentStatusState extends State<PaymentStatus>
       onPopInvoked: (_) async {
         // Get.back();
         _paymentController.getPaymentDetail();
-        PaymentRoutes.preventDuplicate('/OnlinePaymentView', context);
+        PaymentRoutes.preventDuplicate('/online-payment', context);
         // Get.off(OnlinePaymentView());
 
         // return false;
