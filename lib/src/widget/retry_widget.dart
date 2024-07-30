@@ -4,6 +4,21 @@ import 'package:get/get.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/utils/my_button.dart';
 
+// import 'package:get/get.dart';
+
+class ApiCallState<T> {
+  var isLoading = false.obs;
+  var hasError = false.obs;
+  var errorMessage = ''.obs;
+  var data = Rxn<T>();
+
+  void reset() {
+    isLoading(false);
+    hasError(false);
+    errorMessage('');
+    data.value = null;
+  }
+}
 
 
 

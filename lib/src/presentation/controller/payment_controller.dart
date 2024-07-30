@@ -16,9 +16,11 @@ import 'package:intl/intl.dart';
 import 'package:number_to_text_converter/number_to_text_converter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
+import 'package:pesu_payu/pesupay.dart';
 import 'package:pesu_payu/src/presentation/views/online_payment_view.dart';
 import 'package:pesu_payu/src/utils/enums/misc_enums.dart';
 import 'package:pesu_payu/src/utils/page_route.dart';
+import 'package:pesu_payu/src/widget/retry_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/models/TransactionModel.dart';
@@ -116,6 +118,19 @@ class OnlinePaymentController extends GetxController {
   var converter = NumberToTextConverter.forIndianNumberingSystem();
 
   CancelToken _cancelToken;
+
+
+
+
+///Serahc feature identifiers
+Rx<List<MisDetails>> searchResult = Rx<List<MisDetails>>([]);
+  RxList<MisDetails> filteredStudentList = <MisDetails>[].obs;
+  final RxList<MisDetails> filteredItems = <MisDetails>[].obs;
+  Rx<List<Paymenthistory>> historySearchResult = Rx<List<Paymenthistory>>([]);
+  RxList<Paymenthistory> historyFilteredStudentList = <Paymenthistory>[].obs;
+  final RxList<Paymenthistory> historyFilteredItems = <Paymenthistory>[].obs;
+  final TextEditingController searchController = TextEditingController();
+  final TextEditingController historySearchController = TextEditingController();
 
   @override
   void onInit()  {
@@ -254,10 +269,10 @@ class OnlinePaymentController extends GetxController {
 
 /// Here We are passing config values to payu as required by Payu
       var payUCheckoutProConfig = {
-        PayUCheckoutProConfigKeys.primaryColor: "#4994EC",
-        PayUCheckoutProConfigKeys.secondaryColor: "#FFFFFF",
-        PayUCheckoutProConfigKeys.merchantName: "PES University",
-        PayUCheckoutProConfigKeys.merchantLogo: "@drawable/peslogo",
+        // PayUCheckoutProConfigKeys.primaryColor: "#4994EC",
+        // PayUCheckoutProConfigKeys.secondaryColor: "#FFFFFF",
+        // PayUCheckoutProConfigKeys.merchantName: "PES University",
+        // PayUCheckoutProConfigKeys.merchantLogo: "@drawable/peslogo",
         PayUCheckoutProConfigKeys.showExitConfirmationOnCheckoutScreen: true,
         PayUCheckoutProConfigKeys.showExitConfirmationOnPaymentScreen: true,
         // PayUCheckoutProConfigKeys.cartDetails: cartDetails,
@@ -593,7 +608,7 @@ class OnlinePaymentController extends GetxController {
       // paymentLoading.value = false;
     }
   }
-
+ var apiCallState1 = ApiCallState<String>().obs;
   /// Get all transaction detils in transaction details view page
   ///
   /// of payments user has done in past of that demand Id
@@ -601,22 +616,37 @@ class OnlinePaymentController extends GetxController {
     dynamic academicYearId,
     dynamic feeType,
   ) async {
+     final state = apiCallState1.value;
     try {
-      paymentLoading.value = true;
+      state.reset();
+    state.isLoading(true);
       var response = await _paymentDetailRepo.getTransactionDetail(
           academicYearId, feeType, userInfo.value['userId']);
-      // if (response.statuscode == 200) {
-      response.fold((left) {
-        paymentLoading.value = false;
+      
+      response.fold((e) {
+        state.hasError(true);
+        state.errorMessage.value=e.message!;
+        // state.isLoading(false);
+        if (e.error is CustomDioException) {
+        state.errorMessage((e.error as CustomDioException).message);
+      } else {
+        state.errorMessage("An unexpected error occurred.");
+      }
       }, (res) {
         transactionDetailModel.value = TransactionDetailModel.fromJson(res);
+        state.data.value=res;
+        
       });
 
       // }
-      paymentLoading.value = false;
+  //  state.isLoading(false);
     } catch (e, s) {
+      state.hasError(true);
       log('$e', error: s);
-      paymentLoading.value = false;
+      // state.isLoading(false);
+    }
+    finally{
+      state.isLoading(false);
     }
   }
 
@@ -1028,6 +1058,97 @@ class OnlinePaymentController extends GetxController {
     // close listener after 30 seconds, so the program doesn't run forever
     await Future<void>.delayed(const Duration(seconds: 30));
     await listener.cancel();
+  }
+
+
+
+
+  void filterSearchResults(String query) {
+    filteredStudentList.value = paymentDetailModel.value.misDetails ?? [];
+    if (query.isNotEmpty) {
+      List<MisDetails> filteredResults = [];
+      searchResult.value.clear();
+      debugPrint('ssss1 ${filteredStudentList.length}');
+
+      for (var entry in filteredStudentList) {
+        // debugPrint('ssss2 ${searchResult.value}');
+
+        if (entry.transactionDetails!
+            .toLowerCase()
+            .contains(query.toLowerCase()) ||entry.transactionDetails!
+            .toLowerCase()
+            .contains(query.toLowerCase()) || entry.sRN!
+            .toLowerCase()
+            .contains(query.toLowerCase()) || entry.transactionNo!
+            .toLowerCase()
+            .contains(query.toLowerCase())|| entry.amount!
+            .toLowerCase()
+            .contains(query.toLowerCase())||entry.batchName!
+            .toLowerCase()
+            .contains(query.toLowerCase())|| entry.verifiedStatus!
+            .toLowerCase()
+            .contains(query.toLowerCase()) ) {
+          // debugPrint('ssss3 ${searchResult.value}');
+
+          filteredResults.add(entry);
+          searchResult.value.add(entry);
+        }
+        // debugPrint('ssss4 ${searchResult.value}');
+      }
+      filteredItems.assignAll(filteredResults);
+
+    } else {
+      filteredItems.assignAll(filteredStudentList);
+
+    }
+
+    for(int i = 0 ; i < searchResult.value.length ; i++){
+     debugPrint('ssss4 ${searchResult.value[i].batchName}');}
+    update(['search']);
+  }
+
+  void historySearchResults(String query) {
+    historyFilteredStudentList.value = paymentDetailModel.value.paymenthistory ?? [];
+    if (query.isNotEmpty) {
+      List<Paymenthistory> historyFilteredResults = [];
+      historySearchResult.value.clear();
+      debugPrint('ssss1 ${historyFilteredStudentList.length}');
+
+      for (var entry in historyFilteredStudentList) {
+        // debugPrint('ssss2 ${searchResult.value}');
+
+        if (entry.transactionDetails!
+            .toLowerCase()
+            .contains(query.toLowerCase()) ||entry.transactionDetails!
+            .toLowerCase()
+            .contains(query.toLowerCase()) || entry.sRN!
+            .toLowerCase()
+            .contains(query.toLowerCase()) || entry.transactionNo!
+            .toLowerCase()
+            .contains(query.toLowerCase())|| entry.amount!
+            .toLowerCase()
+            .contains(query.toLowerCase())||entry.batchName!
+            .toLowerCase()
+            .contains(query.toLowerCase())|| entry.reason!
+            .toLowerCase()
+            .contains(query.toLowerCase()) ) {
+          // debugPrint('ssss3 ${searchResult.value}');
+
+          historyFilteredResults.add(entry);
+          historySearchResult.value.add(entry);
+        }
+        // debugPrint('ssss4 ${searchResult.value}');
+      }
+      historyFilteredItems.assignAll(historyFilteredResults);
+
+    } else {
+      historyFilteredItems.assignAll(historyFilteredStudentList);
+
+    }
+
+    for(int i = 0 ; i < historySearchResult.value.length ; i++){
+      debugPrint('ssss4 ${historySearchResult.value[i].batchName}');}
+    update(['historysearch']);
   }
 }
 

@@ -76,7 +76,7 @@ class _PaymentStatusState extends State<PaymentStatus>
   final config = Get.find<PaymentConfig>();
   @override
   Widget build(BuildContext context) {
-    log(_paymentController.payuresponse.value.toString(), name: 'payu');
+    // log(_paymentController.payuresponse.value.toString(), name: 'payu');
 
     return PopScope(
       onPopInvoked: (_) async {

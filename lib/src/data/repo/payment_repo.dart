@@ -6,9 +6,11 @@ import '../../config/api_config.dart';
 // import 'package:pesua/utils/properties.dart';
 
 abstract class PaymentDetailRepo {
-  factory PaymentDetailRepo(Dio dio, CancelToken cancelToken) = PaymentDetailService;
+  factory PaymentDetailRepo(Dio dio, CancelToken cancelToken) =
+      PaymentDetailService;
   Future<Either<Exception, dynamic>> getPaymentDetail(String userId);
-  Future<Either<Exception, dynamic>> getTransactionDetail(dynamic academicYearId, dynamic feeType, String userId);
+  Future<Either<DioException, dynamic>> getTransactionDetail(
+      dynamic academicYearId, dynamic feeType, String userId);
   Future<Either<Exception, dynamic>> getDynamicHash({
     required String hash,
     required String txnId,
@@ -28,7 +30,8 @@ abstract class PaymentDetailRepo {
   });
   Future<Either<Exception, dynamic>> getCTypeList(int instId);
   Future<Either<Exception, dynamic>> getSTypeList(int id, int instId);
-  Future<Either<Exception, dynamic>> getPaymentConfirmationDetail(int ctype, int stype, String userId);
+  Future<Either<Exception, dynamic>> getPaymentConfirmationDetail(
+      int ctype, int stype, String userId);
   Future<Either<Exception, dynamic>> getPaymenttandc(int instId);
 }
 
@@ -51,28 +54,33 @@ class PaymentDetailService implements PaymentDetailRepo {
         'userId': userId,
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
+      var res = await _dio.post(
+        ApiConfig.dispatecher,
+        data: body,
+        cancelToken: _cancelToken,
+      );
       log(res.toString(), name: 'paymentDetail Response');
-      if(res.statusCode==200){
+      if (res.statusCode == 200) {
         return Right(res.data);
-      }else{
+      } else {
         return Left(Exception(res.data));
       }
       // return res;
-    } catch (e) {
+    } on DioException catch (e) {
       log("Error getPaymentDetail", error: e);
       // return false;
-      return Left(Exception(e));
+      return Left(e);
     }
   }
 
   @override
-  Future<Either<Exception, dynamic>> getTransactionDetail(dynamic academicYearId, dynamic feeType, String userId) async {
+  Future<Either<DioException, dynamic>> getTransactionDetail(
+      dynamic academicYearId, dynamic feeType, String userId) async {
     try {
       log(jsonEncode({
         'action': 48,
         'mode': 2,
-        'userId':userId,
+        'userId': userId,
         'academicYear': academicYearId,
         'feeType': feeType
       }));
@@ -84,23 +92,25 @@ class PaymentDetailService implements PaymentDetailRepo {
         'feeType': feeType
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
+      var res = await _dio.post(
+        ApiConfig.dispatecher,
+        data: body,
+        cancelToken: _cancelToken,
+      );
       log(res.toString(), name: 'Transaction Response');
-      if(res.statusCode==200){
+      if (res.statusCode == 200) {
         return Right(res.data);
-        }else{
-          return Left(Exception(res.data));
-          }
-      // return res;
-    } catch (e) {
+      } else {
+        throw Exception("${res.statusMessage}");
+      }
+    } on DioException catch (e) {
       log("ERROR getTransactionDetail", error: e);
-      // return false;
-      return Left(Exception(e));
+
+      return Left(e);
     }
   }
 
   @override
-
   Future<Either<Exception, dynamic>> getDynamicHash({
     required String hash,
     required String txnId,
@@ -117,7 +127,6 @@ class PaymentDetailService implements PaymentDetailRepo {
     required String mobileNumber,
     required String userId,
     required String loginId,
-    
   }) async {
     log(
         jsonEncode({
@@ -130,9 +139,9 @@ class PaymentDetailService implements PaymentDetailRepo {
           "email": email,
           "feename": feeName,
           "instId": instId,
-          "UserId":userId,
+          "UserId": userId,
           "number": mobileNumber,
-          "LoginId":loginId,
+          "LoginId": loginId,
           "AcademicYear": academicyear,
           "misctype": misctype,
           "fdFeeType": fdFeeTypeId,
@@ -168,15 +177,16 @@ class PaymentDetailService implements PaymentDetailRepo {
       if (res.statusCode == 200) {
         return Right(res.data);
       } else {
-        throw Exception("Invalid Hash");
+        throw Exception("${res.statusMessage}");
       }
     } on DioException catch (e) {
       log("Error getDynamicHash", error: e);
       return Left(e);
     }
-    }
+  }
+
   @override
-   Future<Either<Exception, dynamic>> getCTypeList( int instId) async {
+  Future<Either<Exception, dynamic>> getCTypeList(int instId) async {
     try {
       log(jsonEncode({
         'action': 48,
@@ -186,33 +196,32 @@ class PaymentDetailService implements PaymentDetailRepo {
       FormData body = FormData.fromMap({
         'action': 48,
         'mode': 3,
-        'instId':instId,
+        'instId': instId,
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
+      var res = await _dio.post(
+        ApiConfig.dispatecher,
+        data: body,
+        cancelToken: _cancelToken,
+      );
       log(res.toString(), name: 'CType Response');
       if (res.statusCode == 200) {
         return Right(res.data);
-        } else {
-          throw Exception("${res.statusMessage}");
-          }
-          } on DioException catch (e) {
+      } else {
+        throw Exception("${res.statusMessage}");
+      }
+    } on DioException catch (e) {
       log("error api call in CtypeList", error: e);
-          
-            return Left(e);
-            }
-            }
+
+      return Left(e);
+    }
+  }
 
   @override
-   Future<Either<Exception, dynamic>> getSTypeList(int id, int instId) async {
+  Future<Either<Exception, dynamic>> getSTypeList(int id, int instId) async {
     try {
-      log(jsonEncode({
-        'action': 48,
-        'mode': 4,
-        'instId': instId,
-        'id': id,
-        'type': 0
-      }));
+      log(jsonEncode(
+          {'action': 48, 'mode': 4, 'instId': instId, 'id': id, 'type': 0}));
       FormData body = FormData.fromMap({
         'action': 48,
         'mode': 4,
@@ -221,24 +230,27 @@ class PaymentDetailService implements PaymentDetailRepo {
         'type': 0 // AS FOR NOW IT IS DYNAMIC - RITHESH CONFIRMED
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
+      var res = await _dio.post(
+        ApiConfig.dispatecher,
+        data: body,
+        cancelToken: _cancelToken,
+      );
       log(res.toString(), name: 'SType Response');
-      if(res.statusCode==200){
+      if (res.statusCode == 200) {
         return Right(res.data);
-      }
-      else{
+      } else {
         throw Exception("${res.statusMessage}");
-        }
-    
-    }on DioException catch (e) {
+      }
+    } on DioException catch (e) {
       log("error api call in StypeList", error: e);
-    
-    return Left(e);
+
+      return Left(e);
     }
   }
 
   @override
-   Future<Either<Exception, dynamic>> getPaymentConfirmationDetail(int ctype, int stype, String userId) async {
+  Future<Either<Exception, dynamic>> getPaymentConfirmationDetail(
+      int ctype, int stype, String userId) async {
     try {
       log(jsonEncode({
         'action': 48,
@@ -246,7 +258,7 @@ class PaymentDetailService implements PaymentDetailRepo {
         'userId': userId,
         'subtype': stype,
         'type': ctype,
-      "feeType":2
+        "feeType": 2
       }));
       FormData body = FormData.fromMap({
         'action': 48,
@@ -254,50 +266,47 @@ class PaymentDetailService implements PaymentDetailRepo {
         'userId': userId,
         'subtype': stype,
         'type': ctype,
-        "feeType":2
+        "feeType": 2
       });
 
-      var res = await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
+      var res = await _dio.post(
+        ApiConfig.dispatecher,
+        data: body,
+        cancelToken: _cancelToken,
+      );
       log(res.toString(), name: 'getPaymentConfirmationDetail');
-      if(res.statusCode==200){
+      if (res.statusCode == 200) {
         return Right(res.data);
-        }
-        else{
-          throw Exception("${res.statusMessage}");
-        }
-
-    }on DioException catch (e) {
+      } else {
+        throw Exception("${res.statusMessage}");
+      }
+    } on DioException catch (e) {
       log("error api call in getPaymentConfirmationDetail", error: e);
       return Left(e);
     }
   }
-  
+
   @override
-  Future<Either<Exception, dynamic>> getPaymenttandc(int instId)async {
-    try{
- log(jsonEncode({
-        'action': 48,
-        'mode': 6,
-        "instId":instId
-       
-      }));
+  Future<Either<Exception, dynamic>> getPaymenttandc(int instId) async {
+    try {
+      log(jsonEncode({'action': 48, 'mode': 6, "instId": instId}));
 
-FormData body = FormData.fromMap({
-   'action': 48,
-        'mode': 6,
-        "instId":instId
-});
-var res =await _dio.post(ApiConfig.dispatecher, data: body, cancelToken: _cancelToken,);
-log(res.toString(), name: 'getPaymenttandc');
-if(res.statusCode==200){
-  return Right(res.data);
-}else{
-  throw Exception("${res.statusMessage}");
-}
-
-  }on DioException catch(e){
-    log("error api call in getPaymenttandc", error: e);
-    return Left(e);
-  }
+      FormData body =
+          FormData.fromMap({'action': 48, 'mode': 6, "instId": instId});
+      var res = await _dio.post(
+        ApiConfig.dispatecher,
+        data: body,
+        cancelToken: _cancelToken,
+      );
+      log(res.toString(), name: 'getPaymenttandc');
+      if (res.statusCode == 200) {
+        return Right(res.data);
+      } else {
+        throw Exception("${res.statusMessage}");
+      }
+    } on DioException catch (e) {
+      log("error api call in getPaymenttandc", error: e);
+      return Left(e);
+    }
   }
 }

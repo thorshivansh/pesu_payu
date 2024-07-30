@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:pesu_payu/src/config/payments_config.dart';
 import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
 import 'package:pesu_payu/src/presentation/sub_widgets/transactiondetail.dart';
 import 'package:pesu_payu/src/utils/my_text.dart';
@@ -14,7 +15,7 @@ class AnnualFee extends GetView<OnlinePaymentController> {
   @override
   Widget build(BuildContext context) {
     CancelToken token = CancelToken();
-    
+    final config = Get.find<PaymentConfig>();
     return PopScope(
       onPopInvoked: (didPop) => token.cancel(),
       child: RefreshIndicator.adaptive(
@@ -31,7 +32,7 @@ class AnnualFee extends GetView<OnlinePaymentController> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(10),
-                // color: Properties.themeColor.darkBlue3,
+                color: config.secondaryColor,
                 child: MyText(
                     "Balance / Pending Amount(${controller.pendingCount.value})",
                     style: GoogleFonts.merriweather(
