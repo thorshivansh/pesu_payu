@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
-import '../../config/api_config.dart';
-// import 'package:pesua/utils/properties.dart';
+import '../../../pesupay.dart';
+
 
 abstract class PaymentDetailRepo {
   factory PaymentDetailRepo(Dio dio, CancelToken cancelToken) =

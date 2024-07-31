@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
-import 'package:pesu_payu/src/config/payments_config.dart';
-import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
-import 'package:pesu_payu/src/widget/appbar.dart';
-import 'package:pesu_payu/src/widget/retry_widget.dart';
+import '../../../pesupay.dart';
 
 class TermsAndConditionView extends GetView<OnlinePaymentController> {
   const TermsAndConditionView({super.key});

@@ -1,315 +1,228 @@
-import 'dart:convert';
-import 'dart:developer';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
-import 'package:payu_checkoutpro_flutter/payu_checkoutpro_flutter.dart';
-import 'package:pesu_payu/src/config/api_config.dart';
-import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
+import 'package:get/get.dart'hide Response;
+import 'package:lucide_icons/lucide_icons.dart';
+import '../../../pesupay.dart';
 
-import '../sub_widgets/payment_status.dart';
 
-class PesuPaymentPage extends StatefulWidget {
-  final Widget? loadingWidget;
-  final String academicyear;
-  final String misctype;
-  final String? demandId;
-  final String dueAmount;
-  final String? feeName;
-  final String? instId;
-  final String? fdFeeTypeId;
-  final String merchantKey;
-  final String? paymentDescription;
-  final bool isMiscpayment;
+class OnlinePaymentView extends GetView<OnlinePaymentController> {
+  final String name;
+  final String email;
+  final String mobileNumber;
+  final String userId;
+  final String loginId;
+  final int instId;
+  final Dio dio;
+  final SharedPreferences preferences;
+  final CancelToken cancelToken;
+  final PaymentConfig config;
+  const OnlinePaymentView(
+      {required this.dio,
+      required this.instId,
+      required this.preferences,
+      required this.cancelToken,
+      required this.config,
+      required this.name,
+      required this.email,
+      required this.mobileNumber,
+      required this.userId,
+      required this.loginId,
+      super.key});
 
-  const PesuPaymentPage({
-    super.key,
-    required this.academicyear,
-    required this.misctype,
-    this.demandId,
-    required this.dueAmount,
-    this.feeName,
-    this.fdFeeTypeId,
-    required this.merchantKey,
-    this.paymentDescription,
-    required this.isMiscpayment,
-    this.loadingWidget,
-    this.instId,
-    // this.pay
-  });
 
-  @override
-  State<PesuPaymentPage> createState() => _PesuPaymentPageState();
-}
 
-class _PesuPaymentPageState extends State<PesuPaymentPage>
-    with PayUCheckoutProProtocol {
-  late PayUCheckoutProFlutter _checkoutPro;
-  final _controller = Get.find<OnlinePaymentController>();
-  // late Map additionnalParms;
-  // late Map payuParams;
-// late DateTime _dateTime;
-  @override
-  void initState() {
-    print('initstate');
-    _checkoutPro = _checkoutPro = PayUCheckoutProFlutter(this);
-    _controller.payuresponse.value.clear();
-    _controller.trxnTime.value = '';
-    super.initState();
-    // widget.pay!(my());
-    // my();
-    doPaymennt();
-  }
 
-  my() {
-    print(
-        " ${widget.academicyear};${widget.misctype}${widget.demandId}${widget.dueAmount}${widget.feeName}${widget.fdFeeTypeId}${widget.merchantKey}${widget.paymentDescription}${widget.isMiscpayment}");
-    // Get.dialog(
-    //   AlertDialog(
-    //     title: const Text('Payment Success'),
-    //     content: const Text('Payment Success'),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () {
-    //           Get.back();
-    //           },
-    //           child: const Text('OK'),
-    //           ),
-    //           ],
-    //           ),
-
-    // );
-  }
-
-  doPaymennt() async {
-    _controller.payupaymentstarted.value = true;
-    try {
-      _controller
-          .getUuidTrxnId()
-          .then((value) => _controller.getTrxnTime())
-          .then((value) => _checkoutPro.openCheckoutScreen(
-              payUPaymentParams: payuparams(),
-              payUCheckoutProConfig: _controller.createPayUConfigParams()))
-          .onError((error, stackTrace) =>
-              log(error.toString(), error: stackTrace, name: 'paymennt page'));
-    } catch (e, s) {
-      _controller.payupaymentstarted.value = false;
-      log(e.toString(), error: s, name: 'payu');
-    }
-  }
-
-  Map payuparams() {
-    try {
-      var additionnalParms = {
-        PayUAdditionalParamKeys.udf1: _controller.userInfo.value['userId'],
-        PayUAdditionalParamKeys.udf2:
-            _controller.userInfo.value['mobileNumber'],
-        PayUAdditionalParamKeys.udf3: _controller.userInfo.value['loginId'],
-        PayUAdditionalParamKeys.udf4: widget.academicyear,
-        PayUAdditionalParamKeys.udf5: widget.misctype
-      };
-
-      var payuParam = {
-        PayUPaymentParamKey.key: widget.merchantKey,
-        // _controller.testmerchantKey, //TODO  change merchant key
-        PayUPaymentParamKey.amount: widget.dueAmount,
-        PayUPaymentParamKey.productInfo: widget.isMiscpayment
-            ? widget.paymentDescription
-            : widget.feeName, //TODO paymnnet description if misc
-        PayUPaymentParamKey.firstName: _controller.userInfo.value['name'],
-        PayUPaymentParamKey.email: _controller.userInfo.value['email'],
-        PayUPaymentParamKey.phone: _controller.userInfo.value['mobileNumber'],
-        PayUPaymentParamKey.environment: "0", //TODO  change ennviroment key
-        PayUPaymentParamKey.additionalParam: additionnalParms,
-        PayUPaymentParamKey.enableNativeOTP: true,
-        // String - "0" for Production and "1" for Test
-        PayUPaymentParamKey.transactionId: _controller
-            .pesuTxnId.value, //TODO for ios txid canot be more than 25 lenght
-        // transactionId Cannot be null or empty and should be unique for each transaction. Maximum allowed length is 25 characters. It cannot contain special characters like: -_/
-        PayUPaymentParamKey.userCredential:
-            "${widget.merchantKey}:${_controller.userInfo.value['email']}", //TODO  change merchant key
-        //  Format: <testmerchantKey>:<userId> ... UserId is any id/email/phone number to uniquely identify the user.
-        PayUPaymentParamKey.android_surl: ApiConfig.androidSurl,
-        PayUPaymentParamKey.android_furl: ApiConfig.androidFurl,
-        PayUPaymentParamKey.ios_surl: ApiConfig.iosSurl,
-        PayUPaymentParamKey.ios_furl: ApiConfig.iosFurl
-      };
-      log(payuParam.toString(), name: 'payuparams');
-      return payuParam;
-    } catch (e, s) {
-      log(e.toString(), error: s, name: 'payup');
-      throw Exception();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.clean();
-    super.dispose();
-  }
-
-//  payuresponse=ValueNotifier({})
   @override
   Widget build(BuildContext context) {
-    // print("payuparams : ${payuparams.}");
-// var userCredential = "${_controller.livemerchantKey}:abc@gmail.com";
-// var json1 = jsonDecode(_controller. payuresponse.value['response']['payuResponse']);
+final config = Get.find<PaymentConfig>();
+ dio.interceptors.add(CustomInterceptor());
+Get.put<OnlinePaymentController>(
+    OnlinePaymentController(dio, preferences, cancelToken),
+  );
 
-    return SafeArea(
-      top: false,
+  // Get.put();
+  controller.userInfo = ValueNotifier({
+    'name':  name,
+    'email':  email,
+    'mobileNumber':  mobileNumber,
+    'loginId':  loginId,
+    'userId':  userId,
+    'instId':  instId,
+  });
+    TabBar tabBar = TabBar(
+        tabAlignment: TabAlignment.start,
+        onTap: (index) {
+
+        },
+        enableFeedback: true,
+        // indicatorColor: config.appVersion,
+        indicatorWeight: 4,
+        indicatorSize: TabBarIndicatorSize.label,
+        isScrollable: true,
+        labelColor: config.primaryColor,
+        unselectedLabelColor: config.primaryColor,
+        tabs: const [
+          Tab(
+            text: "Annual Fees",
+          ),
+          Tab(text: "Miscellaneous Fees"),
+          Tab(text: "Payment History"),
+        ]);
+    // Get.find<OnlinePaymentController>();
+    return DefaultTabController(
+      length: 3,
       child: Scaffold(
-        body: Obx(() => _controller.payupaymentstarted.value
-            ? Center(
-                child: widget.loadingWidget ??
-                    const CircularProgressIndicator.adaptive())
-            : PaymentStatus(
-                paymenntStatus: _controller.payuresponse.value['status'] ?? '1',
-                errorType: _controller.payuresponse.value['id'] ?? '1',
-                date: _getDateValue(_controller.payuresponse.value),
-                paymentMode:
-                    _getPaymentModeValue(_controller.payuresponse.value),
-                feeType: widget.feeName,
-                trxnId: _getTransactionId(_controller.payuresponse.value),
-                amount: widget.dueAmount,
-                name: _controller.userInfo.value['name'],
-                srn: _controller.userInfo.value['loginId'],
-                errorReason: _getErrorReason(_controller.payuresponse.value),
-              )),
+        appBar: paymentAppBar(
+          
+          appBarTitle: "Online Payments",appBarBackgroundColor: config.primaryColor,
+          appBarAction: [
+            Padding(
+              padding: const EdgeInsets.only(right: 14),
+              child: GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    backgroundColor: Colors.white,
+                    elevation: 0.0,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(0),
+                      ),
+                    ),
+                    context: context,
+                    enableDrag: true,
+                    builder: (BuildContext context) {
+                      return const Padding(
+                        padding: EdgeInsets.only(
+                            left: 8, right: 8, top: 10, bottom: 15),
+                        child: Disclaimer(),
+                      );
+                    },
+                  );
+                },
+                child: const MyIcons(
+                  LucideIcons.alertCircle,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+
+            Visibility(
+              visible: tabBar.controller?.index!=0,
+            child: MyIcons(LucideIcons.search, onPressed: () {
+                
+              },),
+          )
+          ],
+          bottom: PreferredSize(
+            preferredSize: tabBar.preferredSize,
+            child: Material(
+              color: config.secondaryColor,
+            
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width, child: tabBar),
+            ),
+          ),
+          // onBack: () {
+          //   Get.back();
+          // },
+
+
+        ),
+        body: Obx(
+          () => controller.rxRequestStatus.value == RequestStatus.LOADING
+              ?  Center(child: config.loadingWidget)
+              : controller.rxRequestStatus.value == RequestStatus.ERROR
+                  ? RetryException(onTap: () {
+                      controller.getPaymentDetail();
+                      controller.getCTypeListResponse();
+                      controller.getTermsAndConditions();
+                    })
+
+                  // const Center(child: Text("No Data Available"),)
+                  : const TabBarView(
+                      physics: NeverScrollableScrollPhysics(),
+                      children: [
+                        AnnualFee(),
+                        Miscellaneous(),
+                        PaymentHistoryView(),
+                      ],
+                    ),
+        ),
       ),
     );
   }
+}
 
-// Helper functions to extract values safely
-  String _getDateValue(Map<dynamic, dynamic>? response) {
-    if (response == null ||
-        response['status'] == 'Cancelled' ||
-        response['status'] == 'Error' ||
-        response['response'] == null) {
-      return _controller.trxnTime.value ?? 'N.A';
+
+
+///
+///
+///
+
+
+class CustomInterceptor extends Interceptor {
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    String errorMessage;
+    switch (err.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+       errorMessage = "Connection Timeout. Please try again.";
+        break;
+      case DioExceptionType.badResponse:
+        if (err.response?.statusCode == 404) {
+        errorMessage = "Resource not found.";
+        } else {
+         errorMessage = "Received invalid status code: ${err.response?.statusCode}";
+        }
+        break;
+      case DioExceptionType.cancel:
+       errorMessage = "Request to API server was cancelled.";
+        break;
+      case DioExceptionType.unknown:
+       errorMessage = "Connection error: ${err.message}";
+        break;
+        default:
+        errorMessage = "Unknown error occurred.";
+        break;
     }
-    return response['response']['addedon'] ??
-        response['response']['result']['addedon'] ??
-        'N.A';
+    handler.next(DioException(
+      requestOptions: err.requestOptions,
+      response: err.response,
+      type: err.type,
+      error: CustomDioException(errorMessage),
+    ));
   }
 
-  String _getPaymentModeValue(Map<dynamic, dynamic>? response) {
-    if (response == null ||
-        response['status'] == 'Cancelled' ||
-        response['status'] == 'Error' ||
-        response['response'] == null ||
-        response['response']['PG_TYPE'] == null ||
-        response['response']['result'] == null) {
-      return 'N.A';
-    }
-    return response['response']['PG_TYPE'] ??
-        response['response']['result']['PG_TYPE'] ??
-        'N.A';
+
+  /// Called when the request is about to be sent.
+  @override
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) {
+    handler.next(options);
   }
 
-  String _getTransactionId(Map<dynamic, dynamic>? response) {
-    if (response == null || response['response'] == null) {
-      return '0';
-    }
-    return "${response['response']['id'] ?? response['response']['result']['mihpayid'] ?? '0'}";
+  /// Called when the response is about to be resolved.
+  @override
+  void onResponse(
+    Response response,
+    ResponseInterceptorHandler handler,
+  ) {
+    handler.next(response);
   }
+}
 
-  String _getErrorReason(Map<dynamic, dynamic>? response) {
-    if (response == null ||
-        response['response'] == null ||
-        response['status'] == 'Cancelled') {
-      return response?['reason'] ?? 'N.A';
-    }
-    return response['response']['field9'] ?? 'N.A';
-  }
+
+class CustomDioException implements Exception {
+  final String message;
+  CustomDioException(this.message);
 
   @override
-  generateHash(Map response) async {
-    try {
-      var hash = await _controller.getserverDynamicHash(
-        instId: widget.instId, //TODO add InnstId
-        trxnId: _controller.pesuTxnId.value,
-        misctype: widget.misctype,
-        merchantKey: widget.merchantKey,
-        hash: jsonEncode(response),
-        academicyear: widget.academicyear,
-        fdFeeTypeId: widget.isMiscpayment ? "2" : widget.fdFeeTypeId!,
-        feeName: widget.feeName!,
-        demandId: widget.isMiscpayment ? "0" : widget.demandId!,
-        dueAmount: widget.dueAmount,
-      );
-
-      // if (hash == null) return;
-      print('@@@@@@');
-      // var hash = HashService.generateHash(response);
-      _checkoutPro.hashGenerated(hash: hash);
-    } catch (e, s) {
-      // print(e
-      // );
-      log(e.toString(), error: s, name: "generate hash");
-    }
-    // TODO: implement generateHash
-    // throw UnimplementedError();
-  }
-
-  @override
-  onError(Map? response) {
-    log(response.toString(), name: 'error');
-    _controller.payupaymentstarted.value = false;
-    // PaymentSuccessScreen(status: 'error',respionse: response,);
-    // var res = jsonDecode(response!['payuResponse']);
-    _controller.payuresponse = ValueNotifier({
-      "status": "Error",
-      "onError": response,
-      "id": "1",
-      "reason": "Payment Error ${response!['errorCode']}"
-    });
-  }
-
-  @override
-  onPaymentCancel(Map? response) {
-    try {
-      log(_controller.payuresponse.value.toString(), name: 'payu');
-      log(response.toString(), name: 'cancel');
-      _controller.payupaymentstarted.value = false;
-      //  var res = jsonDecode(response!['payuResponse']);
-      var isTrxnInitiated = response!['isTxnInitiated'];
-      _controller.payuresponse = ValueNotifier({
-        "status": "Cancelled",
-        "onpayCancel": response,
-        "id": "1",
-        "reason": isTrxnInitiated
-            ? "Pending. Please confirm  your payment"
-            : "User Cancelled Transction "
-      });
-    } catch (e, s) {
-      log(e.toString(), error: s, name: 'cancel');
-    }
-    // PaymentSuccessScreen(status: 'cancelled',
-    //  response!.addAll(response);respionse: response,);
-  }
-
-  @override
-  onPaymentFailure(dynamic response) {
-    log(response.toString(), name: 'fails');
-    _controller.payupaymentstarted.value = false;
-    var res = jsonDecode(response!['payuResponse']);
-    // PaymentSuccessScreen(status: 'failed',respionse: response,);
-    _controller.payuresponse =
-        ValueNotifier({"status": "Failed", "response": res, "id": "1"});
-  }
-
-  @override
-  onPaymentSuccess(dynamic response) {
-    try {
-      log(response.toString(), name: 'responnse');
-      _controller.payupaymentstarted.value = false;
-      var res = jsonDecode(response!['payuResponse']);
-      // PaymentSuccessScreen(status: 'Success',respionse: response,);
-      _controller.payuresponse =
-          ValueNotifier({"status": "Successfull", "response": res, "id": "0"});
-    } catch (e) {
-      log(e.toString(), name: 'responnse');
-    }
-  }
+  String toString() => message;
 }

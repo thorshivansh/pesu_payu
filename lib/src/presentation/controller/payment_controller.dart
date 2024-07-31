@@ -16,24 +16,18 @@ import 'package:intl/intl.dart';
 import 'package:number_to_text_converter/number_to_text_converter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
-import 'package:pesu_payu/pesupay.dart';
-import 'package:pesu_payu/src/presentation/views/online_payment_view.dart';
-import 'package:pesu_payu/src/utils/enums/misc_enums.dart';
-import 'package:pesu_payu/src/utils/page_route.dart';
-import 'package:pesu_payu/src/widget/retry_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../pesupay.dart';
 import '../../data/models/TransactionModel.dart';
 import '../../data/models/c_type_model.dart';
 import '../../data/models/payment_confirmation_model.dart';
 import '../../data/models/payment_detail_model.dart';
 import '../../data/models/s_type_model.dart';
-import '../../data/repo/payment_repo.dart';
-import '../../utils/enums/rxtstatus.dart';
-import '../../utils/toast.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:uuid/uuid.dart';
+import '../../domain/repo/payment_repo.dart';
 
 class OnlinePaymentController extends GetxController {
   // OnlinePaymentController( this._dio);

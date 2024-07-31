@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pesu_payu/src/utils/color/colors.dart';
-import 'package:pesu_payu/src/utils/styles/my_text_styles.dart';
-import 'my_text.dart';
+import '../../../pesupay.dart';
 
 class MyButton extends StatefulWidget {
   final Widget? name;

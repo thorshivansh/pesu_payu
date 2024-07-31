@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pesu_payu/src/utils/my_icons.dart';
-import 'package:pesu_payu/src/widget/autosize_text.dart';
+import '../../../pesupay.dart';
 
 PreferredSizeWidget paymentAppBar({
   required String appBarTitle,

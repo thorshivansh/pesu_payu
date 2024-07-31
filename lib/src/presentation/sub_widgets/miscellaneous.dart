@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -8,17 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesu_payu/src/config/payments_config.dart';
-import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
-import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
-import 'package:pesu_payu/src/utils/dropdown.dart';
-import 'package:pesu_payu/src/utils/misctext_field.dart';
-import 'package:pesu_payu/src/utils/my_button.dart';
-import 'package:pesu_payu/src/utils/my_icons.dart';
-import 'package:pesu_payu/src/utils/my_text.dart';
-import 'package:pesu_payu/src/utils/toast.dart';
-import 'package:pesu_payu/src/widget/alignrow_widget.dart';
-import 'package:pesu_payu/src/widget/autosize_text.dart';
+import '../../../pesupay.dart';
+
 
 
 class Miscellaneous extends GetView<OnlinePaymentController> {

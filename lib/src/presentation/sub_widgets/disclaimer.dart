@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-// import 'package:pesua/utils/properties.dart';
 
 class Disclaimer extends StatelessWidget {
   const Disclaimer({super.key});

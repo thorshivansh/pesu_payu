@@ -7,21 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesu_payu/src/config/payments_config.dart';
-import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
-import 'package:pesu_payu/src/presentation/sub_widgets/disclaimer.dart';
-import 'package:pesu_payu/src/presentation/sub_widgets/terms_condition.dart';
-import 'package:pesu_payu/src/presentation/views/online_payment_view.dart';
-import 'package:pesu_payu/src/utils/color/colors.dart';
-import 'package:pesu_payu/src/utils/misctext_field.dart';
-import 'package:pesu_payu/src/utils/my_button.dart';
-import 'package:pesu_payu/src/utils/my_icons.dart';
-import 'package:pesu_payu/src/utils/my_text.dart';
-import 'package:pesu_payu/src/utils/page_route.dart';
-import 'package:pesu_payu/src/utils/styles/my_text_styles.dart';
-import 'package:pesu_payu/src/utils/toast.dart';
-import 'package:pesu_payu/src/widget/appbar.dart';
-import 'package:pesu_payu/src/widget/autosize_text.dart';
+import '../../../pesupay.dart';
+
+
 
 class TransactionDetailView extends GetView<OnlinePaymentController> {
   final int annualfeeIndex;

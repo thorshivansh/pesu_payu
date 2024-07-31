@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
-import 'package:pesu_payu/src/config/payments_config.dart';
-import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
+import '../../../pesupay.dart';
 class OnlinePaymentBinding extends Bindings {
   @override
   void dependencies() {

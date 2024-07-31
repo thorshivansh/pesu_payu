@@ -1,10 +1,10 @@
+// ignore: unnecessary_import
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:pesu_payu/src/presentation/controller/payment_controller.dart';
-import 'package:pesu_payu/src/utils/toast.dart';
+import '../../../pesupay.dart';
 
 class PaymentHistoryView extends GetView<OnlinePaymentController> {
   const PaymentHistoryView({super.key});
